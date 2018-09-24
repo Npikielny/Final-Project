@@ -36,10 +36,14 @@ class point(Sprite):
         
     def colorRandom(funcIndex):
         return point.color(abs(sin(funcIndex*0.2)*255),abs(cos(funcIndex*1.3)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5)*255))
-    
-class Grapher(App):
+
+class function():
     functions = {}
-    functionsType = {}
+    def __init__(self, inputString):
+        
+    def funcType():
+class Grapher(App):
+    
     def __init__(self, width, height):
         super().__init__(width, height)
         Sprite(RectangleAsset(width, height, noLine, white))
