@@ -33,14 +33,15 @@ class point(Sprite):
             else:
                 output += str(i - a*16)
         return (Color(output, 1.0))
+        
+    def colorRandom(funcIndex):
+        return point.color(abs(sin(funcIndex*0.2)*255),abs(cos(funcIndex*1.3)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5)*255))
                 
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
         Sprite(RectangleAsset(width, height, noLine, white))
-        for i in range(0,10):
-            point((i*10, 0), point.color(abs(sin(i+0.4)*255),abs(cos(2.2*i+0.5)*255),abs(cos(2*i)*sin(i)*255)))
-            #abs(sin(i)*255),abs(cos(i)*255),abs(cos(i)*sin(i)*255*2)
-        #point.color(255,25,100)
+        for i in range(0,40):
+            point((i*10,0), point.colorRandom(i))
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
