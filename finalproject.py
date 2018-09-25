@@ -33,10 +33,9 @@ class point(Sprite):
     def colorRandom(funcIndex):
         return point.color(abs(sin(funcIndex*0.2)*255),abs(cos(funcIndex*1.31)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5)*255))
 class collectionViewCell(Sprite):
-    cell = RectangleAsset(200, 10, noLine, black)
-    Sprite(cell, (0,0))
-    def __init__(position):
-        super(collectionViewCell.cell, position)
+    cell = RectangleAsset(200,50, LineStyle(1, point.color(100,100,100)), point.color(200,200,200))
+    def __init__(self, position):
+        super().__init__(collectionViewCell.cell, position)
 class function():
     functions = {}
     def __init__(self, inputString):
@@ -46,9 +45,10 @@ class function():
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-        Sprite(RectangleAsset(width, height, noLine, white))
+        Sprite(RectangleAsset(width, height, noLine, white), (0,0))
         for i in range(0,40):
             point((i*10,0), point.colorRandom(i))
+        collectionViewCell((10,10))
     def function(inputString):
         functionType = 0
         left = 0
@@ -65,7 +65,6 @@ class Grapher(App):
                     functionType += 1
                     y += 1
         functions[len(functions)] = inputString
-        functionsType[len(functions)] = functionType
-        collectionViewCell((0,0))
+        functionsType[len(functions)] = functionTyp
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
