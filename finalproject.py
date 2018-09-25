@@ -14,9 +14,6 @@ noLine  = LineStyle(0, black)
 #-----------------------------------------------------
 class point(Sprite):
     def __init__(self, position, color):
-        #if color <= 10:
-        #pt = CircleAsset(5, noLine, (color * sin(color)), color * cos(color), 1)
-        #else:
         pt = CircleAsset(5, noLine, color)
         Sprite(pt, position)
     def color(red, green, blue):
@@ -33,17 +30,20 @@ class point(Sprite):
             else:
                 output += str(i - a*16)
         return (Color(output, 1.0))
-        
     def colorRandom(funcIndex):
-        return point.color(abs(sin(funcIndex*0.2)*255),abs(cos(funcIndex*1.3)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5)*255))
-
+        return point.color(abs(sin(funcIndex*0.2)*255),abs(cos(funcIndex*1.31)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5)*255))
+class collectionViewCell(Sprite):
+    cell = RectangleAsset(200, 10, noLine, black)
+    Sprite(cell, (0,0))
+    def __init__(position):
+        super(collectionViewCell.cell, position)
 class function():
     functions = {}
     def __init__(self, inputString):
-        
+        print("yay")
     def funcType():
+        print("yay")
 class Grapher(App):
-    
     def __init__(self, width, height):
         super().__init__(width, height)
         Sprite(RectangleAsset(width, height, noLine, white))
@@ -66,5 +66,6 @@ class Grapher(App):
                     y += 1
         functions[len(functions)] = inputString
         functionsType[len(functions)] = functionType
+        collectionViewCell((0,0))
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
