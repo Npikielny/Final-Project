@@ -45,14 +45,12 @@ class addFuncButton(Sprite):
         super().__init__(addFuncButton.button, position)
         super().__init__(addFuncButton.plusV, position)
         super().__init__(addFuncButton.plusH, position)
-
 class collectionView(Sprite):
     view = RectangleAsset(240,frameHeight, noLine, black)
     def __init__(self, position):
         super().__init__(collectionView.view, position)
         for i in range(1,11):
             collectionViewCell((20, 10 + i * (60 + 10)))
-
 #-----------------------------------------------------
 class function():
     functions = {}
