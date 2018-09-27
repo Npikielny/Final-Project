@@ -1,1 +1,37 @@
+def funcInterpreter(inputString, eType):
+    print(inputString)
+    if eType == 2:
+        terms = {}
+        term = ""
+        e = 0
+        for i in inputString:
+            if i == "=":
+                e += 1
+            if e > 1:
+                print("You goofed.")
+                break 
+            if e == 1:
+                print("y")
+        print(terms)
+def funcType(inputString):
+    eType = 0
+    p = 0
+    output = ""
+    for i in inputString:
+        if p == 0:
+            if i == "x" and eType != 1 and eType != 3:
+                eType += 1
+            elif i == "y" and eType != 2 and eType != 3:
+                eType += 2
+            elif i == "=":
+                p = 1
+            elif i != " " and eType <= 3:
+                eType += 10
+        if i != " ":
+            output += i
+    print(output, eType)
+    funcInterpreter(output, eType)
 
+
+funcType("y=4")
+#print(output)
