@@ -58,15 +58,16 @@ class Grapher(App):
         super().__init__(width, height)
         collectionView((0,0))
         Grapher.listenMouseEvent("click", self.mouseClick)
-        dropping = True
+        self.dropping = False
     def X(x):
         return(x + 240)
     for i in range(0,40):
             point((X(i*10),0), point.colorRandom(i))
     def mouseClick(self, event):
-        if event.x < 80 and event.x > 20 and event.y < 80 and event.y > 20 and dropping == False:
+        if event.x < 80 and event.x > 20 and event.y < 80 and event.y > 20 and self.dropping == False:
             collectionView.dropdown()
-            dropping = not dropping
+            self.dropping = not self.dropping
+
         else:
             print("oy")
     #-----------------------------------------------------
