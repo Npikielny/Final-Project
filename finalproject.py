@@ -40,6 +40,7 @@ class collectionViewCell(Sprite):
 class collectionView(Sprite):
     view = RectangleAsset(240,frameHeight, noLine, black)
     addFuncButton = RectangleAsset(200, 50, noLine, white)
+    self.isVisible = False
     def __init__(self, position):
         super().__init__(collectionView.view, position)
         for i in range(1,11):
@@ -51,7 +52,10 @@ class collectionView(Sprite):
         Sprite(plusV,(50-5,15))
         Sprite(plusH,(25,35))
     def dropdown():
-        print("yay")
+        Func = Sprite(RectangleAsset(10,10,noLine, black), (10,10))
+        self.isVisible = not isVisible
+        Func.visible = self.isVisible
+            
 #-----------------------------------------------------
 class Grapher(App):
     def __init__(self, width, height):
