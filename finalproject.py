@@ -54,13 +54,6 @@ class collectionView(Sprite):
             collectionViewCell((20, 10 + i * (60 + 10)))
         Sprite(addFuncButton, (0,0))
 #-----------------------------------------------------
-class function():
-    functions = {}
-    def __init__(self, inputString):
-        print("yay")
-    def funcType():
-        print("yay")
-#-----------------------------------------------------
 class Grapher(App):
     
     def __init__(self, width, height):
