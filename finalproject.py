@@ -50,16 +50,25 @@ class collectionView(Sprite):
         Sprite(button,(20,10))
         Sprite(plusV,(50-5,15))
         Sprite(plusH,(25,35))
+    def dropdown():
+        print("yay")
 #-----------------------------------------------------
 class Grapher(App):
-    
     def __init__(self, width, height):
         super().__init__(width, height)
         collectionView((0,0))
+        Grapher.listenMouseEvent("click", self.mouseClick)
+        dropping = True
     def X(x):
         return(x + 240)
     for i in range(0,40):
             point((X(i*10),0), point.colorRandom(i))
+    def mouseClick(self, event):
+        if event.x < 80 and event.x > 20 and event.y < 80 and event.y > 20 and dropping == False:
+            collectionView.dropdown()
+            dropping = not dropping
+        else:
+            print("oy")
     #-----------------------------------------------------
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
