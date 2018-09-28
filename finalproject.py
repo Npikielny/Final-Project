@@ -37,14 +37,6 @@ class collectionViewCell(Sprite):
     cell = RectangleAsset(200,60, LineStyle(1, point.color(100,100,100,0.5)), point.color(200,200,200,0.5))
     def __init__(self, position):
         super().__init__(collectionViewCell.cell, position)
-class addFuncButton(Sprite):
-    button = RectangleAsset(30,30,LineStyle(1, point.color(250,250,250,0.5)))
-    plusV = RectangleAsset(5,20,LineStyle(1, point.color(250,250,250,0.5)))
-    plusH = RectangleAsset(20,5,LineStyle(1, point.color(250,250,250,0.5)))
-    def __init__(self, position):
-        super().__init__(addFuncButton.button, position)
-        super().__init__(addFuncButton.plusV, position)
-        super().__init__(addFuncButton.plusH, position)
 class collectionView(Sprite):
     view = RectangleAsset(240,frameHeight, noLine, black)
     addFuncButton = RectangleAsset(200, 50, noLine, white)
@@ -52,7 +44,12 @@ class collectionView(Sprite):
         super().__init__(collectionView.view, position)
         for i in range(1,11):
             collectionViewCell((20, 10 + i * (60 + 10)))
-        Sprite(addFuncButton, (0,0))
+        button = RectangleAsset(60,60,LineStyle(1, point.color(250,250,250,0.5)))
+        plusV = RectangleAsset(10,50,LineStyle(1, point.color(250,250,250,0.5)), white)
+        plusH = RectangleAsset(50,10,LineStyle(1, point.color(250,250,250,0.5)), white)
+        Sprite(button,(20,10))
+        Sprite(plusV,(50-5,15))
+        Sprite(plusH,(25,35))
 #-----------------------------------------------------
 class Grapher(App):
     
