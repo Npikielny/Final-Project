@@ -40,7 +40,6 @@ class collectionViewCell(Sprite):
 class collectionView(Sprite):
     view = RectangleAsset(240,frameHeight, noLine, black)
     addFuncButton = RectangleAsset(200, 50, noLine, white)
-    self.isVisible = False
     def __init__(self, position):
         super().__init__(collectionView.view, position)
         for i in range(1,11):
@@ -51,10 +50,9 @@ class collectionView(Sprite):
         Sprite(button,(20,10))
         Sprite(plusV,(50-5,15))
         Sprite(plusH,(25,35))
-    def dropdown():
+    def dropdown(state):
         Func = Sprite(RectangleAsset(10,10,noLine, black), (10,10))
-        self.isVisible = not isVisible
-        Func.visible = self.isVisible
+        Func.visible = state
             
 #-----------------------------------------------------
 class Grapher(App):
@@ -68,12 +66,16 @@ class Grapher(App):
     for i in range(0,40):
             point((X(i*10),0), point.colorRandom(i))
     def mouseClick(self, event):
+        #Dropping down menu
         if event.x < 80 and event.x > 20 and event.y < 80 and event.y > 20 and self.dropping == False:
-            collectionView.dropdown()
             self.dropping = not self.dropping
-
-        else:
-            print("oy")
+            collectionView.dropdown(self.dropping)
+        elif event.x < 80 and event.x > 20 and event.y < 40 and event.y > 20 and self.dropping == True:
+            print("func")
+        elif event.x < 80 and event.x > 20 and event.y < 60 and event.y > 40 and self.dropping == True:
+            print("param")
+        elif event.x < 80 and event.x > 20 and event.y < 80 and event.y > 60 and self.dropping == True:    
+            print("constant")
     #-----------------------------------------------------
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
