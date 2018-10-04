@@ -1,10 +1,11 @@
-from math import floor
 def funcInterpreter(equation):
     print(equation)
     terms = (getOperandsAndTerms(equation))[0]
     operands = (getOperandsAndTerms(equation))[1]
     pren = prenEliminator(terms,operands)
-    return(pren)
+    prenTermsAndOps = getOperandsAndTerms(pren)
+    return(funcSolver(prenTermsAndOps[0],prenTermsAndOps[1]))
+    #return(prenTermsAndOps[0],prenTermsAndOps[1])
     
 
 def prenEliminator(terms, operands):
@@ -73,7 +74,7 @@ def getOperandsAndTerms(equation):
     p = 0
     op = 1
     for i in str(equation):
-        if i != " " and i != "y" and i != "=":
+        if i != " " and i != "y" and i != "=" and i != "'"  and i != "[" and i != "]":
             if i == "(":
                 p += 1
             elif i == ")":
@@ -97,7 +98,7 @@ def getOperandsAndTerms(equation):
                         if term != "":
                             terms.append(term)
                             term = ""
-                elif i.isdigit() == True:
+                elif i.isdigit() == True or  i == ".":
                     term += i
                     op = 0
                 elif i.isdigit() == False:
@@ -126,35 +127,32 @@ def funcSolver(terms, operands):
     if len(operands) > 0:
         for i in range(0,len(operands)):
             if operands[i] == "^":
-                newTerms[i] = int(terms[i])**int(terms[i+1])
+                newTerms[i] = float(terms[i])**float(terms[i+1])
                 del newTerms[i+1]
         #print("expo:", newTerms)
         for i in range(0,len(operands)):
             if operands[i] == "*":
-                newTerms[i] = int(terms[i])*int(terms[i+1])
+                newTerms[i] = float(terms[i])*float(terms[i+1])
                 del newTerms[i+1]
             elif operands[i] == "/":
-                newTerms[i] = int(terms[i])/int(terms[i+1])
+                newTerms[i] = float(terms[i])/float(terms[i+1])
                 del newTerms[i+1]
         #print("mult:", newTerms)
         for i in range(0,len(operands)):
             if operands[i] == "-":
-                newTerms[i+1] = str((-1)*int(terms[i+1]))
+                newTerms[i+1] = str((-1)*float(terms[i+1]))
         #print("sub:", newTerms)
         for i in newTerms:
             #print("i", i)
-            final += int(i)  
+            final += float(i)  
     else:
         final = ""
         for i in terms:
             for k in i:
-                if k.isdigit() == True:
+                if k.isdigit() == True or k == ".":
                     final += str(k)
-        final = int(final)
+        final = float(final)
     #print("solved", final)
     return(final)
 
-print(funcInterpreter("y =3*((3)+(3))"))
-#print(funcInterpreter("y=24+1/4^2"))
-#print(funcSolver())
-            
+print(funcInterpreter("y =((3.0^2)+3/2)"))
