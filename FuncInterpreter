@@ -1,12 +1,98 @@
 def funcInterpreter(equation):
+    if equation.count("(") != equation.count(")") or equation.find("=") == 0:
+        print("Invalid input given")
+    else:
+        newEquation = ""
+        for i in equation:
+            if i != " ":
+                newEquation += i
+        print("Interpreting:", newEquation)    
+        equationL = getOperandsAndTerms(equation[0:equation.find("=")])
+        equationR = getOperandsAndTerms(equation[equation.find("=") + 1:len(equation)])
+        xR = 0
+        for i in range(0,len(equationR[1])-1):
+            if (equationR[0])[i] == "x" or (equationR[0])[i] == "X":
+                
+            elif (equationR[1])[i] == "/":
+                
+        #yL = equationL.count("y") + equationL.count("Y")
+        #xL = equationL.count("x") + equationL.count("X")
+        #yR = equationR.count("y") + equationR.count("Y")
+        #xR = equationR.count("x") + equationR.count("X")
+        #funcType = ""
+        #if yL > 0 and (xL+yR+xR == 0 or xL-xR+yR == 0):
+        #    funcType = "y="
+        #elif xL > 0 and (yL+xR+yR == 0 or yL-yR+xR == 0):
+        #    funcType = "x="
+        #elif 
+        #
+        #else:
+        #    funcType = "Solve"
+        return(equationL, equationR)    
+         
+
+        
+        #terms = (getOperandsAndTerms(equation))[0]
+        #operands = (getOperandsAndTerms(equation))[1]
+        #pren = prenEliminator(terms,operands)
+        #prenTermsAndOps = getOperandsAndTerms(pren)
+        #return(funcSolver(prenTermsAndOps[0],prenTermsAndOps[1]))
+        #return(prenTermsAndOps[0],prenTermsAndOps[1])
+        #return(xSeperator(terms,operands))
+'''
+def funcType(equation):
+    equationL = equation[0:equation.find("=")]
+    equationR = equation[equation.find("=") + 1:len(equation)]
+    yL = equationL.count("y") + equationL.count("Y")
+    xL = equationL.count("x") + equationL.count("X")
+    yR = equationR.count("y") + equationR.count("Y")
+    xR = equationR.count("x") + equationR.count("X")
+    if yL > 0 and xL+yR+xR == 0:
+        return("y")
+    elif xL > 0 and yL+xR+yR == 0:
+        return("x")
+    elif yL>0 and xR >0 and yR+xL == 0:
+        return("y=x")
+    elif xL>0 and yR >0 and yL+xR == 0:
+        return("x=y")
+    elif (xL > 0 and yL > 0) or (xR > 0 and yR > 0)
+'''    
+def funcCombiner(equation):
     print(equation)
-    terms = (getOperandsAndTerms(equation))[0]
-    operands = (getOperandsAndTerms(equation))[1]
-    pren = prenEliminator(terms,operands)
-    prenTermsAndOps = getOperandsAndTerms(pren)
-    return(funcSolver(prenTermsAndOps[0],prenTermsAndOps[1]))
-    #return(prenTermsAndOps[0],prenTermsAndOps[1])
+    equationL = getOperandsAndTerms(equation[0:equation.find("=")])
+    print(equationL)
+    equationR = getOperandsAndTerms(equation[equation.find("="):len(equation)-1])
+    print(equationR)
+    equationLOperators=[]
+    for i in equationL[1]:
+        if i == "-":
+            equationLOperators.append("+")
+        elif i == "+":
+            equationLOperators.append("-")
+        else:
+            equationLOperators.append(i)
+    return(equationR[0] + equationL[0],equationR[1] + equationLOperators[:])
     
+    
+def varSeperator(terms, operands):
+    varParts = []
+    intParts = []
+    for i in range(0,len(terms)-1):
+        if terms[i].count("x") > 0 or terms[i].count("X") > 0:
+            if terms[i].count("(") > 0 or operands[i] == "*" or operands[i+1] == "*":
+                print("y")
+            else:
+                varParts.append(terms[i])
+    return(xParts, intParts)
+                
+      
+def funcCompiler(terms, operands):
+    output = ""
+    for i in range(0, len(terms)):
+        output += terms[i]
+        if i < len(terms) - 1:
+            output += operands[i]
+    return(output)
 
 def prenEliminator(terms, operands):
     newTerms = []
@@ -17,53 +103,65 @@ def prenEliminator(terms, operands):
         operators.append(z)
     pp = 1
     g = 0
+    ##print("size?",newTerms,operators)
     while pp == 1 and g != 5:
-        #print("while", newTerms)
-        #print("pren:", newTerms)
-        #print("pren:", operands)
+        ##print("while", newTerms)
+        ##print("pren:", newTerms)
+        ##print("pren:", operands)
         g += 1
         pcheck = ""
             
         for i in range(0,len(newTerms)):
+            ##print("i", newTerms[i])
             if str(newTerms[i]).isdigit() == False:
                 p = str(newTerms[i]).count("(")
-                if p == 1:
-                    newTerms[i] = (newTerms[i])[1:len(newTerms[i])-1]
-                    #print("calling newTerm", (getOperandsAndTerms(newTerms[i]))[0],(getOperandsAndTerms(newTerms[i]))[1])
-                    newTerms[i] = str(funcSolver((getOperandsAndTerms(newTerms[i]))[0],(getOperandsAndTerms(newTerms[i]))[1]))
-                    #print("newTerms", newTerms, newTerms[i])
-                elif p > 1:
-                    #print("Implementation needed")
-                    term = ""
-                    newTerm = ""
-                    outside = ""
-                    for k in newTerms[i]:
-                        term += k
-                        if k == "(":
-                            outside += term[0:len(term)-1:]
-                            term = "("
-                        elif k == ")" and term[0] == "(":
-                            term = term[1:len(term)-1:]
-                            #print("calling newTerm", getOperandsAndTerms(term)[0],getOperandsAndTerms(term)[1])
-                            #newTerm = str(funcSolver(getOperandsAndTerms(term))[0],getOperandsAndTerms(term)[1])
-                            newTerm = str(funcSolver(getOperandsAndTerms(term)[0],getOperandsAndTerms(term)[1]))
-                            outside += "{0}"
-                            term = ""
-                            outside = outside.format(newTerm)
+                ##print("Implementation needed")
+                term = ""
+                newTerm = ""
+                outside = ""
+                for k in newTerms[i]:
+                    ##print("k", k)
+                    term += k
+                    #print("length:", len(term[1:len(term)-1:]))
+                    if k == "(":
+                        outside += term[0:len(term)-1:]
+                        if len(outside) > 0:
+                            if outside[len(outside) - 1].isdigit() == True or outside[len(outside) - 1] == "x" or outside[len(outside) - 1] == "y":
+                                outside += "*"
+                        term = "("
+                    elif k == ")" and term[0] == "(" and len(term[1:len(term)-1:]) > 0:
+                        term = term[1:len(term)-1:]
+                        ##print("calling newTerm", getOperandsAndTerms(term)[0],getOperandsAndTerms(term)[1])
+                        #newTerm = str(funcSolver(getOperandsAndTerms(term))[0],getOperandsAndTerms(term)[1])
+                        newTerm = str(funcSolver(getOperandsAndTerms(term)[0],getOperandsAndTerms(term)[1]))
+                        outside += "{0}"
+                        term = ""
+                        outside = outside.format(newTerm)
+                    elif k == ")" and term[0] == "(" and len(term[1:len(term)-1:]) == 0:
+                        print("There is an empty term; Substituting 0")
+                        term = ""
+                        outside += "0"
+                    ##print("term", term)
+                ##print("final term", term)
+                if len(term) > 0:
+                    if term[0].isdigit() == True:
+                        term = "*" + term
+                    ##print("cash me", outside, term)
                     outside += term
-                    newTerms[i] = str(outside)
-                    #print("newTerms[i]", newTerms[i])
+                ##print(outside)
+                newTerms[i] = str(outside)
+                ##print("newTerms[i]", newTerms[i])
         for h in newTerms:
             pcheck += str(h)
         if pcheck.count("(") == 0:
             pp = 0
     
     if len(newTerms) > 1:
-        #print("final Solver")
+        ##print("final Solver")
         newTerms = funcSolver(newTerms, operands)
-    #print("returning")
+    ##print("returning")
                 #Solving Inner parenthetical Terms Like (4 + (3 + 2))
-    #print(newTerms, g, "G", pp, ": PP", pcheck, pcheck.count("("))
+    ##print(newTerms, g, "G", pp, ": PP", pcheck, pcheck.count("("))
     return(newTerms) 
 
 def getOperandsAndTerms(equation):
@@ -74,7 +172,7 @@ def getOperandsAndTerms(equation):
     p = 0
     op = 1
     for i in str(equation):
-        if i != " " and i != "y" and i != "=" and i != "'"  and i != "[" and i != "]":
+        if i != " " and i != "'"  and i != "[" and i != "]":
             if i == "(":
                 p += 1
             elif i == ")":
@@ -114,45 +212,66 @@ def getOperandsAndTerms(equation):
                 term += i
     if term != "":
         terms.append(term)
-    #print("GottenTerms", terms, "GottenOperands", operands, "from", equation)
+    ##print("GottenTerms", terms, "GottenOperands", operands, "from", equation)
     return((terms,operands))
     
 def funcSolver(terms, operands):
-    #print("funcSolverCalled")
-    #print("terms:", terms)
-    #print("operands:", operands)
+    print("funcSolverCalled")
+    print("terms:", terms)
+    print("operands:", operands)
     newTerms = terms
     final = 0
     holder = ""
+    found = 0
     if len(operands) > 0:
         for i in range(0,len(operands)):
             if operands[i] == "^":
+                i = i - found
                 newTerms[i] = float(terms[i])**float(terms[i+1])
                 del newTerms[i+1]
-        #print("expo:", newTerms)
+                del operands[i]
+                found += 1
+        print("expo:", newTerms, operands)
+        found = 0
         for i in range(0,len(operands)):
+            print(i,len(terms),len(operands))
+            print(terms,operands)
+            i = i - found
             if operands[i] == "*":
                 newTerms[i] = float(terms[i])*float(terms[i+1])
                 del newTerms[i+1]
+                del operands[i]
+                found += 1
             elif operands[i] == "/":
                 newTerms[i] = float(terms[i])/float(terms[i+1])
                 del newTerms[i+1]
-        #print("mult:", newTerms)
+                del operands[i]
+                found += 1
+        print("mult:", newTerms)
         for i in range(0,len(operands)):
             if operands[i] == "-":
                 newTerms[i+1] = str((-1)*float(terms[i+1]))
-        #print("sub:", newTerms)
+        ##print("sub:", newTerms)
         for i in newTerms:
-            #print("i", i)
             final += float(i)  
     else:
         final = ""
         for i in terms:
             for k in i:
-                if k.isdigit() == True or k == ".":
+                if k.isdigit() == True or k == "." or k == "-":
                     final += str(k)
         final = float(final)
-    #print("solved", final)
+    ##print("solved", final)
     return(final)
 
-print(funcInterpreter("y =((3.0^2)+3/2)"))
+#print(funcCombiner("y+x+3=4-2-y"))
+#print(getOperandsAndTerms("y + 4 = 3"))
+#print(funcCompiler(["x","4","-3","(1)"],["+","*","/"]))
+b = "y+3=2x+4"
+print(b)
+print(funcInterpreter(b))
+#a = getOperandsAndTerms(b)
+#print(a[0],a[1])
+#print(prenEliminator(a[0],a[1]))
+#print("a", a)
+#print(funcSolver(a[0],a[1]))
