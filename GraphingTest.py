@@ -183,7 +183,7 @@ def funcSolver(terms, operands):
     ##print("solved", final)
     return(final)
 
-def funcPlugger(depVar, indepVar, equation, funcNumb, t):
+def funcPlugger(depVar, indepVar, equation, t):
     substitueValues = list(range(-100,100))
     a = getOperandsAndTerms(equation.format(t))
     b = funcSolver(a[0],a[1])
@@ -241,7 +241,8 @@ class Grapher(App):
     functions.append("{0}^0.5")
     functions.append("1/{0}")
     for i in range(len(functions)):
-        point(funcPlugger("y", "x", functions[i], color(i), 0),color(i),functions[i])
+        print(funcPlugger("y", "x", functions[i], 0.01))
+        point(funcPlugger("y", "x", functions[i], 0.01),colorRandom(i),functions[i])
         print(functions[i])
         b = []
         b.append(functions[i])
@@ -249,10 +250,12 @@ class Grapher(App):
     #-----------------------------------------------------
     t = 0
     def step(self):
-        t += 1
+        print("stepping")
+        self.t += 1
         for Point in self.getSpritebyClass(point):
-            Point.y = (funcPlugger("y", "x", Point.equation, t))[1]
-            Point.x = (funcPlugger("y", "x", Point.equation, t))[0]
+            print("stomping")
+        #    Point.y = (funcPlugger("y", "x", Point.equation, t))[1]
+        #    Point.x = (funcPlugger("y", "x", Point.equation, t))[0]
     
     
     
