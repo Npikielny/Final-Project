@@ -189,10 +189,10 @@ def funcPlugger(depVar, indepVar, equations, funcNumb, t):
     b = funcSolver(a[0],a[1])
     if depVar == "x":
         print(b,k)
-        point(coordinateTransfer((b,t*10)),colorRandom(funcNumb))
+        return(coordinateTransfer((b,t*10)))
     else:
         print(k,b)
-        point(coordinateTransfer((t,b*10)),colorRandom(funcNumb))
+        return(coordinateTransfer((t,b*10)))
 
 def coordinateTransfer(position):
     x = position[0]
@@ -219,11 +219,11 @@ def colorRandom(funcIndex):
     return color(abs(sin(funcIndex*0.2)*255),abs(cos(funcIndex*1.31)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5)*255), 1.0)    
 #-----------------------------------------------------
 class point(Sprite):
-    def __init__(self, position, color):
+    def __init__(self, position, color, equation):
         pt = CircleAsset(5, outline, color)
         Sprite(pt, position)
-        #self.y = position[1]
-        #self.x = position[0]
+        self.vy = 0
+        self.vx = 0
 class drawnPoint(Sprite):
     def __init__(self, position, color):
         pt = CircleAsset(3, noLine, color)
@@ -235,18 +235,24 @@ class Grapher(App):
     def X(x):
         return(x + 240)
     for i in range(0,40):
-            point((X(i*10),0), colorRandom(i))
+            point((X(i*10),0), colorRandom(i), "{0}")
     functions = []
-    #functions.append("4+3*{0}+{0}-2/4")
-    #functions.append("{0}^0.5")
+    functions.append("4+3*{0}+{0}-2/4")
+    functions.append("{0}^0.5")
     functions.append("1/{0}")
     for i in range(len(functions)):
+        point(funcPlugger("y", "x", functions[i], i, 0),i,functions[i])
         print(functions[i])
         b = []
         b.append(functions[i])
         #funcPlugger("y","x",b,i)
     #-----------------------------------------------------
-    
+    t = 0
+    def step(self):
+        t += 1
+        for Point in self.getSpritebyClass(point):
+            Point.y = (funcPlugger("y", "x", Point.equation, t))[1]
+            Point.x = (funcPlugger("y", "x", Point.equation, t))[0]
     
     
     
