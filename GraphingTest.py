@@ -241,7 +241,7 @@ class Grapher(App):
     functions.append("{0}^0.5")
     functions.append("1/{0}")
     for i in range(len(functions)):
-        point(funcPlugger("y", "x", functions[i], i, 0),i,functions[i])
+        point(funcPlugger("y", "x", functions[i], color(i), 0),color(i),functions[i])
         print(functions[i])
         b = []
         b.append(functions[i])
