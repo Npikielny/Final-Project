@@ -188,10 +188,10 @@ def funcPlugger(depVar, indepVar, equation, funcNumb, t):
     a = getOperandsAndTerms(equation.format(t))
     b = funcSolver(a[0],a[1])
     if depVar == "x":
-        print(b,k)
+        print(b,t)
         return(coordinateTransfer((b,t*10)))
     else:
-        print(k,b)
+        print(t,b)
         return(coordinateTransfer((t,b*10)))
 
 def coordinateTransfer(position):
