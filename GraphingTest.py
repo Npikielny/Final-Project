@@ -11,6 +11,7 @@ frameWidth = 800
 frameHeight = 800
 #-----------------------------------------------------
 noLine  = LineStyle(0, black)
+outline = LineStyle(1,black)
 #-----------------------------------------------------
 def prenEliminator(terms, operands):
     newTerms = []
@@ -182,22 +183,25 @@ def funcSolver(terms, operands):
     ##print("solved", final)
     return(final)
 
-def funcPlugger(depVar, indepVar, equations):
-    substitueValues = list(range(100))
+def funcPlugger(depVar, indepVar, equations, funcNumb):
+    substitueValues = list(range(300))
+    for i in range(len(substitueValues)):
+        substitueValues[i] = (substitueValues[i]+1)/100
     for i in equations:
         for k in substitueValues:
             a = getOperandsAndTerms(i.format(k))
             b = funcSolver(a[0],a[1])
             if depVar == "x":
                 print(b,k)
-                point((b,k),colorRandom(1))
+                point((b,k*10),point.colorRandom(funcNumb))
             else:
                 print(k,b)
-                point((k,b),point.colorRandom(10))
+                point((k,b*10),point.colorRandom(funcNumb))
+
 #-----------------------------------------------------
 class point(Sprite):
     def __init__(self, position, color):
-        pt = CircleAsset(5, noLine, color)
+        pt = CircleAsset(5, outline, color)
         Sprite(pt, position)
     def color(red, green, blue, alpha):
         letters = {10:"A",11:"B",12:"C",13:"D",14:"E",15:"F"}
@@ -223,11 +227,16 @@ class Grapher(App):
         return(x + 240)
     for i in range(0,40):
             point((X(i*10),0), point.colorRandom(i))
-    b = ["4+3*{0}+{0}-2/4"]
-    print(b)
-    funcPlugger("y","x",b)
+    functions = []
+    functions.append("4+3*{0}+{0}-2/4")
+    functions.append("{0}^0.5")
+    functions.append("1/{0}")
+    for i in range(len(functions)):
+        print(functions[i])
+        b = []
+        b.append(functions[i])
+        funcPlugger("y","x",b,i)
     #-----------------------------------------------------
-    
     
     
     
