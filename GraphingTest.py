@@ -183,21 +183,16 @@ def funcSolver(terms, operands):
     ##print("solved", final)
     return(final)
 
-def funcPlugger(depVar, indepVar, equations, funcNumb):
+def funcPlugger(depVar, indepVar, equations, funcNumb, t):
     substitueValues = list(range(-100,100))
-    for i in range(len(substitueValues)):
-        substitueValues[i] = (substitueValues[i]*3+1)/10
-    for i in equations:
-        for k in substitueValues:
-            a = getOperandsAndTerms(i.format(k))
-            b = funcSolver(a[0],a[1])
-            if depVar == "x":
-                print(b,k)
-                print(coordinateTransfer((b,k*10)))
-                point(coordinateTransfer((b,k*10)),colorRandom(funcNumb))
-            else:
-                print(k,b)
-                point(coordinateTransfer((k,b*10)),colorRandom(funcNumb))
+    a = getOperandsAndTerms(i.format(t))
+    b = funcSolver(a[0],a[1])
+    if depVar == "x":
+        print(b,k)
+        point(coordinateTransfer((b,t*10)),colorRandom(funcNumb))
+    else:
+        print(k,b)
+        point(coordinateTransfer((t,b*10)),colorRandom(funcNumb))
 
 def coordinateTransfer(position):
     x = position[0]
@@ -227,6 +222,12 @@ class point(Sprite):
     def __init__(self, position, color):
         pt = CircleAsset(5, outline, color)
         Sprite(pt, position)
+        #self.y = position[1]
+        #self.x = position[0]
+class drawnPoint(Sprite):
+    def __init__(self, position, color):
+        pt = CircleAsset(3, noLine, color)
+        Sprite(pt, position)
 #-----------------------------------------------------
 class Grapher(App):
     def __init__(self, width, height):
@@ -243,7 +244,7 @@ class Grapher(App):
         print(functions[i])
         b = []
         b.append(functions[i])
-        funcPlugger("y","x",b,i)
+        #funcPlugger("y","x",b,i)
     #-----------------------------------------------------
     
     
