@@ -183,9 +183,9 @@ def funcSolver(terms, operands):
     ##print("solved", final)
     return(final)
 
-def funcPlugger(depVar, indepVar, equations, funcNumb, t):
+def funcPlugger(depVar, indepVar, equation, funcNumb, t):
     substitueValues = list(range(-100,100))
-    a = getOperandsAndTerms(i.format(t))
+    a = getOperandsAndTerms(equation.format(t))
     b = funcSolver(a[0],a[1])
     if depVar == "x":
         print(b,k)
