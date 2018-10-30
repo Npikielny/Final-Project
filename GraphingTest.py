@@ -183,7 +183,7 @@ def funcSolver(terms, operands):
     return(final)
 
 def funcPlugger(depVar, indepVar, equations):
-    substitueValues = list(range(10))
+    substitueValues = list(range(100))
     for i in equations:
         for k in substitueValues:
             a = getOperandsAndTerms(i.format(k))
@@ -193,7 +193,7 @@ def funcPlugger(depVar, indepVar, equations):
                 point((b,k),colorRandom(1))
             else:
                 print(k,b)
-                point((k,b),colorRandom(1))
+                point((k,b),point.colorRandom(10))
 #-----------------------------------------------------
 class point(Sprite):
     def __init__(self, position, color):
@@ -223,6 +223,9 @@ class Grapher(App):
         return(x + 240)
     for i in range(0,40):
             point((X(i*10),0), point.colorRandom(i))
+    b = ["4+3*{0}+{0}-2/4"]
+    print(b)
+    funcPlugger("y","x",b)
     #-----------------------------------------------------
     
     
