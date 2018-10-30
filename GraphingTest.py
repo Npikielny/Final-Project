@@ -184,41 +184,49 @@ def funcSolver(terms, operands):
     return(final)
 
 def funcPlugger(depVar, indepVar, equations, funcNumb):
-    substitueValues = list(range(300))
+    substitueValues = list(range(-100,100))
     for i in range(len(substitueValues)):
-        substitueValues[i] = (substitueValues[i]+1)/100
+        substitueValues[i] = (substitueValues[i]*3+1)/10
     for i in equations:
         for k in substitueValues:
             a = getOperandsAndTerms(i.format(k))
             b = funcSolver(a[0],a[1])
             if depVar == "x":
                 print(b,k)
-                point((b,k*10),point.colorRandom(funcNumb))
+                print(coordinateTransfer((b,k*10)))
+                point(coordinateTransfer((b,k*10)),colorRandom(funcNumb))
             else:
                 print(k,b)
-                point((k,b*10),point.colorRandom(funcNumb))
+                point(coordinateTransfer((k,b*10)),colorRandom(funcNumb))
 
+def coordinateTransfer(position):
+    x = position[0]
+    y = position[1]
+    x = x + frameWidth / 2
+    y = y*-1 + (frameHeight / 4) 
+    return((x,y))
+#----------------------------------------------------- 
+def color(red, green, blue, alpha):
+    letters = {10:"A",11:"B",12:"C",13:"D",14:"E",15:"F"}
+    output = "0x"
+    for i in (int(red), int(green), int(blue)):
+        a = int(floor(i / 16))
+        if a >= 10:
+            output += str(letters[a])
+        else:
+            output += str(a)
+        if i - a*16 >= 10:
+            output += str(letters[i - a*16])
+        else:
+            output += str(i - a*16)
+    return (Color(output, alpha))
+def colorRandom(funcIndex):
+    return color(abs(sin(funcIndex*0.2)*255),abs(cos(funcIndex*1.31)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5)*255), 1.0)    
 #-----------------------------------------------------
 class point(Sprite):
     def __init__(self, position, color):
         pt = CircleAsset(5, outline, color)
         Sprite(pt, position)
-    def color(red, green, blue, alpha):
-        letters = {10:"A",11:"B",12:"C",13:"D",14:"E",15:"F"}
-        output = "0x"
-        for i in (int(red), int(green), int(blue)):
-            a = int(floor(i / 16))
-            if a >= 10:
-                output += str(letters[a])
-            else:
-                output += str(a)
-            if i - a*16 >= 10:
-                output += str(letters[i - a*16])
-            else:
-                output += str(i - a*16)
-        return (Color(output, alpha))
-    def colorRandom(funcIndex):
-        return point.color(abs(sin(funcIndex*0.2)*255),abs(cos(funcIndex*1.31)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5)*255), 1.0)
 #-----------------------------------------------------
 class Grapher(App):
     def __init__(self, width, height):
@@ -226,10 +234,10 @@ class Grapher(App):
     def X(x):
         return(x + 240)
     for i in range(0,40):
-            point((X(i*10),0), point.colorRandom(i))
+            point((X(i*10),0), colorRandom(i))
     functions = []
-    functions.append("4+3*{0}+{0}-2/4")
-    functions.append("{0}^0.5")
+    #functions.append("4+3*{0}+{0}-2/4")
+    #functions.append("{0}^0.5")
     functions.append("1/{0}")
     for i in range(len(functions)):
         print(functions[i])
