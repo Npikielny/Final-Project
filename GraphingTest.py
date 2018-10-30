@@ -237,12 +237,13 @@ class Grapher(App):
     for i in range(0,40):
             point((X(i*10),0), colorRandom(i), "{0}")
     functions = []
-    functions.append("4+3*{0}+{0}-2/4")
+    #functions.append("4+3*{0}+{0}-2/4")
     functions.append("{0}^0.5")
     functions.append("1/{0}")
     for i in range(len(functions)):
         print(funcPlugger("y", "x", functions[i], 0.01))
         point(funcPlugger("y", "x", functions[i], 0.01),colorRandom(i),functions[i])
+        print("success")
         print(functions[i])
         b = []
         b.append(functions[i])
@@ -250,9 +251,9 @@ class Grapher(App):
     #-----------------------------------------------------
     t = 0
     def step(self):
-        print("stepping")
+        #print("stepping")
         self.t += 1
-        for Point in self.getSpritebyClass(point):
+        for Point in self.getSpritesbyClass(point):
             print("stomping")
         #    Point.y = (funcPlugger("y", "x", Point.equation, t))[1]
         #    Point.x = (funcPlugger("y", "x", Point.equation, t))[0]
