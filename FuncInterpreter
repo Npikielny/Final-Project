@@ -127,16 +127,16 @@ def prenEliminator(terms, operands):
     ##print("size?",newTerms,operators)
     while pp == 1 and g != 5:
         #print("while", newTerms, "g=", g)
-        ##print("pren:", newTerms)
-        ##print("pren:", operands)
+        #print("pren:", newTerms)
+        #print("pren:", operands)
         g += 1
         pcheck = ""
             
         for i in range(0,len(newTerms)):
-            ##print("i", newTerms[i])
+            #print("i", newTerms[i])
             if str(newTerms[i]).isdigit() == False:
+                #print("Non-int detected in prenElim")
                 p = str(newTerms[i]).count("(")
-                ##print("Implementation needed")
                 term = ""
                 newTerm = ""
                 outside = ""
@@ -162,13 +162,15 @@ def prenEliminator(terms, operands):
                         print("There is an empty term; Substituting 0")
                         term = ""
                         outside += "0"
-                    ##print("term", term)
-                ##print("final term", term)
-                if len(term) > 0:
-                    if term[0].isdigit() == True:
+                    #print("term", term)
+                if len(term) > 0 and len(outside) > 0:
+                    if outside[len(outside) - 1].isdigit() == True and term[0].isdigit == True:
                         term = "*" + term
-                    ##print("cash me", outside, term)
                     outside += term
+                    #print("cash me", outside, term)
+                else:
+                    outside += term
+                    
                 ##print(outside)
                 newTerms[i] = str(outside)
                 ##print("newTerms[i]", newTerms[i])
@@ -178,11 +180,11 @@ def prenEliminator(terms, operands):
             pp = 0
     
     if len(newTerms) > 1:
-        ##print("final Solver")
+        #print("Int Solver", newTerms)
         newTerms = funcSolver(newTerms, operands)
     ##print("returning")
                 #Solving Inner parenthetical Terms Like (4 + (3 + 2))
-    ##print(newTerms, g, "G", pp, ": PP", pcheck, pcheck.count("("))
+    #print(newTerms, g, "G", pp, ": PP", pcheck, pcheck.count("("))
     return(newTerms) 
 
 def getOperandsAndTerms(equation):
@@ -200,7 +202,8 @@ def getOperandsAndTerms(equation):
                     terms.append(term)
                     term = ""
                     op = 0
-                elif op == 0:
+                if op == 0 and p == 1:
+                    #print("OP == 0", term, terms, operands)
                     operands.append("*")
             elif i == ")" or i == "}":
                 p -= 1
@@ -246,7 +249,7 @@ def getOperandsAndTerms(equation):
                 term += i
     if term != "":
         terms.append(term)
-    ##print("GottenTerms", terms, "GottenOperands", operands, "from", equation)
+    #print("GottenTerms", terms, "GottenOperands", operands, "from", equation)
     return((terms,operands))
     
 def funcSolver(terms, operands):
@@ -268,6 +271,7 @@ def funcSolver(terms, operands):
         #print("expo:", newTerms, operands)
         found = 0
         for i in range(0,len(operands)):
+            #print(found, terms, newTerms, operands)
             i = i - found
             #print(i,len(terms),len(operands))
             #print(terms,operands)
@@ -312,12 +316,12 @@ def funcPlugger(depVar, indepVar, equations):
 #print(funcCombiner("y+x+3=4-2-y"))
 #print(getOperandsAndTerms("y + 4 = 3"))
 #print(funcCompiler(["x","4","-3","(1)"],["+","*","/"]))
-b = "(45*(2+99)(3^6))^3(99-(57/2))"
+b = "((1-(1+4/2^4-1/3*35^8)))"
 print(b)
 b=getOperandsAndTerms(b)
 print(b)
 b=prenEliminator(b[0],b[1])
-print(b)
+print("Final:", b)
 #print(b)
 #funcPlugger("y","x",b)
 #funcPlugger("x","y",b)
