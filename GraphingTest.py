@@ -238,12 +238,12 @@ def colorRandom(funcIndex):
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
     def __init__(self, position, color, equation):
-        super().__init__(point.pt, position)
         self.vy = 0
         self.vx = 0
         print(funcPlugger("y", "x", 0.1, equation))
         self.y = funcPlugger("y", "x", 0.1, equation)[1]
         self.x = funcPlugger("y", "x", 0.1, equation)[0]
+        super().__init__(point.pt, position)
 
 
 class drawnPoint(Sprite):
