@@ -24,17 +24,17 @@ def prenEliminator(terms, operands):
     g = 0
     ##print("size?",newTerms,operators)
     while pp == 1 and g != 5:
-        ##print("while", newTerms)
-        ##print("pren:", newTerms)
-        ##print("pren:", operands)
+        #print("while", newTerms, "g=", g)
+        #print("pren:", newTerms)
+        #print("pren:", operands)
         g += 1
         pcheck = ""
             
         for i in range(0,len(newTerms)):
-            ##print("i", newTerms[i])
+            #print("i", newTerms[i])
             if str(newTerms[i]).isdigit() == False:
+                #print("Non-int detected in prenElim")
                 p = str(newTerms[i]).count("(")
-                ##print("Implementation needed")
                 term = ""
                 newTerm = ""
                 outside = ""
@@ -60,13 +60,15 @@ def prenEliminator(terms, operands):
                         print("There is an empty term; Substituting 0")
                         term = ""
                         outside += "0"
-                    ##print("term", term)
-                ##print("final term", term)
-                if len(term) > 0:
-                    if term[0].isdigit() == True:
+                    #print("term", term)
+                if len(term) > 0 and len(outside) > 0:
+                    if outside[len(outside) - 1].isdigit() == True and term[0].isdigit == True:
                         term = "*" + term
-                    ##print("cash me", outside, term)
                     outside += term
+                    #print("cash me", outside, term)
+                else:
+                    outside += term
+                    
                 ##print(outside)
                 newTerms[i] = str(outside)
                 ##print("newTerms[i]", newTerms[i])
@@ -76,11 +78,11 @@ def prenEliminator(terms, operands):
             pp = 0
     
     if len(newTerms) > 1:
-        ##print("final Solver")
+        #print("Int Solver", newTerms)
         newTerms = funcSolver(newTerms, operands)
     ##print("returning")
                 #Solving Inner parenthetical Terms Like (4 + (3 + 2))
-    ##print(newTerms, g, "G", pp, ": PP", pcheck, pcheck.count("("))
+    #print(newTerms, g, "G", pp, ": PP", pcheck, pcheck.count("("))
     return(newTerms) 
 
 def getOperandsAndTerms(equation):
@@ -92,11 +94,18 @@ def getOperandsAndTerms(equation):
     op = 1
     for i in str(equation):
         if i != " " and i != "'"  and i != "[" and i != "]":
-            if i == "(":
+            if i == "(" or i == "{":
                 p += 1
-            elif i == ")":
+                if term != "" and term.count("(") == 0:
+                    terms.append(term)
+                    term = ""
+                    op = 0
+                if op == 0 and p == 1:
+                    #print("OP == 0", term, terms, operands)
+                    operands.append("*")
+            elif i == ")" or i == "}":
                 p -= 1
-            if p == 0 and i != ")":
+            if p == 0 and i != ")" and i != "}":
                 if i == "+" or i == "*" or i == "/" or i == "^":
                     operands.append(i)
                     op = 1
@@ -104,10 +113,12 @@ def getOperandsAndTerms(equation):
                         terms.append(term)
                         term = ""
                 elif i == "-":
-                    #Negative
                     if op == 1:
                         op = 2
                         term += i
+                    elif op == 2:
+                        op = 0
+                        term = term[0:len(term)-1]
                     else:
                         #minusOperator
                         operands.append(i)
@@ -115,7 +126,7 @@ def getOperandsAndTerms(equation):
                         if term != "":
                             terms.append(term)
                             term = ""
-                elif i.isdigit() == True or  i == ".":
+                elif i.isdigit() == True or i == ".":
                     term += i
                     op = 0
                 elif i.isdigit() == False:
@@ -127,11 +138,16 @@ def getOperandsAndTerms(equation):
                 if len(terms) > len(operands) + 1:
                     operands.append("*")
                     op = 1
+            elif p == 0 and (i == ")" or i == "}"):
+                term += i
+                terms.append(term)
+                term = ""
+                op = 0
             else:
                 term += i
     if term != "":
         terms.append(term)
-    ##print("GottenTerms", terms, "GottenOperands", operands, "from", equation)
+    #print("GottenTerms", terms, "GottenOperands", operands, "from", equation)
     return((terms,operands))
     
 def funcSolver(terms, operands):
@@ -144,8 +160,8 @@ def funcSolver(terms, operands):
     found = 0
     if len(operands) > 0:
         for i in range(0,len(operands)):
+            i = i - found
             if operands[i] == "^":
-                i = i - found
                 newTerms[i] = float(terms[i])**float(terms[i+1])
                 del newTerms[i+1]
                 del operands[i]
@@ -153,9 +169,10 @@ def funcSolver(terms, operands):
         #print("expo:", newTerms, operands)
         found = 0
         for i in range(0,len(operands)):
+            #print(found, terms, newTerms, operands)
+            i = i - found
             #print(i,len(terms),len(operands))
             #print(terms,operands)
-            i = i - found
             if operands[i] == "*":
                 newTerms[i] = float(terms[i])*float(terms[i+1])
                 del newTerms[i+1]
@@ -170,7 +187,7 @@ def funcSolver(terms, operands):
         for i in range(0,len(operands)):
             if operands[i] == "-":
                 newTerms[i+1] = str((-1)*float(terms[i+1]))
-        ##print("sub:", newTerms)
+        #print("sub:", newTerms)
         for i in newTerms:
             final += float(i)
     else:
@@ -180,7 +197,7 @@ def funcSolver(terms, operands):
                 if k.isdigit() == True or k == "." or k == "-":
                     final += str(k)
         final = float(final)
-    ##print("solved", final)
+    #print("solved:", final)
     return(final)
 
 def funcPlugger(depVar, indepVar, equation, t):
@@ -195,8 +212,8 @@ def funcPlugger(depVar, indepVar, equation, t):
         return(coordinateTransfer((t,b*10)))
 
 def coordinateTransfer(position):
-    x = position[0]
-    y = position[1]
+    x = float(position[0])
+    y = float(position[1])
     x = x + frameWidth / 2
     y = y*-1 + (frameHeight / 4) 
     return((x,y))
@@ -219,11 +236,16 @@ def colorRandom(funcIndex):
     return color(abs(sin(funcIndex*0.2)*255),abs(cos(funcIndex*1.31)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5)*255), 1.0)    
 #-----------------------------------------------------
 class point(Sprite):
+    pt = CircleAsset(5, outline, red)
     def __init__(self, position, color, equation):
-        pt = CircleAsset(5, outline, color)
-        Sprite(pt, position)
+        super().__init__(point.pt, position)
         self.vy = 0
         self.vx = 0
+        print(funcPlugger("y", "x", 0.1, equation))
+        self.y = funcPlugger("y", "x", 0.1, equation)[1]
+        self.x = funcPlugger("y", "x", 0.1, equation)[0]
+
+
 class drawnPoint(Sprite):
     def __init__(self, position, color):
         pt = CircleAsset(3, noLine, color)
@@ -249,14 +271,14 @@ class Grapher(App):
         b.append(functions[i])
         #funcPlugger("y","x",b,i)
     #-----------------------------------------------------
-    t = 0
+    t = 0.1
     def step(self):
         #print("stepping")
         self.t += 1
         for Point in self.getSpritesbyClass(point):
-            print("stomping")
-        #    Point.y = (funcPlugger("y", "x", Point.equation, t))[1]
-        #    Point.x = (funcPlugger("y", "x", Point.equation, t))[0]
+            print(funcPlugger("y", "x", t, Point.equation))
+            Point.y = (funcPlugger("y", "x", Point.equation, t))[1]
+            Point.x = (funcPlugger("y", "x", Point.equation, t))[0]
     
     
     
