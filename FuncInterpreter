@@ -1,38 +1,30 @@
 
-def funcInterpreter(equation):
-    if equation.count("(") != equation.count(")") or equation.find("=") == 0:
+def funcInterpreter(depVar, indepVar, equation):
+    if equation.count("(") != equation.count(")") or equation.count("=") != 1:
         print("Invalid input given")
     else:
         newEquation = ""
         for i in equation:
             if i != " ":
                 newEquation += i
-        print("Interpreting:", newEquation)    
-        #equationL = getOperandsAndTerms(newEquation[0:newEquation.find("=")+1])
-        #equationR = getOperandsAndTerms(newEquation[newEquation.find("=") + 1:len(newEquation)])
-        #print(equationR, "Left 'x': ", varSplitter(equationR[0], equationR[1], ["x"]))
-        #print(equationL, "Right 'y': ", varSplitter(equationL[0], equationL[1], ["y"]))
-        newEquation = getOperandsAndTerms(newEquation)
-        print("FINISHED:",newEquation, varSplitter(newEquation[0], newEquation[1], ["x"]))
-        #return(equationL, equationR)    
-'''        
-def funcType(equation):
-    equationL = equation[0:equation.find("=")]
-    equationR = equation[equation.find("=") + 1:len(equation)]
-    yL = equationL.count("y") + equationL.count("Y")
-    xL = equationL.count("x") + equationL.count("X")
-    yR = equationR.count("y") + equationR.count("Y")
-    xR = equationR.count("x") + equationR.count("X")
-    if yL > 0 and xL+yR+xR == 0:
-        return("y")
-    elif xL > 0 and yL+xR+yR == 0:
-        return("x")
-    elif yL>0 and xR >0 and yR+xL == 0:
-        return("y=x")
-    elif xL>0 and yR >0 and yL+xR == 0:
-        return("x=y")
-    elif (xL > 0 and yL > 0) or (xR > 0 and yR > 0)
-'''  
+        print("Interpreting:", newEquation)
+        if newEquation.find("=") != 1:
+            print("Implementation of implicits needed")
+        else:
+             equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
+             print("equationR", equationR)
+             if equationR.count(indepVar) > 0 or indepVar == "nil":
+                  pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
+                  print("pluggable:", pluggableEquation)
+             else:
+                  b = getOperandsAndTerms(equationR)
+                  pluggableEquation = prenEliminator(b[0],b[1])
+        points = []
+        for i in range(1,10):
+            points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), i)))
+        #points = "nil"    
+        return(points)
+        
 def funcCombiner(equation):
     #print(equation)
     equationL = getOperandsAndTerms(equation[0:equation.find("=")])
@@ -48,64 +40,6 @@ def funcCombiner(equation):
         else:
             equationLOperators.append(i)
     return(equationR[0] + equationL[0],equationR[1] + equationLOperators[:])
-    
-'''    
-def varSplitter(terms, operands, variables):
-    varParts = ""
-    intParts = ""
-    newTerms = []
-    newOperands = []
-    term = 0
-    shift = 0
-    #CondensingTerms
-    print(terms, operands)
-    if len(operands)>0:
-        for i in range(len(operands)):
-            if operands[i] == "-":
-                operands[i] = "+"
-                terms[i+1] = "-" + terms[i+1]
-        for i in range(len(operands)):
-            if i < len(operands):
-                print(newTerms,newOperands)
-                print(terms[i],operands[i])
-                if operands[i] == "^" or operands[i] == "*" or operands[i] == "/":
-                    if term == 0:
-                        newTerms.append(terms[i] + operands[i] + terms[i+1])
-                        term = 1
-                        print("Deleting:", terms[i+1], operands[i])
-                        del terms[i+1]
-                        del operands[i]
-                        print(terms, operands)
-                    else:
-                        newTerms[len(newTerms)-1] = newTerms[len(newTerms)-1] + operands[i] + terms[i + 1]
-                else:
-                    term = 0
-                   # if operands[i] == "+":
-                    newTerms.append(terms[i])
-                    newOperands.append(operands[i])
-    else:
-        newTerms = terms
-    print("new", newTerms, newOperands)
-    #TermsAreNowCondensed
-    for i in range(len(newOperands)):
-        if newOperands[i] == "-":
-            newOperands[i] = "+"
-            newTerms[i] = "-" + newTerms[i]
-        varsFound = 0
-        for k in variables:
-            if newTerms[i].count(k) > 0:
-                varsFound += 1
-        if varsFound > 0:
-            if len(varParts) > 0:
-                varParts += "+" + newTerms[i]
-            else:
-                varParts += newTerms[i]
-        elif len(intParts)>0:
-            intParts += "+" + newTerms[i]
-        else:
-            intParts += newTerms[i]
-    return(varParts, intParts)
-'''               
       
 def funcCompiler(terms, operands):
     output = ""
@@ -302,36 +236,50 @@ def funcSolver(terms, operands):
     #print("solved:", final)
     return(final)
 
-def funcPlugger(depVar, indepVar, equations):
-    substitueValues = list(range(10))
-    for i in equations:
-        for k in substitueValues:
-            a = getOperandsAndTerms(i.format(k))
-            b = funcSolver(a[0],a[1])
-            if depVar == "x":
-                print(b,k)
-            else:
-                print(k,b)
+def funcPlugger(depVar, indepVar, equation, t):
+    if equation.find("=") != -1:
+        equation = equation[equation.find("=")+1:len(equation)]
+    a = getOperandsAndTerms(equation.format(t))
+    b = prenEliminator(a[0],a[1])
+    if depVar == "x":
+        return(b,t)
+    else:
+        return(t,b)
         
-#print(funcCombiner("y+x+3=4-2-y"))
-#print(getOperandsAndTerms("y + 4 = 3"))
-#print(funcCompiler(["x","4","-3","(1)"],["+","*","/"]))
-b = "((1-(1+4/2^4-1/3*35^8)))"
+def pluggerSetup(depVar, indepVar, equation):
+    output = ""
+    #print("PluggerSetup", depVar, indepVar, equation)
+    for i in equation:
+        #print("plug?", i, i == indepVar)
+        if i == indepVar:
+            if len(output)>0:
+                if output[len(output)-1].isdigit():
+                    output += "*"+"{0}"
+                else:
+                    output += "{0}"
+            else:
+                output += "{0}"
+        elif len(output)>0: 
+            if output[len(output)-1] == "}" and i.isdigit():
+                output += "*"+i
+            else:
+                output += i
+        else:
+            output += i
+        #print(output)
+    return output
+    
+'''    
+b = "y = 2.17^x"
 print(b)
+print(funcInterpreter("y", "x", b))
+
 b=getOperandsAndTerms(b)
 print(b)
 b=prenEliminator(b[0],b[1])
 print("Final:", b)
-#print(b)
-#funcPlugger("y","x",b)
-#funcPlugger("x","y",b)
-#b=getOperandsAndTerms(b)
-#print(b)
-#print(funcInterpreter(b))
-#print(funcInterpreter(b))
-#'print(varSplitter(b[0],b[1], ["x","y"]))
-#a = getOperandsAndTerms(b)
-#print(a[0],a[1])
-#print(prenEliminator(a[0],a[1]))
-#print("a", a)
-#print(funcSolver(a[0],a[1]))
+
+
+for i in range(10):
+    print(getOperandsAndTerms(b))
+'''
