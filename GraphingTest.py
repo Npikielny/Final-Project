@@ -333,7 +333,7 @@ class Grapher(App):
     #def X(x):
     #    return(x + 240)
     sproites = {}
-    for i in range(0,2):
+    for i in range(0,40):
             sproites[point((i*10,0), colorRandom(i), "y=x")] = "y=x"
     #print(funcInterpreter("y","x","y=x",1))
     t = 0
