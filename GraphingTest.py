@@ -14,7 +14,7 @@ frameHeight = 800
 noLine  = LineStyle(0, black)
 outline = LineStyle(1,black)
 #-----------------------------------------------------
-def funcInterpreter(depVar, indepVar, equation, t):
+def funcInterpreter(depVar, indepVar, equation,t):
     if equation.count("(") != equation.count(")") or equation.count("=") != 1:
         print("Invalid input given")
     else:
@@ -22,23 +22,23 @@ def funcInterpreter(depVar, indepVar, equation, t):
         for i in equation:
             if i != " ":
                 newEquation += i
-        print("Interpreting:", newEquation)
+        #print("Interpreting:", newEquation)
         if newEquation.find("=") != 1:
             print("Implementation of implicits needed")
         else:
              equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
-             print("equationR", equationR)
+        #     print("equationR", equationR)
              if equationR.count(indepVar) > 0 or indepVar == "nil":
                   pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
-                  print("pluggable:", pluggableEquation)
+        #          print("pluggable:", pluggableEquation)
              else:
                   b = getOperandsAndTerms(equationR)
                   pluggableEquation = prenEliminator(b[0],b[1])
         points = []
         #for i in range(1,10):
         #    points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), i)))
-        #points = "nil"    
         points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), t)))
+        #points = "nil"    
         return(points)
         
 def funcCombiner(equation):
@@ -253,31 +253,20 @@ def funcSolver(terms, operands):
     return(final)
 
 def funcPlugger(depVar, indepVar, equation, t):
-    equation = str(equation)
     if equation.find("=") != -1:
         equation = equation[equation.find("=")+1:len(equation)]
     a = getOperandsAndTerms(equation.format(t))
     b = prenEliminator(a[0],a[1])
+    c = 0
+    if isinstance(b, (list,)):
+        print(b)
+        for i in b:
+            c += float(i)
     if depVar == "x":
-        print(b,t)
-        #return(coordinateTransfer((b,t*10)))
-        return((b,t*10))
+        return(c,t)
     else:
-        print(t,b)
-        #return(coordinateTransfer((t,b*10)))
-        return((t,b*10))
-'''
-def funcPlugger(depVar, indepVar, equation, t):
-    substitueValues = list(range(-100,100))
-    a = getOperandsAndTerms(equation.format(t))
-    b = funcSolver(a[0],a[1])
-    if depVar == "x":
-        print(b,t)
-        return(coordinateTransfer((b,t*10)))
-    else:
-        print(t,b)
-        return(coordinateTransfer((t,b*10)))
-'''
+        return(t,c)
+        
 def pluggerSetup(depVar, indepVar, equation):
     output = ""
     #print("PluggerSetup", depVar, indepVar, equation)
@@ -300,14 +289,7 @@ def pluggerSetup(depVar, indepVar, equation):
             output += i
         #print(output)
     return output
-'''
-def coordinateTransfer(position):
-    x = float(position[0])
-    y = float(position[1])
-    x = x + frameWidth / 2
-    y = y*-1 + (frameHeight / 4) 
-    return((x,y))
-'''
+
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
     letters = {10:"A",11:"B",12:"C",13:"D",14:"E",15:"F"}
@@ -331,9 +313,9 @@ class point(Sprite):
     def __init__(self, position, color, equation):
         self.vy = 0
         self.vx = 0
-        print(funcPlugger("y", "x", equation, 0.1))
-        self.y = funcInterpreter("y", "x", equation, 0.1)[1]
-        self.x = funcInterpreter("y", "x", equation, 0.1)[0]
+        print(funcInterpreter("y", "x", equation, 0.1))
+        self.vy = 0
+        self.vx = 0
         super().__init__(point.pt, position)
 
 
@@ -347,10 +329,23 @@ class Grapher(App):
         super().__init__(width, height)
     #def X(x):
     #    return(x + 240)
-    for i in range(0,40):
-            point((X(i*10),0), colorRandom(i), "x")
-   
-    
+    sproites = {}
+    for i in range(0,2):
+            sproites[point((i*10,0), colorRandom(i), "y=x")] = "y=x"
+    #print(funcInterpreter("y","x","y=x",1))
+    t = 0
+    def step(self):
+        self.t += 1
+        #print(self.t)
+        for sprite in self.getSpritesbyClass(point):
+            #sprite.x += funcInterpreter("y","x","y=x",1)[0]
+            a = funcInterpreter("y","x","y=x^2",self.t)
+            b = funcInterpreter("y","x","y=x*2",int(self.t - 1))
+            print("step", a, (a[0])[0])
+            sprite.x += 1
+            sprite.y += (a[0])[1]-(b[0])[1]
+            #print(t)
+            #print(sproites[sprite])
     
     
     
