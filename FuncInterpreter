@@ -242,6 +242,7 @@ def funcPlugger(depVar, indepVar, equation, t):
     a = getOperandsAndTerms(equation.format(t))
     b = prenEliminator(a[0],a[1])
     c = 0
+    print("Wubbo", equation.format(t),a,b)
     if isinstance(b, (list,)):
         print(b)
         for i in b:
@@ -278,7 +279,7 @@ def pluggerSetup(depVar, indepVar, equation):
 #b = "y=x^0.5"
 #print(b)
 #print(funcInterpreter("y", "x", b))
-print(funcInterpreter("y","x","y=x",1))
+print(funcInterpreter("y","x","y=x^2",3))
 '''
 b=getOperandsAndTerms(b)
 print(b)
