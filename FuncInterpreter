@@ -76,6 +76,15 @@ def prenEliminator(terms, operands):
                 for k in range(len(newTerms[i])):
                     currentTerm = (newTerms[i])[k]
                     ##print("k", k)
+                    '''
+                    if len(term)>=3:
+                        if term.find(".") != -1:
+                            print("heyooo", term, currentTerm)
+                            term += "*"+currentTerm
+                        else:
+                            term += currentTerm
+                    else:
+                    '''
                     term += currentTerm
                     #print("length:", len(term[1:len(term)-1:]))
                     if currentTerm == "(":
@@ -97,12 +106,7 @@ def prenEliminator(terms, operands):
                         term = ""
                         outside += "0"
                     #print("term", term)
-                    if len(newTerms[i]) - 2 > k and len(newTerms) > 2 and len(term)>0:
-                        #print("hm:", )
-                        print("let's fix this",term[len(term)-1], term[len(term)-1].isdigit(),(newTerms[i])[k+1],(newTerms[i])[k+1] == ")" and (newTerms[i])[k+2].isdigit() == True)
-                        if term[len(term)-1].isdigit() == True and (newTerms[i])[k+1] == ")" and (newTerms[i])[k+2].isdigit() == True:
-                            term = term + "*"
-                            #print("oy")
+                    print(term, newTerms)
                     
                 #print("oussssside", len(newTerms[i]) - 1, k, len(newTerms[i]) - 1 > k)
                 if len(term) > 0 and len(outside) > 0:
