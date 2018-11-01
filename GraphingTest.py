@@ -339,6 +339,7 @@ class Grapher(App):
     functions.append("y=(x/10)")
     functions.append("y=1/(x/10)")
     functions.append("y=((x/10)^-1)+10")
+    #functions.append("x = 2+3")
     for i in range(0,len(functions)):
             sproites[point((0,0), colorRandom(i), functions[i])] = functions[i]
     #print(funcInterpreter("y","x","y=x",1))
@@ -346,7 +347,7 @@ class Grapher(App):
     def step(self):
         g = 0.15
         self.t += g
-        #print(self.t)
+        print(self.t)
         funcNumber = 0
         for sprite in self.getSpritesbyClass(point):
             funcNumber += 1
