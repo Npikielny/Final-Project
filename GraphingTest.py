@@ -333,7 +333,7 @@ class Grapher(App):
     #def X(x):
     #    return(x + 240)
     sproites = {}
-    for i in range(0,40):
+    for i in range(0,1):
             sproites[point((i*10,0), colorRandom(i), "y=x")] = "y=x"
     #print(funcInterpreter("y","x","y=x",1))
     t = 0
@@ -346,7 +346,7 @@ class Grapher(App):
             funcNumber += 1
             #sprite.x += funcInterpreter("y","x","y=x",1)[0]
             a = funcInterpreter("y","x","y=(x^(4/3))",self.t)
-            b = funcInterpreter("y","x","y=(x^(4/3))",int(self.t - 1))
+            b = funcInterpreter("y","x","y=(x^(4/3))",self.t - 1)
             #print("step", a, (a[0])[0])
             sprite.x += g
             sprite.y += (a[0])[1]-(b[0])[1]
