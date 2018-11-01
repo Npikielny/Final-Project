@@ -333,20 +333,25 @@ class Grapher(App):
     #def X(x):
     #    return(x + 240)
     sproites = {}
-    for i in range(0,1):
-            sproites[point((i*10,0), colorRandom(i), "y=x")] = "y=x"
+    functions = []
+    functions.append("y=x^2")
+    functions.append("y=8*(x/10)^2-(x/10)^3")
+    functions.append("y=x")
+    for i in range(0,len(functions)):
+            sproites[point((0,0), colorRandom(i), functions[i])] = functions[i]
     #print(funcInterpreter("y","x","y=x",1))
     t = 0
     def step(self):
-        g = 1
+        g = 0.15
         self.t += g
         #print(self.t)
         funcNumber = 0
         for sprite in self.getSpritesbyClass(point):
             funcNumber += 1
+            #print(self.sproites[sprite])
             #sprite.x += funcInterpreter("y","x","y=x",1)[0]
-            a = funcInterpreter("y","x","y=(x^(4/3))",self.t)
-            b = funcInterpreter("y","x","y=(x^(4/3))",self.t - 1)
+            a = funcInterpreter("y","x",self.sproites[sprite],self.t)
+            b = funcInterpreter("y","x",self.sproites[sprite],self.t - 1)
             #print("step", a, (a[0])[0])
             sprite.x += g
             sprite.y += (a[0])[1]-(b[0])[1]
