@@ -58,33 +58,33 @@ def prenEliminator(terms, operands):
         operators.append(z)
     pp = 1
     g = 0
-    ##print("size?",newTerms,operators)
-    while pp == 1 and g != 5:
-        #print("while", newTerms, "g=", g)
-        #print("pren:", newTerms)
-        #print("pren:", operands)
+    #print("size?",newTerms,operators)
+    while pp == 1 and g != 20:
+        print("while", newTerms, "g=", g)
+        print("pren:", newTerms)
+        print("pren:", operands)
         g += 1
         pcheck = ""
             
         for i in range(0,len(newTerms)):
-            #print("i", newTerms[i])
             if str(newTerms[i]).isdigit() == False:
                 #print("Non-int detected in prenElim")
                 p = str(newTerms[i]).count("(")
                 term = ""
                 newTerm = ""
                 outside = ""
-                for k in newTerms[i]:
+                for k in range(len(newTerms[i])):
+                    currentTerm = (newTerms[i])[k]
                     ##print("k", k)
-                    term += k
+                    term += currentTerm
                     #print("length:", len(term[1:len(term)-1:]))
-                    if k == "(":
+                    if currentTerm == "(":
                         outside += term[0:len(term)-1:]
                         if len(outside) > 0:
                             if outside[len(outside) - 1].isdigit() == True or outside[len(outside) - 1] == "x" or outside[len(outside) - 1] == "y":
                                 outside += "*"
                         term = "("
-                    elif k == ")" and term[0] == "(" and len(term[1:len(term)-1:]) > 0:
+                    elif currentTerm == ")" and term[0] == "(" and len(term[1:len(term)-1:]) > 0:
                         term = term[1:len(term)-1:]
                         ##print("calling newTerm", getOperandsAndTerms(term)[0],getOperandsAndTerms(term)[1])
                         #newTerm = str(funcSolver(getOperandsAndTerms(term))[0],getOperandsAndTerms(term)[1])
@@ -92,20 +92,28 @@ def prenEliminator(terms, operands):
                         outside += "{0}"
                         term = ""
                         outside = outside.format(newTerm)
-                    elif k == ")" and term[0] == "(" and len(term[1:len(term)-1:]) == 0:
+                    elif currentTerm == ")" and term[0] == "(" and len(term[1:len(term)-1:]) == 0:
                         print("There is an empty term; Substituting 0")
                         term = ""
                         outside += "0"
                     #print("term", term)
+                    if len(newTerms[i]) - 2 > k and len(newTerms) > 2 and len(term)>0:
+                        #print("hm:", )
+                        print("let's fix this",term[len(term)-1], term[len(term)-1].isdigit(),(newTerms[i])[k+1],(newTerms[i])[k+1] == ")" and (newTerms[i])[k+2].isdigit() == True)
+                        if term[len(term)-1].isdigit() == True and (newTerms[i])[k+1] == ")" and (newTerms[i])[k+2].isdigit() == True:
+                            term = term + "*"
+                            #print("oy")
+                    
+                #print("oussssside", len(newTerms[i]) - 1, k, len(newTerms[i]) - 1 > k)
                 if len(term) > 0 and len(outside) > 0:
                     if outside[len(outside) - 1].isdigit() == True and term[0].isdigit == True:
                         term = "*" + term
                     outside += term
-                    #print("cash me", outside, term)
+                    print("cash me", outside, term)
                 else:
                     outside += term
                     
-                ##print(outside)
+                print("OuTsIdE", outside)
                 newTerms[i] = str(outside)
                 ##print("newTerms[i]", newTerms[i])
         for h in newTerms:
