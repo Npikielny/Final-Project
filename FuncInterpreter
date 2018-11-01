@@ -247,6 +247,8 @@ def funcPlugger(depVar, indepVar, equation, t):
         print(b)
         for i in b:
             c += float(i)
+    else:
+        c = b
     if depVar == "x":
         return(c,t)
     else:
