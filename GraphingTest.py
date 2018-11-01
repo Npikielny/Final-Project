@@ -1,5 +1,6 @@
 from ggame import App, Color, LineStyle, Sprite, CircleAsset, Frame, RectangleAsset
 from math import floor, sin, cos
+
 #-----------------------------------------------------
 red = Color(0xff0000, 1.0)
 blue = Color(0x0000ff, 1.0)
@@ -13,6 +14,57 @@ frameHeight = 800
 noLine  = LineStyle(0, black)
 outline = LineStyle(1,black)
 #-----------------------------------------------------
+def funcInterpreter(depVar, indepVar, equation, t):
+    if equation.count("(") != equation.count(")") or equation.count("=") != 1:
+        print("Invalid input given")
+    else:
+        newEquation = ""
+        for i in equation:
+            if i != " ":
+                newEquation += i
+        print("Interpreting:", newEquation)
+        if newEquation.find("=") != 1:
+            print("Implementation of implicits needed")
+        else:
+             equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
+             print("equationR", equationR)
+             if equationR.count(indepVar) > 0 or indepVar == "nil":
+                  pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
+                  print("pluggable:", pluggableEquation)
+             else:
+                  b = getOperandsAndTerms(equationR)
+                  pluggableEquation = prenEliminator(b[0],b[1])
+        points = []
+        #for i in range(1,10):
+        #    points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), i)))
+        #points = "nil"    
+        points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), t)))
+        return(points)
+        
+def funcCombiner(equation):
+    #print(equation)
+    equationL = getOperandsAndTerms(equation[0:equation.find("=")])
+    #print(equationL)
+    equationR = getOperandsAndTerms(equation[equation.find("="):len(equation)-1])
+    #print(equationR)
+    equationLOperators=[]
+    for i in equationL[1]:
+        if i == "-":
+            equationLOperators.append("+")
+        elif i == "+":
+            equationLOperators.append("-")
+        else:
+            equationLOperators.append(i)
+    return(equationR[0] + equationL[0],equationR[1] + equationLOperators[:])
+      
+def funcCompiler(terms, operands):
+    output = ""
+    for i in range(0, len(terms)):
+        output += terms[i]
+        if i < len(terms) - 1:
+            output += operands[i]
+    return(output)
+
 def prenEliminator(terms, operands):
     newTerms = []
     operators = []
@@ -201,6 +253,21 @@ def funcSolver(terms, operands):
     return(final)
 
 def funcPlugger(depVar, indepVar, equation, t):
+    equation = str(equation)
+    if equation.find("=") != -1:
+        equation = equation[equation.find("=")+1:len(equation)]
+    a = getOperandsAndTerms(equation.format(t))
+    b = prenEliminator(a[0],a[1])
+    if depVar == "x":
+        print(b,t)
+        #return(coordinateTransfer((b,t*10)))
+        return((b,t*10))
+    else:
+        print(t,b)
+        #return(coordinateTransfer((t,b*10)))
+        return((t,b*10))
+'''
+def funcPlugger(depVar, indepVar, equation, t):
     substitueValues = list(range(-100,100))
     a = getOperandsAndTerms(equation.format(t))
     b = funcSolver(a[0],a[1])
@@ -210,13 +277,37 @@ def funcPlugger(depVar, indepVar, equation, t):
     else:
         print(t,b)
         return(coordinateTransfer((t,b*10)))
-
+'''
+def pluggerSetup(depVar, indepVar, equation):
+    output = ""
+    #print("PluggerSetup", depVar, indepVar, equation)
+    for i in equation:
+        #print("plug?", i, i == indepVar)
+        if i == indepVar:
+            if len(output)>0:
+                if output[len(output)-1].isdigit():
+                    output += "*"+"{0}"
+                else:
+                    output += "{0}"
+            else:
+                output += "{0}"
+        elif len(output)>0: 
+            if output[len(output)-1] == "}" and i.isdigit():
+                output += "*"+i
+            else:
+                output += i
+        else:
+            output += i
+        #print(output)
+    return output
+'''
 def coordinateTransfer(position):
     x = float(position[0])
     y = float(position[1])
     x = x + frameWidth / 2
     y = y*-1 + (frameHeight / 4) 
     return((x,y))
+'''
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
     letters = {10:"A",11:"B",12:"C",13:"D",14:"E",15:"F"}
@@ -240,9 +331,9 @@ class point(Sprite):
     def __init__(self, position, color, equation):
         self.vy = 0
         self.vx = 0
-        print(funcPlugger("y", "x", 0.1, equation))
-        self.y = funcPlugger("y", "x", 0.1, equation)[1]
-        self.x = funcPlugger("y", "x", 0.1, equation)[0]
+        print(funcPlugger("y", "x", equation, 0.1))
+        self.y = funcInterpreter("y", "x", equation, 0.1)[1]
+        self.x = funcInterpreter("y", "x", equation, 0.1)[0]
         super().__init__(point.pt, position)
 
 
@@ -254,31 +345,11 @@ class drawnPoint(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-    def X(x):
-        return(x + 240)
+    #def X(x):
+    #    return(x + 240)
     for i in range(0,40):
-            point((X(i*10),0), colorRandom(i), "{0}")
-    functions = []
-    #functions.append("4+3*{0}+{0}-2/4")
-    functions.append("{0}^0.5")
-    functions.append("1/{0}")
-    for i in range(len(functions)):
-        print(funcPlugger("y", "x", functions[i], 0.01))
-        point(funcPlugger("y", "x", functions[i], 0.01),colorRandom(i),functions[i])
-        print("success")
-        print(functions[i])
-        b = []
-        b.append(functions[i])
-        #funcPlugger("y","x",b,i)
-    #-----------------------------------------------------
-    t = 0.1
-    def step(self):
-        #print("stepping")
-        self.t += 1
-        for Point in self.getSpritesbyClass(point):
-            print(funcPlugger("y", "x", t, Point.equation))
-            Point.y = (funcPlugger("y", "x", Point.equation, t))[1]
-            Point.x = (funcPlugger("y", "x", Point.equation, t))[0]
+            point((X(i*10),0), colorRandom(i), "x")
+   
     
     
     
