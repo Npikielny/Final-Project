@@ -338,6 +338,7 @@ class Grapher(App):
     functions.append("y=8*(x/10)^2-(x/10)^3")
     functions.append("y=(x/10)")
     functions.append("y=1/(x/10)")
+    functions.append("y=((x/10)^-1)+10")
     for i in range(0,len(functions)):
             sproites[point((0,0), colorRandom(i), functions[i])] = functions[i]
     #print(funcInterpreter("y","x","y=x",1))
