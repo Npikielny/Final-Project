@@ -268,7 +268,7 @@ def pluggerSetup(depVar, indepVar, equation):
             else:
                 output += "{0}"
         elif len(output)>0: 
-            if output[len(output)-1] == "}" and i.isdigit():
+            if output[len(output)-1] == "}" and (i.isdigit() or i == "(" or i == "{"):
                 output += "*"+i
             else:
                 output += i
@@ -281,7 +281,7 @@ def pluggerSetup(depVar, indepVar, equation):
 #b = "y=x^0.5"
 #print(b)
 #print(funcInterpreter("y", "x", b))
-print(funcInterpreter("y","x","y=x^2",3))
+print(funcInterpreter("y","x","y=(2(26x-(7*x(86))^2)(2x/2))",3))
 '''
 b=getOperandsAndTerms(b)
 print(b)
