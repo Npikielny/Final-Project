@@ -293,6 +293,14 @@ def pluggerSetup(depVar, indepVar, equation):
         #print(output)
     return output
 
+def getX(xValue):
+    x = xValue + float(frameWidth) / 2.0
+    return(x)
+    
+def getY(yValue):
+    y = float(frameHeight) / 4.0 - yValue
+    return(y)
+
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
     letters = {10:"A",11:"B",12:"C",13:"D",14:"E",15:"F"}
@@ -330,24 +338,30 @@ class drawnPoint(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
+    initial = 0
+    increase = 0.15
     #def X(x):
     #    return(x + 240)
     sproites = {}
     functions = []
-    functions.append("y=(x/10)^2")
-    functions.append("y=8*(x/10)^2-(x/10)^3")
-    functions.append("y=(x/10)")
-    functions.append("y=1/(x/10)")
-    functions.append("y=((x/10)^-1)+10")
-    #functions.append("x = 2+3")
+    #functions.append("y= (x/10)^2")
+    #functions.append("y= 8*(x/10)^2-3*(x/10)^3+(x/20)^4")
+    #functions.append("y= (x/10)")
+    #functions.append("y= 1/(x/10)")
+    functions.append("y= ((x/10)^-1)+10")
+    #functions.append("y= 3(x/10)")
+    #functions.append("y = 2+3")
+    drawnPoint((getX(0),getY(0)),green)
     for i in range(0,len(functions)):
-            sproites[point((0,0), colorRandom(i), functions[i])] = functions[i]
+        b = funcInterpreter("y","x", functions[i], initial)[0]
+        sproites[point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i])] = functions[i]
+        #print("yoy", funcInterpreter("y","x", functions[i], 0.1)[0])
     #print(funcInterpreter("y","x","y=x",1))
-    t = 0
+    t = initial
     def step(self):
-        g = 0.15
+        g = self.increase
         self.t += g
-        print(self.t)
+        #print(self.t)
         funcNumber = 0
         for sprite in self.getSpritesbyClass(point):
             funcNumber += 1
@@ -357,7 +371,8 @@ class Grapher(App):
             b = funcInterpreter("y","x",self.sproites[sprite],self.t - 1)
             #print("step", a, (a[0])[0])
             sprite.x += g
-            sprite.y += (a[0])[1]-(b[0])[1]
+            sprite.y += ((a[0])[1])-((b[0])[1])
+            #print(a[1])
             #print(t)
             #print(sproites[sprite])
             #drawnPoint(sprite.x, sprite.y, colorRandom(funcNumber))
