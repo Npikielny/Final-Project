@@ -22,15 +22,15 @@ def funcInterpreter(depVar, indepVar, equation,t):
         for i in equation:
             if i != " ":
                 newEquation += i
-        print("Interpreting:", newEquation)
+        #print("Interpreting:", newEquation)
         if newEquation.find("=") != 1:
             print("Implementation of implicits needed")
         else:
              equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
-             print("equationR", equationR)
+        #     print("equationR", equationR)
              if equationR.count(indepVar) > 0 or indepVar == "nil":
                   pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
-                  print("pluggable:", pluggableEquation)
+        #          print("pluggable:", pluggableEquation)
              else:
                   b = getOperandsAndTerms(equationR)
                   pluggableEquation = prenEliminator(b[0],b[1])
@@ -258,9 +258,9 @@ def funcPlugger(depVar, indepVar, equation, t):
     a = getOperandsAndTerms(equation.format(t))
     b = prenEliminator(a[0],a[1])
     c = 0
-    print("Wubbo", equation.format(t),a,b)
+    #print("Wubbo", equation.format(t),a,b)
     if isinstance(b, (list,)):
-        print(b)
+        #print(b)
         for i in b:
             c += float(i)
     else:
@@ -341,7 +341,9 @@ class Grapher(App):
         g = 1
         self.t += g
         #print(self.t)
+        funcNumber = 0
         for sprite in self.getSpritesbyClass(point):
+            funcNumber += 1
             #sprite.x += funcInterpreter("y","x","y=x",1)[0]
             a = funcInterpreter("y","x","y=(x^(4/3))",self.t)
             b = funcInterpreter("y","x","y=(x^(4/3))",int(self.t - 1))
@@ -350,6 +352,8 @@ class Grapher(App):
             sprite.y += (a[0])[1]-(b[0])[1]
             #print(t)
             #print(sproites[sprite])
+            #drawnPoint(sprite.x, sprite.y, colorRandom(funcNumber))
+            drawnPoint((sprite.x,sprite.y),colorRandom(funcNumber))
     
     
     
