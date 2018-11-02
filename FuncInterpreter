@@ -56,9 +56,9 @@ def prenEliminator(terms, operands):
         newTerms.append(z)
     for z in operands:
         operators.append(z)
-    pp = 1
-    g = 0
-    #print("size?",newTerms,operators)
+    pp = 1 #Status of parenthesis being present
+    g = 0 #Just a method to stop infinite loops if there is an error in my code
+    
     while pp == 1 and g != 20:
         print("while", newTerms, "g=", g)
         print("pren:", newTerms)
@@ -75,27 +75,19 @@ def prenEliminator(terms, operands):
                 outside = ""
                 for k in range(len(newTerms[i])):
                     currentTerm = (newTerms[i])[k]
-                    ##print("k", k)
-                    
-                    if len(term)>=3:
-                        if term.find(".") != -1:
-                            print("heyooo", term, currentTerm)
-                            term += "*"+currentTerm
-                        else:
-                            term += currentTerm
-                    else:
-                        term += currentTerm
-                    #print("length:", len(term[1:len(term)-1:]))
+                    term += currentTerm
                     if currentTerm == "(":
+                        print("Hey we found an opening parenthesis!", newTerms, k)
                         outside += term[0:len(term)-1:]
+                        print("This is the outside:", outside)
                         if len(outside) > 0:
-                            if outside[len(outside) - 1].isdigit() == True or outside[len(outside) - 1] == "x" or outside[len(outside) - 1] == "y":
+                            print("The outside is longer than 0")
+                            if outside[len(outside) - 1] == ")" or outside[len(outside) - 1].isdigit() == True or outside[len(outside) - 1] == "x" or outside[len(outside) - 1] == "y":
+                                print("We decided to add a multiplier")
                                 outside += "*"
                         term = "("
                     elif currentTerm == ")" and term[0] == "(" and len(term[1:len(term)-1:]) > 0:
                         term = term[1:len(term)-1:]
-                        ##print("calling newTerm", getOperandsAndTerms(term)[0],getOperandsAndTerms(term)[1])
-                        #newTerm = str(funcSolver(getOperandsAndTerms(term))[0],getOperandsAndTerms(term)[1])
                         newTerm = str(funcSolver(getOperandsAndTerms(term)[0],getOperandsAndTerms(term)[1]))
                         outside += "{0}"
                         term = ""
@@ -104,10 +96,6 @@ def prenEliminator(terms, operands):
                         print("There is an empty term; Substituting 0")
                         term = ""
                         outside += "0"
-                    #print("term", term)
-                    #print(term, newTerms)
-                    
-                #print("oussssside", len(newTerms[i]) - 1, k, len(newTerms[i]) - 1 > k)
                 if len(term) > 0 and len(outside) > 0:
                     if outside[len(outside) - 1].isdigit() == True and term[0].isdigit == True:
                         term = "*" + term
@@ -116,7 +104,6 @@ def prenEliminator(terms, operands):
                 else:
                     outside += term
                     
-                print("OuTsIdE", outside)
                 newTerms[i] = str(outside)
                 ##print("newTerms[i]", newTerms[i])
         for h in newTerms:
