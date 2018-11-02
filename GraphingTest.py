@@ -343,8 +343,8 @@ class drawnPoint(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-    initial = 0.1
-    increase = 0.2
+    initial = -1*float(frameWidth)/2 + 0.1
+    increase = 1.6
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
     Sprite(quadrant, (float(frameWidth)/2,0))
@@ -359,9 +359,9 @@ class Grapher(App):
     #functions.append("y= (x/10)")
     #functions.append("y= 1/(x/10)")
     #functions.append("y= ((x/10)^-1)+10")
-    functions.append("y=(x/10)^2")
-    functions.append("y= 3(x)")
-    functions.append("y = 2+3")
+    functions.append("y=(x/30)^2")
+    #functions.append("y= 3(x)")
+    #functions.append("y = 2+3")
     drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         b = funcInterpreter("y","x", functions[i], initial)[0]
