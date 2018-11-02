@@ -296,7 +296,7 @@ def getX(xValue):
     return(x)
     
 def getY(yValue):
-    y = float(frameHeight) / 4.0 - yValue + 3
+    y = float(frameHeight) / 4.0 - yValue
     return(y)
 
 def giveX(xValue):
@@ -304,7 +304,7 @@ def giveX(xValue):
     return(x)
     
 def giveY(yValue):
-    y = (-1 * yValue + float(frameHeight) / 4.0 + 3)
+    y = (-1 * yValue + float(frameHeight) / 4.0)
     return(y)
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
@@ -344,7 +344,7 @@ class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
     initial = -1*float(frameWidth)/2 + 0.1
-    increase = 1.6
+    increase = 3.2
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
     Sprite(quadrant, (float(frameWidth)/2,0))
@@ -359,13 +359,15 @@ class Grapher(App):
     #functions.append("y= (x/10)")
     #functions.append("y= 1/(x/10)")
     #functions.append("y= ((x/10)^-1)+10")
-    functions.append("y=(x/30)^2")
+    #functions.append("y=(x/30)^2")
     #functions.append("y= 3(x)")
     #functions.append("y = 2+3")
+    functions.append("y = (x/10)^3")
     drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         b = funcInterpreter("y","x", functions[i], initial)[0]
         sproites[point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i])] = functions[i]
+        print("Graphing: ", functions[i])
         #print("yoy", funcInterpreter("y","x", functions[i], 0.1)[0])
     #print(funcInterpreter("y","x","y=x",1))
     t = initial
@@ -380,7 +382,7 @@ class Grapher(App):
             #sprite.x += funcInterpreter("y","x","y=x",1)[0]
             a = funcInterpreter("y","x",self.sproites[sprite],self.t)
             b = funcInterpreter("y","x",self.sproites[sprite],self.t - 1)
-            print(a, self.sproites[sprite])
+            #print(a, self.sproites[sprite])
             #print("step", a, (a[0])[0])
             sprite.x = getX(((a[0])[0]))
             sprite.y = getY(((a[0])[1]))
@@ -389,6 +391,8 @@ class Grapher(App):
             #print(sproites[sprite])
             #drawnPoint(sprite.x, sprite.y, colorRandom(funcNumber))
             drawnPoint((sprite.x,sprite.y),colorRandom(funcNumber))
+            if sprite.x > frameWidth or sprite.x < 0:
+                sprite.destroy()
     
     
     
