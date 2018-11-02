@@ -304,7 +304,7 @@ def giveX(xValue):
     return(x)
     
 def giveY(yValue):
-    y = -1 * yValue + float(frameHeight) / 4.0 +3
+    y = (-1 * yValue + float(frameHeight) / 4.0 + 3)
     return(y)
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
@@ -344,7 +344,7 @@ class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
     initial = 0.1
-    increase = 1
+    increase = 0.2
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
     Sprite(quadrant, (float(frameWidth)/2,0))
@@ -359,7 +359,8 @@ class Grapher(App):
     #functions.append("y= (x/10)")
     #functions.append("y= 1/(x/10)")
     #functions.append("y= ((x/10)^-1)+10")
-    #functions.append("y= 3(x/10)")
+    functions.append("y=(x/10)^2")
+    functions.append("y= 3(x)")
     functions.append("y = 2+3")
     drawnPoint((0,0),green)
     for i in range(0,len(functions)):
@@ -379,10 +380,10 @@ class Grapher(App):
             #sprite.x += funcInterpreter("y","x","y=x",1)[0]
             a = funcInterpreter("y","x",self.sproites[sprite],self.t)
             b = funcInterpreter("y","x",self.sproites[sprite],self.t - 1)
-            print(a)
+            print(a, self.sproites[sprite])
             #print("step", a, (a[0])[0])
-            sprite.x += g
-            sprite.y += getY((a[0])[1])-getY((b[0])[1])
+            sprite.x = getX(((a[0])[0]))
+            sprite.y = getY(((a[0])[1]))
             #print(a[1])
             #print(t)
             #print(sproites[sprite])
