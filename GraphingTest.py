@@ -354,15 +354,18 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    #functions.append("y= (x/10)^2")
-    #functions.append("y= 8*(x/10)^2-3*(x/10)^3+(x/20)^4")
-    #functions.append("y= (x/10)")
-    #functions.append("y= 1/(x/10)")
-    #functions.append("y= ((x/10)^-1)+10")
-    #functions.append("y=(x/30)^2")
-    #functions.append("y= 3(x)")
-    #functions.append("y = 2+3")
-    functions.append("y = (x/10)^3")
+    functions.append("y= (x/10)^2")
+    functions.append("y= 8*(x/10)^2-3*(x/10)^3+(x/20)^4")
+    functions.append("y= (x/10)")
+    functions.append("y= 1/(x/10)")
+    functions.append("y= ((x/10)^-1)+10")
+    functions.append("y=(x/30)^2")
+    functions.append("y= 3(x)")
+    functions.append("y = 2+3")
+    functions.append("y=x^4")
+    functions.append("y=1/x")
+    functions.append("y=1/(x^2)")
+    #functions.append("y = 8-x^2 + (8-9(24-x^6)(9+(8-4(72-72x)(0-1)^1 - 14)))")
     drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         b = funcInterpreter("y","x", functions[i], initial)[0]
