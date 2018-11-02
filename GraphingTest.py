@@ -338,7 +338,8 @@ class point(Sprite):
 class drawnPoint(Sprite):
     def __init__(self, position, color):
         pt = CircleAsset(3, noLine, color)
-        Sprite(pt, position)
+        newPos = (position[0], position[1]-1.5)
+        Sprite(pt, newPos)
 #-----------------------------------------------------
 class Grapher(App):
     def __init__(self, width, height):
@@ -355,6 +356,7 @@ class Grapher(App):
     sproites = {}
     functions = []
     functions.append("y= (x/10)^2")
+    functions.append("y=1/(x^2)")
     functions.append("y= 8*(x/10)^2-3*(x/10)^3+(x/20)^4")
     functions.append("y= (x/10)")
     functions.append("y= 1/(x/10)")
@@ -364,9 +366,8 @@ class Grapher(App):
     functions.append("y = 2+3")
     functions.append("y=x^4")
     functions.append("y=1/x")
-    functions.append("y=1/(x^2)")
     #functions.append("y = 8-x^2 + (8-9(24-x^6)(9+(8-4(72-72x)(0-1)^1 - 14)))")
-    drawnPoint((0,0),green)
+    #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         b = funcInterpreter("y","x", functions[i], initial)[0]
         sproites[point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i])] = functions[i]
