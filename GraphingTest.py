@@ -72,10 +72,10 @@ def prenEliminator(terms, operands):
         newTerms.append(z)
     for z in operands:
         operators.append(z)
-    pp = 1
-    g = 0
-    ##print("size?",newTerms,operators)
-    while pp == 1 and g != 5:
+    pp = 1 #Status of parenthesis being present
+    g = 0 #Just a method to stop infinite loops if there is an error in my code
+    
+    while pp == 1 and g != 20:
         #print("while", newTerms, "g=", g)
         #print("pren:", newTerms)
         #print("pren:", operands)
@@ -83,36 +83,35 @@ def prenEliminator(terms, operands):
         pcheck = ""
             
         for i in range(0,len(newTerms)):
-            #print("i", newTerms[i])
             if str(newTerms[i]).isdigit() == False:
                 #print("Non-int detected in prenElim")
                 p = str(newTerms[i]).count("(")
                 term = ""
                 newTerm = ""
                 outside = ""
-                for k in newTerms[i]:
-                    ##print("k", k)
-                    term += k
-                    #print("length:", len(term[1:len(term)-1:]))
-                    if k == "(":
+                for k in range(len(newTerms[i])):
+                    currentTerm = (newTerms[i])[k]
+                    term += currentTerm
+                    if currentTerm == "(":
+                        #print("Hey we found an opening parenthesis!", newTerms, k)
                         outside += term[0:len(term)-1:]
+                        #print("This is the outside:", outside)
                         if len(outside) > 0:
-                            if outside[len(outside) - 1].isdigit() == True or outside[len(outside) - 1] == "x" or outside[len(outside) - 1] == "y":
+                            #print("The outside is longer than 0")
+                            if outside[len(outside) - 1] == ")" or outside[len(outside) - 1].isdigit() == True or outside[len(outside) - 1] == "x" or outside[len(outside) - 1] == "y":
+                                #print("We decided to add a multiplier")
                                 outside += "*"
                         term = "("
-                    elif k == ")" and term[0] == "(" and len(term[1:len(term)-1:]) > 0:
+                    elif currentTerm == ")" and term[0] == "(" and len(term[1:len(term)-1:]) > 0:
                         term = term[1:len(term)-1:]
-                        ##print("calling newTerm", getOperandsAndTerms(term)[0],getOperandsAndTerms(term)[1])
-                        #newTerm = str(funcSolver(getOperandsAndTerms(term))[0],getOperandsAndTerms(term)[1])
                         newTerm = str(funcSolver(getOperandsAndTerms(term)[0],getOperandsAndTerms(term)[1]))
                         outside += "{0}"
                         term = ""
                         outside = outside.format(newTerm)
-                    elif k == ")" and term[0] == "(" and len(term[1:len(term)-1:]) == 0:
+                    elif currentTerm == ")" and term[0] == "(" and len(term[1:len(term)-1:]) == 0:
                         print("There is an empty term; Substituting 0")
                         term = ""
                         outside += "0"
-                    #print("term", term)
                 if len(term) > 0 and len(outside) > 0:
                     if outside[len(outside) - 1].isdigit() == True and term[0].isdigit == True:
                         term = "*" + term
@@ -121,7 +120,6 @@ def prenEliminator(terms, operands):
                 else:
                     outside += term
                     
-                ##print(outside)
                 newTerms[i] = str(outside)
                 ##print("newTerms[i]", newTerms[i])
         for h in newTerms:
@@ -294,13 +292,20 @@ def pluggerSetup(depVar, indepVar, equation):
     return output
 
 def getX(xValue):
-    x = xValue + float(frameWidth) / 2.0
+    x = xValue + float(frameWidth) / 2.0 - 3
     return(x)
     
 def getY(yValue):
-    y = float(frameHeight) / 4.0 - yValue
+    y = float(frameHeight) / 4.0 - yValue + 3
     return(y)
 
+def giveX(xValue):
+    x = xValue - float(frameWidth) / 2.0 + 3
+    return(x)
+    
+def giveY(yValue):
+    y = -1 * yValue + float(frameHeight) / 4.0 +3
+    return(y)
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
     letters = {10:"A",11:"B",12:"C",13:"D",14:"E",15:"F"}
@@ -338,8 +343,13 @@ class drawnPoint(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-    initial = 0
-    increase = 0.15
+    initial = 0.1
+    increase = 1
+    quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
+    Sprite(quadrant, (0,0))
+    Sprite(quadrant, (float(frameWidth)/2,0))
+    Sprite(quadrant, (0,float(frameHeight)/4))
+    Sprite(quadrant, (float(frameWidth)/2,float(frameHeight)/4))
     #def X(x):
     #    return(x + 240)
     sproites = {}
@@ -348,10 +358,10 @@ class Grapher(App):
     #functions.append("y= 8*(x/10)^2-3*(x/10)^3+(x/20)^4")
     #functions.append("y= (x/10)")
     #functions.append("y= 1/(x/10)")
-    functions.append("y= ((x/10)^-1)+10")
+    #functions.append("y= ((x/10)^-1)+10")
     #functions.append("y= 3(x/10)")
-    #functions.append("y = 2+3")
-    drawnPoint((getX(0),getY(0)),green)
+    functions.append("y = 2+3")
+    drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         b = funcInterpreter("y","x", functions[i], initial)[0]
         sproites[point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i])] = functions[i]
@@ -369,9 +379,10 @@ class Grapher(App):
             #sprite.x += funcInterpreter("y","x","y=x",1)[0]
             a = funcInterpreter("y","x",self.sproites[sprite],self.t)
             b = funcInterpreter("y","x",self.sproites[sprite],self.t - 1)
+            print(a)
             #print("step", a, (a[0])[0])
             sprite.x += g
-            sprite.y += ((a[0])[1])-((b[0])[1])
+            sprite.y += getY((a[0])[1])-getY((b[0])[1])
             #print(a[1])
             #print(t)
             #print(sproites[sprite])
