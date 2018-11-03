@@ -337,15 +337,17 @@ class point(Sprite):
 
 class drawnPoint(Sprite):
     def __init__(self, position, color):
-        pt = CircleAsset(3, noLine, color)
-        newPos = (position[0], position[1]-1.5)
+        radius = 3
+        pt = CircleAsset(radius, noLine, color)
+        newPos = (position[0], position[1]-float(radius)/2.0)
         Sprite(pt, newPos)
 #-----------------------------------------------------
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-    initial = -1*float(frameWidth)/2 + 0.1
-    increase = 3.2
+    initial = -1*float(frameWidth)/2 + 5.1
+    #initial = -0.001
+    increase = 1.6
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
     Sprite(quadrant, (float(frameWidth)/2,0))
@@ -355,18 +357,7 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    functions.append("y= (x/10)^2")
-    functions.append("y=1/(x^2)")
-    functions.append("y= 8*(x/10)^2-3*(x/10)^3+(x/20)^4")
-    functions.append("y= (x/10)")
-    functions.append("y= 1/(x/10)")
-    functions.append("y= ((x/10)^-1)+10")
-    functions.append("y=(x/30)^2")
-    functions.append("y= 3(x)")
-    functions.append("y = 2+3")
-    functions.append("y=x^4")
-    functions.append("y=1/x")
-    #functions.append("y = 8-x^2 + (8-9(24-x^6)(9+(8-4(72-72x)(0-1)^1 - 14)))")
+    functions.append("y=x10")
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         b = funcInterpreter("y","x", functions[i], initial)[0]
@@ -381,12 +372,13 @@ class Grapher(App):
         #print(self.t)
         funcNumber = 0
         for sprite in self.getSpritesbyClass(point):
+            print("i")
             funcNumber += 1
             #print(self.sproites[sprite])
             #sprite.x += funcInterpreter("y","x","y=x",1)[0]
             a = funcInterpreter("y","x",self.sproites[sprite],self.t)
             b = funcInterpreter("y","x",self.sproites[sprite],self.t - 1)
-            #print(a, self.sproites[sprite])
+            print(a, self.sproites[sprite])
             #print("step", a, (a[0])[0])
             sprite.x = getX(((a[0])[0]))
             sprite.y = getY(((a[0])[1]))
