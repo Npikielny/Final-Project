@@ -326,12 +326,14 @@ def colorRandom(funcIndex):
 #-----------------------------------------------------
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
-    def __init__(self, position, color, equation):
+    def __init__(self, position, color, equation, depVar):
         self.vy = 0
         self.vx = 0
         print(funcInterpreter("y", "x", equation, 0.1))
         self.vy = 0
         self.vx = 0
+        point.equation = equation
+        point.depVar = depVar
         super().__init__(point.pt, position)
 
 
@@ -345,8 +347,8 @@ class drawnPoint(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-    #initial = -1*float(frameWidth)/2 + 5.1
-    initial = -50
+    initial = -1*float(frameWidth)/2 + 5.1
+    #initial = -50
     increase = 1
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
@@ -357,18 +359,18 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    functions.append("y=x^-1")
+    functions.append(("y=x^-1","y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
-            b = funcInterpreter("y","x", functions[i], initial)[0]
+            b = funcInterpreter("y","x", functions[i][0], initial)[0]
         except:
             try:
-                b = funcInterpreter("y","x", functions[i], initial + increase / 2)[0]
+                b = funcInterpreter("y","x", functions[i][0], initial + increase / 2)[0]
             except:
                 print("Function Failed, Going to (0,0)", functions[i])
                 b = (0,0)
-        sproites[point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i])] = functions[i]
+        point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i][0], functions[i][1])
         print("Graphing: ", functions[i])
         #print("yoy", funcInterpreter("y","x", functions[i], 0.1)[0])
     #print(funcInterpreter("y","x","y=x",1))
@@ -382,14 +384,15 @@ class Grapher(App):
             funcNumber += 1
             #print(self.sproites[sprite])
             #sprite.x += funcInterpreter("y","x","y=x",1)[0]
+            indepVar = {"y":"x","x":"y"}
             try:
-                a = funcInterpreter("y","x",self.sproites[sprite],self.t)
-                b = funcInterpreter("y","x",self.sproites[sprite],self.t - 1)
+                a = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t)
+                b = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t - 1)
             except:
                 print("Undefined value, shifting point.")
                 try:
-                    a = funcInterpreter("y","x",self.sproites[sprite],self.t + g / 2)
-                    b = funcInterpreter("y","x",self.sproites[sprite],self.t - 1 + g / 2)
+                    a = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t + g / 2)
+                    b = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t - 1 + g / 2)
                 except:
                     print("Function Failed Twice, Going to (0,0)")
                     a = (0,0)
