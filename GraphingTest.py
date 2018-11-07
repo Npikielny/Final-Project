@@ -347,9 +347,9 @@ class drawnPoint(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-    #initial = -1*float(frameWidth)/2 + 5.1
-    initial = -201
-    increase = 0.01
+    initial = -1*float(frameWidth)/2 + 5.1
+    #initial = -201
+    increase = 3.2
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
     Sprite(quadrant, (float(frameWidth)/2,0))
