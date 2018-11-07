@@ -329,7 +329,7 @@ class point(Sprite):
     def __init__(self, position, color, equation, depVar):
         self.vy = 0
         self.vx = 0
-        print(funcInterpreter("y", "x", equation, 0.1))
+        #print(funcInterpreter("y", "x", equation, 0.1))
         self.vy = 0
         self.vx = 0
         self.equation = equation
@@ -359,9 +359,15 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    functions.append(("y=(40000-x^2)^0.5","y"))
-    functions.append(("y=-1(40000-x^2)^0.5","y"))
-    functions.append(("y=1","y"))
+    #functions.append(("y=(200^6-x^6)^(1/6)","y"))
+    #functions.append(("y=-1(200^6-x^6)^(1/6)","y"))
+    #functions.append(("y=1","y"))
+    #functions.append(("x=(200^6-y^6)^(1/6)","x"))
+    #functions.append(("x=-1(200^6-y^6)^(1/6)","x"))
+    functions.append(("y=(200^2-x^2)^0.5","y"))
+    functions.append(("y=-1(200^2-x^2)^0.5","y"))
+    functions.append(("x=(200^2-y^2)^0.5","x"))
+    functions.append(("x=-1(200^2-y^2)^0.5","x"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
