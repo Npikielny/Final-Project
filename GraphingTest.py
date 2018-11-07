@@ -349,7 +349,7 @@ class Grapher(App):
         super().__init__(width, height)
     initial = -1*float(frameWidth)/2 + 5.1
     #initial = -201
-    increase = 3.2
+    increase = 1
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
     Sprite(quadrant, (float(frameWidth)/2,0))
@@ -359,15 +359,20 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    #functions.append(("y=(200^6-x^6)^(1/6)","y"))
-    #functions.append(("y=-1(200^6-x^6)^(1/6)","y"))
-    #functions.append(("y=1","y"))
-    #functions.append(("x=(200^6-y^6)^(1/6)","x"))
-    #functions.append(("x=-1(200^6-y^6)^(1/6)","x"))
-    functions.append(("y=(200^2-x^2)^0.5","y"))
-    functions.append(("y=-1(200^2-x^2)^0.5","y"))
-    functions.append(("x=(200^2-y^2)^0.5","x"))
-    functions.append(("x=-1(200^2-y^2)^0.5","x"))
+    #functions.append(("y=0","y"))
+    #functions.append(("x=0","x"))
+    #functions.append(("y=x^2", "y"))
+    #functions.append(("x=y^2", "x"))
+    #functions.append(("y=(200^12-x^12)^(1/12)","y"))
+    #functions.append(("y=-1(200^12-x^12)^(1/12)","y"))
+    #functions.append(("x=(200^12-y^12)^(1/12)","x"))
+    #functions.append(("x=-1(200^12-y^12)^(1/12)","x"))
+    #functions.append(("y=(200^2-x^2)^0.5","y"))
+    #functions.append(("y=-1(200^2-x^2)^0.5","y"))
+    #functions.append(("x=(200^2-y^2)^0.5","x"))
+    #functions.append(("x=-1(200^2-y^2)^0.5","x"))
+    functions.append(("x=100/y","x"))
+    functions.append(("y=100/x","y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
@@ -380,8 +385,7 @@ class Grapher(App):
                 b = (0,0)
         point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i][0], functions[i][1])
         print("Graphing: ", functions[i])
-        #print("yoy", funcInterpreter("y","x", functions[i], 0.1)[0])
-    #print(funcInterpreter("y","x","y=x",1))
+        print(functions[i][0], functions[i][1])
     t = initial
     def step(self):
         g = self.increase
@@ -405,7 +409,6 @@ class Grapher(App):
                     #print("Function Failed Twice, Going to (0,0)")
                     a = (0,0)
                     b = (0,0)
-            #print(a, self.sproites[sprite])
             #print("step", a, (a[0])[0])
             if isinstance(b, (list,)):
                 sprite.x = getX(((a[0])[0]))
@@ -414,12 +417,16 @@ class Grapher(App):
                 sprite.x = getX(a[0])
                 sprite.y = getY(a[0])
             #print(a[1])
-            #print(t)
+            #print(self.t, (sprite.x, sprite.y), sprite.equation)
             #print(sproites[sprite])
             #drawnPoint(sprite.x, sprite.y, colorRandom(funcNumber))
             drawnPoint((sprite.x,sprite.y),colorRandom(funcNumber))
-            if sprite.x > frameWidth or sprite.x < 0:
-                sprite.destroy()
+            if sprite.depVar == "x":
+                if sprite.y > frameWidth or sprite.y < 0:
+                    sprite.destroy()
+            elif sprite.depVar == "y":
+                if sprite.x > frameHeight or sprite.x < 0:
+                    sprite.destroy()
     
     
     
