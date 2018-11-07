@@ -347,9 +347,9 @@ class drawnPoint(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-    initial = -1*float(frameWidth)/2 + 5.1
-    #initial = -50
-    increase = 1
+    #initial = -1*float(frameWidth)/2 + 5.1
+    initial = -201
+    increase = 0.01
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
     Sprite(quadrant, (float(frameWidth)/2,0))
@@ -359,7 +359,8 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    functions.append(("y=(4000-x^2)^0.5","y"))
+    functions.append(("y=(40000-x^2)^0.5","y"))
+    functions.append(("y=-1(40000-x^2)^0.5","y"))
     functions.append(("y=1","y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
@@ -382,7 +383,6 @@ class Grapher(App):
         #print(self.t)
         funcNumber = 0
         for sprite in self.getSpritesbyClass(point):
-            print(sprite.equation)
             funcNumber += 1
             #print(self.sproites[sprite])
             #sprite.x += funcInterpreter("y","x","y=x",1)[0]
