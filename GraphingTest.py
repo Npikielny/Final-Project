@@ -332,8 +332,8 @@ class point(Sprite):
         print(funcInterpreter("y", "x", equation, 0.1))
         self.vy = 0
         self.vx = 0
-        point.equation = equation
-        point.depVar = depVar
+        self.equation = equation
+        self.depVar = depVar
         super().__init__(point.pt, position)
 
 
@@ -359,7 +359,8 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    functions.append(("y=x^-1","y"))
+    functions.append(("y=(4000-x^2)^0.5","y"))
+    functions.append(("y=1","y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
@@ -381,6 +382,7 @@ class Grapher(App):
         #print(self.t)
         funcNumber = 0
         for sprite in self.getSpritesbyClass(point):
+            print(sprite.equation)
             funcNumber += 1
             #print(self.sproites[sprite])
             #sprite.x += funcInterpreter("y","x","y=x",1)[0]
@@ -389,18 +391,22 @@ class Grapher(App):
                 a = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t)
                 b = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t - 1)
             except:
-                print("Undefined value, shifting point.")
+                #print("Undefined value, shifting point.")
                 try:
-                    a = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t + g / 2)
-                    b = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t - 1 + g / 2)
+                    a = funcInterpreter(sprite.depVar,indepVar[depVar],sprite.equation,self.t + g / 2)
+                    b = funcInterpreter(sprite.depVar,indepVar[depVar],sprite.equation,self.t - 1 + g / 2)
                 except:
-                    print("Function Failed Twice, Going to (0,0)")
+                    #print("Function Failed Twice, Going to (0,0)")
                     a = (0,0)
                     b = (0,0)
             #print(a, self.sproites[sprite])
             #print("step", a, (a[0])[0])
-            sprite.x = getX(((a[0])[0]))
-            sprite.y = getY(((a[0])[1]))
+            if isinstance(b, (list,)):
+                sprite.x = getX(((a[0])[0]))
+                sprite.y = getY(((a[0])[1]))
+            else:
+                sprite.x = getX(a[0])
+                sprite.y = getY(a[0])
             #print(a[1])
             #print(t)
             #print(sproites[sprite])
