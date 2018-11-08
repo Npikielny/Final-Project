@@ -7,8 +7,10 @@ def funcInterpreter(depVar, indepVar, equation,t):
             if i != " ":
                 newEquation += i
         print("Interpreting:", newEquation)
-        if newEquation.find("=") != 1:
+        if newEquation.find("=") != 1 or newEquation[newEquation.find("=")+1:len(newEquation)].find(depVar) != -1:
             print("Implementation of implicits needed")
+            print(depVarSolver(depVar, indepVar, newEquation))
+            pluggableEquation = depVarSolver(depVar, indepVar, newEquation)
         else:
              equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
              print("equationR", equationR)
@@ -25,6 +27,41 @@ def funcInterpreter(depVar, indepVar, equation,t):
         #points = "nil"    
         return(points)
         
+def depVarSolver(depVar, indepVar, equation):
+    print("Implicit function entered, Isolating dependent variable")
+    if equation.find("=")!= 1:
+        equationL = equation[0:equation.find("=")-1]
+        equationL = expressionSplitter(equationL)
+    else:
+        equationL = [equation[0]]
+    equationR = equation[equation.find("=")+1: len(equation)]
+    equationR = expressionSplitter("y", equationR)
+    #newEquation = equationL +"="+equationR
+    return(equationL, "=", equationR)
+    
+def expressionSplitter(depVar, expression):
+    if expression.find(depVar) == -1:
+        print("DepVar not found", expression)
+        return([expression])
+    else:
+        terms = []
+        term = ""
+        p = 0
+        for i in expression:
+            term += i
+            if i == "(":
+                p += 1
+            elif i == ")":
+                p -= 1
+            if i == "+" and p == 0:
+                terms.append(term[0:len(term)-1])
+                term = "+"
+        if term != "":
+            terms.append(term)
+        print("DeVars found", terms)
+        return(terms)
+                
+
 def funcCombiner(equation):
     #print(equation)
     equationL = getOperandsAndTerms(equation[0:equation.find("=")])
@@ -279,7 +316,7 @@ def pluggerSetup(depVar, indepVar, equation):
 #b = "y=x^0.5"
 #print(b)
 #print(funcInterpreter("y", "x", b))
-print(funcInterpreter("y","x","y = 8^0 + (8-9(24-3^6)(9+(8-4(72-72)(0-1)^1 - 14)))",3))
+print(depVarSolver("y","x","y= (((1 + y)*2+3/4))"))
 '''
 b=getOperandsAndTerms(b)
 print(b)
