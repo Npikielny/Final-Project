@@ -330,8 +330,6 @@ class point(Sprite):
         self.vy = 0
         self.vx = 0
         #print(funcInterpreter("y", "x", equation, 0.1))
-        self.vy = 0
-        self.vx = 0
         self.equation = equation
         self.depVar = depVar
         super().__init__(point.pt, position)
