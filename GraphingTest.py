@@ -336,11 +336,16 @@ class point(Sprite):
 
 
 class drawnPoint(Sprite):
-    def __init__(self, position, color):
+    def func(position, color):
         radius = 3
         pt = CircleAsset(radius, noLine, color)
         newPos = (position[0], position[1]-float(radius)/2.0)
         Sprite(pt, newPos)
+    def deriv(position, color):
+        radius = 3
+        dr = CircleAsset(radius, outline, color)
+        newPos = (position[0], position[1]-float(radius)/2.0)
+        Sprite(dr,newPos)
 #-----------------------------------------------------
 class Grapher(App):
     def __init__(self, width, height):
@@ -357,7 +362,7 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    #functions.append(("y=0","y"))
+    functions.append(("y=0","y"))
     #functions.append(("x=0","x"))
     #functions.append(("y=x^2", "y"))
     #functions.append(("x=y^2", "x"))
@@ -369,8 +374,9 @@ class Grapher(App):
     #functions.append(("y=-1(200^2-x^2)^0.5","y"))
     #functions.append(("x=(200^2-y^2)^0.5","x"))
     #functions.append(("x=-1(200^2-y^2)^0.5","x"))
-    functions.append(("x=100/y","x"))
-    functions.append(("y=100/x","y"))
+    #functions.append(("x=100/y","x"))
+    functions.append(("y=(x/20)^3","y"))
+    functions.append(("y=(200^2-x^2)^0.5", "y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
@@ -384,6 +390,7 @@ class Grapher(App):
         point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i][0], functions[i][1])
         print("Graphing: ", functions[i])
         print(functions[i][0], functions[i][1])
+    drawnPoint.deriv((0,0),colorRandom(1))
     t = initial
     def step(self):
         g = self.increase
@@ -397,7 +404,7 @@ class Grapher(App):
             indepVar = {"y":"x","x":"y"}
             try:
                 a = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t)
-                b = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t - 1)
+                b = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t - g)
             except:
                 #print("Undefined value, shifting point.")
                 try:
@@ -405,20 +412,24 @@ class Grapher(App):
                     b = funcInterpreter(sprite.depVar,indepVar[depVar],sprite.equation,self.t - 1 + g / 2)
                 except:
                     #print("Function Failed Twice, Going to (0,0)")
-                    a = (0,0)
-                    b = (0,0)
+                    a = [(0,0)]
+                    b = [(0,0)]
             #print("step", a, (a[0])[0])
             if isinstance(b, (list,)):
                 sprite.x = getX(((a[0])[0]))
                 sprite.y = getY(((a[0])[1]))
+                #print(getY(((a[0])[1])-((b[0])[1])))
+                drawnPoint.deriv((getX(((a[0])[0])),getY(2*(((a[0])[1])-((b[0])[1])))), colorRandom(funcNumber))
             else:
                 sprite.x = getX(a[0])
                 sprite.y = getY(a[0])
+                print("Maybe something is off?")
+                #drawnPoint(getX(a[0]),getY(a[0]-b[0]))
             #print(a[1])
             #print(self.t, (sprite.x, sprite.y), sprite.equation)
             #print(sproites[sprite])
             #drawnPoint(sprite.x, sprite.y, colorRandom(funcNumber))
-            drawnPoint((sprite.x,sprite.y),colorRandom(funcNumber))
+            drawnPoint.func((sprite.x,sprite.y),colorRandom(funcNumber))
             if sprite.depVar == "x":
                 if sprite.y > frameWidth or sprite.y < 0:
                     sprite.destroy()
