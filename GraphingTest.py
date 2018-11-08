@@ -343,7 +343,7 @@ class drawnPoint(Sprite):
         Sprite(pt, newPos)
     def deriv(position, color):
         radius = 3
-        dr = CircleAsset(radius, outline, color)
+        dr = CircleAsset(radius/2, LineStyle(1, color), white)
         newPos = (position[0], position[1]-float(radius)/2.0)
         Sprite(dr,newPos)
 #-----------------------------------------------------
@@ -362,7 +362,8 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    functions.append(("y=0","y"))
+    functions.append(("y = 69", "y"))
+    #functions.append(("y=0","y"))
     #functions.append(("x=0","x"))
     #functions.append(("y=x^2", "y"))
     #functions.append(("x=y^2", "x"))
@@ -375,8 +376,8 @@ class Grapher(App):
     #functions.append(("x=(200^2-y^2)^0.5","x"))
     #functions.append(("x=-1(200^2-y^2)^0.5","x"))
     #functions.append(("x=100/y","x"))
-    functions.append(("y=(x/20)^3","y"))
-    functions.append(("y=(200^2-x^2)^0.5", "y"))
+    #functions.append(("y=(x/20)^3","y"))
+    #functions.append(("y=(200^2-x^2)^0.5", "y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
@@ -419,7 +420,7 @@ class Grapher(App):
                 sprite.x = getX(((a[0])[0]))
                 sprite.y = getY(((a[0])[1]))
                 #print(getY(((a[0])[1])-((b[0])[1])))
-                drawnPoint.deriv((getX(((a[0])[0])),getY(2*(((a[0])[1])-((b[0])[1])))), colorRandom(funcNumber))
+                #drawnPoint.deriv((getX(((a[0])[0])),getY(2*(((a[0])[1])-((b[0])[1])))), colorRandom(funcNumber))
             else:
                 sprite.x = getX(a[0])
                 sprite.y = getY(a[0])
