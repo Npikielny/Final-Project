@@ -499,7 +499,7 @@ class Grapher(App):
         super().__init__(width, height)
     initial = -1*float(frameWidth)/2 + 5.1
     #initial = 0
-    increase = 1
+    increase = 0.2
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
     Sprite(quadrant, (float(frameWidth)/2,0))
@@ -509,7 +509,7 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    #functions.append(("y = 69", "y"))
+    #functions.append(("y = 0", "y"))
     #functions.append(("y=0","y"))
     #functions.append(("x=0","x"))
     #functions.append(("y=x^2", "y"))
@@ -526,13 +526,13 @@ class Grapher(App):
     #functions.append(("y=(x/20)^3","y"))
     #functions.append(("y=(200^2-x^2)^0.5", "y"))
     
-    functions.append(("y=10*sin(x/10)","y"))
+    functions.append(("y=100*sin(x/10)","y"))
     #functions.append(("y=10*cos(x/10)","y"))
     #functions.append(("y=10*tan(x/10)","y"))
     #functions.append(("y=10*csc(x/10)","y"))
     #functions.append(("y=10*sec(x/10)","y"))
     #functions.append(("y=10*cot(x/10)","y"))
-    #functions.append(("y=log(x)","y"))
+    #functions.append(("y=10*log(x/10,5)","y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
