@@ -7,6 +7,7 @@ blue = Color(0x0000ff, 1.0)
 black = Color(0x000000, 1.0)
 green  = Color(0x0fff6f, 1.0)
 white = Color(0xffffff, 1.0)
+clear = Color(0xffffff, 0.0)
 #-----------------------------------------------------
 frameWidth = 800
 frameHeight = 800
@@ -296,7 +297,7 @@ def getX(xValue):
     return(x)
     
 def getY(yValue):
-    y = float(frameHeight) / 4.0 - yValue
+    y = float(frameHeight) / 2.0 - yValue
     return(y)
 
 def giveX(xValue):
@@ -304,7 +305,7 @@ def giveX(xValue):
     return(x)
     
 def giveY(yValue):
-    y = (-1 * yValue + float(frameHeight) / 4.0)
+    y = (-1 * yValue + float(frameHeight) / 2.0)
     return(y)
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
@@ -351,18 +352,18 @@ class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
         Grapher.listenMouseEvent("click", self.mouseClick)
-        #for i in range(20):
-        #    drawnPoint((i*6 + 10,0), colorRandom(i))
+        for i in range(20):
+            drawnPoint.func((i*6 + 10,0), colorRandom(i))
         quadrant = RectangleAsset(float(frameWidth)/2-1, float(frameHeight)/2-1, outline, clear)
         grid = RectangleAsset(40,40, outline, white)
-        #for i in range(int(frameWidth/40)):
-        #    for k in range(int(frameHeight/40)):
-        #        Sprite(grid, (i*40,k*40))
+        for i in range(int(frameWidth/40)):
+            for k in range(int(frameHeight/40)):
+                Sprite(grid, (i*40,k*40))
                 #print(i,k)
-        #Sprite(quadrant, (0,0))
-        #Sprite(quadrant, (float(frameWidth)/2,0))
-        #Sprite(quadrant, (0,float(frameHeight)/2))
-        #Sprite(quadrant, (float(frameWidth)/2,float(frameHeight)/2))
+        Sprite(quadrant, (0,0))
+        Sprite(quadrant, (float(frameWidth)/2,0))
+        Sprite(quadrant, (0,float(frameHeight)/2))
+        Sprite(quadrant, (float(frameWidth)/2,float(frameHeight)/2))
                 
     def mouseClick(self,event):
         print("click")
