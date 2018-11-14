@@ -461,7 +461,7 @@ def color(red, green, blue, alpha):
             output += str(i - a*16)
     return (Color(output, alpha))
 def colorRandom(funcIndex):
-    return color(abs(sin(funcIndex*0.2)*255),abs(cos(funcIndex*1.31)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5)*255), 1.0)    
+    return color(abs(sin(funcIndex*0.2+0.1)*255),abs(cos(funcIndex*1.31+1)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5+0.1)*255), 1.0)    
 #-----------------------------------------------------
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
@@ -491,7 +491,7 @@ class Grapher(App):
         super().__init__(width, height)
     initial = -1*float(frameWidth)/2 + 5.1
     #initial = 0
-    increase = 0.2
+    increase = 1
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
     Sprite(quadrant, (float(frameWidth)/2,0))
@@ -501,30 +501,17 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    #functions.append(("y = 0", "y"))
-    #functions.append(("y=0","y"))
-    #functions.append(("x=0","x"))
-    #functions.append(("y=x^2", "y"))
-    #functions.append(("x=y^2", "x"))
-    #functions.append(("y=(200^12-x^12)^(1/12)","y"))
-    #functions.append(("y=-1(200^12-x^12)^(1/12)","y"))
-    #functions.append(("x=(200^12-y^12)^(1/12)","x"))
-    #functions.append(("x=-1(200^12-y^12)^(1/12)","x"))
-    #functions.append(("y=(200^2-x^2)^0.5","y"))
-    #functions.append(("y=-1(200^2-x^2)^0.5","y"))
-    #functions.append(("x=(200^2-y^2)^0.5","x"))
-    #functions.append(("x=-1(200^2-y^2)^0.5","x"))
-    #functions.append(("x=100/y","x"))
-    #functions.append(("y=(x/20)^3","y"))
-    #functions.append(("y=(200^2-x^2)^0.5", "y"))
+    #functions.append(("y=100*sin(x/10)","y"))
+    functions.append(("y=90*sin(x/10)","y"))
+    #functions.append(("y=80*sin(x/10)","y"))
+    functions.append(("y=70*sin(x/10)","y"))
+    #functions.append(("y=60*sin(x/10)","y"))
+    functions.append(("y=50*sin(x/10)","y"))
+    #functions.append(("y=40*sin(x/10)","y"))
+    functions.append(("y=30*sin(x/10)","y"))
+    #functions.append(("y=20*sin(x/10)","y"))
+    functions.append(("y=10*sin(x/10)","y"))
     
-    functions.append(("y=100*sin(x/10)","y"))
-    #functions.append(("y=10*cos(x/10)","y"))
-    #functions.append(("y=10*tan(x/10)","y"))
-    #functions.append(("y=10*csc(x/10)","y"))
-    #functions.append(("y=10*sec(x/10)","y"))
-    #functions.append(("y=10*cot(x/10)","y"))
-    #functions.append(("y=10*log(x/10,5)","y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
