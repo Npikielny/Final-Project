@@ -461,7 +461,8 @@ def color(red, green, blue, alpha):
             output += str(i - a*16)
     return (Color(output, alpha))
 def colorRandom(funcIndex):
-    return color(abs(sin(funcIndex*0.2+0.1)*255),abs(cos(funcIndex*1.31+1)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5+0.1)*255), 1.0)    
+    return color(abs(255*sin(0.89*funcIndex+2.3)),abs(255*sin(0.44*funcIndex+1.5)),abs(255*sin(0.25*funcIndex+0.75)), 1.0)
+    #return color(abs(sin(funcIndex*0.2+0.1)*255),abs(cos(funcIndex*1.31+1)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5+0.1)*255), 1.0)    
 #-----------------------------------------------------
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
@@ -472,6 +473,7 @@ class point(Sprite):
         self.equation = equation
         self.depVar = depVar
         super().__init__(point.pt, position)
+        self.visible = False
 
 
 class drawnPoint(Sprite):
@@ -501,16 +503,8 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    #functions.append(("y=100*sin(x/10)","y"))
-    functions.append(("y=90*sin(x/10)","y"))
-    #functions.append(("y=80*sin(x/10)","y"))
-    functions.append(("y=70*sin(x/10)","y"))
-    #functions.append(("y=60*sin(x/10)","y"))
-    functions.append(("y=50*sin(x/10)","y"))
-    #functions.append(("y=40*sin(x/10)","y"))
-    functions.append(("y=30*sin(x/10)","y"))
-    #functions.append(("y=20*sin(x/10)","y"))
-    functions.append(("y=10*sin(x/10)","y"))
+    functions.append(("y=(x^2)/100","y"))
+    functions.append(("y=-x^2","y"))
     
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
