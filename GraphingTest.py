@@ -73,7 +73,6 @@ def expressionSplitter(depVar, expression):
             terms.append(term)
         print("DeVars found", terms)
         return(terms)
-                
 
 def funcCombiner(equation):
     #print(equation)
@@ -90,7 +89,7 @@ def funcCombiner(equation):
         else:
             equationLOperators.append(i)
     return(equationR[0] + equationL[0],equationR[1] + equationLOperators[:])
-      
+
 def funcCompiler(terms, operands):
     output = ""
     for i in range(0, len(terms)):
@@ -262,6 +261,10 @@ def getOperandsAndTerms(equation):
     if term != "":
         terms.append(term)
     #print("GottenTerms", terms, "GottenOperands", operands, "from", equation)
+    for i in range(0,len(terms)):
+        #print(terms[i])
+        if terms[i] == "-":
+            terms[i] = "-1"
     return((terms,operands))
     
 def funcSolver(terms, operands):
@@ -406,7 +409,7 @@ def funcPlugger(depVar, indepVar, equation, t):
         return(c,t)
     else:
         return(t,c)
-        
+ 
 def pluggerSetup(depVar, indepVar, equation):
     output = ""
     #print("PluggerSetup", depVar, indepVar, equation)
@@ -416,12 +419,15 @@ def pluggerSetup(depVar, indepVar, equation):
             if len(output)>0:
                 if output[len(output)-1].isdigit():
                     output += "*"+"{0}"
+                elif output[len(output)-1] == "-":
+                    output += "1" + "*" + "{0}"
                 else:
                     output += "{0}"
             else:
                 output += "{0}"
+                
         elif len(output)>0: 
-            if output[len(output)-1] == "}" and i.isdigit():
+            if output[len(output)-1] == "}" and (i.isdigit() or i == "(" or i == "{"):
                 output += "*"+i
             else:
                 output += i
@@ -460,6 +466,7 @@ def color(red, green, blue, alpha):
         else:
             output += str(i - a*16)
     return (Color(output, alpha))
+
 def colorRandom(funcIndex):
     return color(abs(255*sin(0.89*funcIndex+2.3)),abs(255*sin(0.44*funcIndex+1.5)),abs(255*sin(0.25*funcIndex+0.75)), 1.0)
     #return color(abs(sin(funcIndex*0.2+0.1)*255),abs(cos(funcIndex*1.31+1)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5+0.1)*255), 1.0)    
@@ -474,7 +481,6 @@ class point(Sprite):
         self.depVar = depVar
         super().__init__(point.pt, position)
         self.visible = False
-
 
 class drawnPoint(Sprite):
     def func(position, color):
@@ -503,8 +509,7 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    functions.append(("y=(x^2)/100","y"))
-    functions.append(("y=-x^2","y"))
+    functions.append(("y=x^(1/x)","y"))
     
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
