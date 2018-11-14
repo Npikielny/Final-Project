@@ -509,7 +509,7 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    functions.append(("y=x^(1/x)","y"))
+    functions.append(("y=x","y"))
     
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
