@@ -22,28 +22,20 @@ def funcInterpreter(depVar, indepVar, equation,t):
             if i != " ":
                 newEquation += i
         #print("Interpreting:", newEquation)
-        if newEquation.find("=") != 1 or newEquation[newEquation.find("=")+1:len(newEquation)].find(depVar) != -1:
+        if newEquation.find("=") != 1:
             print("Implementation of implicits needed")
-            #print(depVarSolver(depVar, indepVar, newEquation))
-            pluggableEquation = depVarSolver(depVar, indepVar, newEquation)
         else:
-            equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
-            #print("equationR", equationR)
-            letterOperands = "sincotaelg"
-            status = 0
-            for i in letterOperands:
-                if equationR.find(i) != -1:
-                    status += 1
-            if equationR.count(indepVar) > 0 and indepVar != "nil":
-                pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
-                #print("pluggable:", pluggableEquation)
-            else:
-                b = getOperandsAndTerms(equationR)
-                pluggableEquation = prenEliminator(b[0],b[1])
+             equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
+        #     print("equationR", equationR)
+             if equationR.count(indepVar) > 0 or indepVar == "nil":
+                  pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
+        #          print("pluggable:", pluggableEquation)
+             else:
+                  b = getOperandsAndTerms(equationR)
+                  pluggableEquation = prenEliminator(b[0],b[1])
         points = []
         #for i in range(1,10):
         #    points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), i)))
-        #print(pluggableEquation)
         points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), t)))
         #points = "nil"    
         return(points)
