@@ -323,7 +323,7 @@ def color(red, green, blue, alpha):
             output += str(i - a*16)
     return (Color(output, alpha))
 def colorRandom(funcIndex):
-    return color(abs(sin(funcIndex*0.2)*255),abs(cos(funcIndex*1.31)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5)*255), 1.0)    
+    return color(abs(sin(funcIndex*0.2+0.1)*255),abs(cos(funcIndex*1.31+1)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5+1)*255), 1.0)
 #-----------------------------------------------------
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
@@ -352,8 +352,6 @@ class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
         Grapher.listenMouseEvent("click", self.mouseClick)
-        for i in range(20):
-            drawnPoint.func((i*6 + 10,0), colorRandom(i))
         quadrant = RectangleAsset(float(frameWidth)/2-1, float(frameHeight)/2-1, outline, clear)
         grid = RectangleAsset(40,40, outline, white)
         for i in range(int(frameWidth/40)):
@@ -364,7 +362,8 @@ class Grapher(App):
         Sprite(quadrant, (float(frameWidth)/2,0))
         Sprite(quadrant, (0,float(frameHeight)/2))
         Sprite(quadrant, (float(frameWidth)/2,float(frameHeight)/2))
-                
+        for i in range(20):
+            drawnPoint.func((i*6 + 10,10), colorRandom(i))
     def mouseClick(self,event):
         print("click")
     #-----------------------------------------------------
@@ -373,7 +372,7 @@ class Grapher(App):
     increase = 1
     sproites = {}
     functions = []
-    functions.append(("y = 69", "y"))
+    #functions.append(("y = 69", "y"))
     #functions.append(("y=0","y"))
     #functions.append(("x=0","x"))
     #functions.append(("y=x^2", "y"))
@@ -389,7 +388,7 @@ class Grapher(App):
     #functions.append(("x=100/y","x"))
     #functions.append(("y=(x/20)^3","y"))
     #functions.append(("y=(200^2-x^2)^0.5", "y"))
-    functions.append(("y=3x^(1/3)","y"))
+    #functions.append(("y=3x^(1/3)","y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
