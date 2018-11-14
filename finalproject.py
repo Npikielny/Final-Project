@@ -323,7 +323,7 @@ def color(red, green, blue, alpha):
             output += str(i - a*16)
     return (Color(output, alpha))
 def colorRandom(funcIndex):
-    return color(abs(sin(funcIndex*0.2+0.1)*255),abs(cos(funcIndex*1.31+1)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5+1)*255), 1.0)
+    return color(abs(255*sin(0.89*funcIndex+2.3)),abs(255*sin(0.44*funcIndex+1.5)),abs(255*sin(0.25*funcIndex+0.75)), 1.0)
 #-----------------------------------------------------
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
@@ -372,23 +372,23 @@ class Grapher(App):
     increase = 1
     sproites = {}
     functions = []
-    #functions.append(("y = 69", "y"))
-    #functions.append(("y=0","y"))
-    #functions.append(("x=0","x"))
-    #functions.append(("y=x^2", "y"))
-    #functions.append(("x=y^2", "x"))
-    #functions.append(("y=(200^12-x^12)^(1/12)","y"))
-    #functions.append(("y=-1(200^12-x^12)^(1/12)","y"))
-    #functions.append(("x=(200^12-y^12)^(1/12)","x"))
-    #functions.append(("x=-1(200^12-y^12)^(1/12)","x"))
-    #functions.append(("y=(200^2-x^2)^0.5","y"))
-    #functions.append(("y=-1(200^2-x^2)^0.5","y"))
-    #functions.append(("x=(200^2-y^2)^0.5","x"))
-    #functions.append(("x=-1(200^2-y^2)^0.5","x"))
-    #functions.append(("x=100/y","x"))
-    #functions.append(("y=(x/20)^3","y"))
-    #functions.append(("y=(200^2-x^2)^0.5", "y"))
-    #functions.append(("y=3x^(1/3)","y"))
+    functions.append(("y=10", "y"))
+    functions.append(("y=20", "y"))
+    functions.append(("y=30", "y"))
+    functions.append(("y=40", "y"))
+    functions.append(("y=50", "y"))
+    functions.append(("y=60", "y"))
+    functions.append(("y=70", "y"))
+    functions.append(("y=80", "y"))
+    functions.append(("y=90", "y"))
+    functions.append(("y=100", "y"))
+    functions.append(("y=110", "y"))
+    functions.append(("y=120", "y"))
+    functions.append(("y=130", "y"))
+    functions.append(("y=140", "y"))
+    functions.append(("y=150", "y"))
+    functions.append(("y=160", "y"))
+    functions.append(("y=170", "y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
@@ -403,7 +403,7 @@ class Grapher(App):
         point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i][0], functions[i][1])
         print("Graphing: ", functions[i])
         print(functions[i][0], functions[i][1])
-    drawnPoint.deriv((0,0),colorRandom(1))
+    #drawnPoint.deriv((0,0),colorRandom(1))
     t = initial
     def step(self):
         g = self.increase
@@ -432,7 +432,7 @@ class Grapher(App):
                 sprite.x = getX(((a[0])[0]))
                 sprite.y = getY(((a[0])[1]))
                 #print(getY(((a[0])[1])-((b[0])[1])))
-                drawnPoint.deriv((getX(((a[0])[0])),getY(2*(((a[0])[1])-((b[0])[1])))), colorRandom(funcNumber))
+                #drawnPoint.deriv((getX(((a[0])[0])),getY(2*(((a[0])[1])-((b[0])[1])))), colorRandom(funcNumber))
             else:
                 sprite.x = getX(a[0])
                 sprite.y = getY(a[0])
