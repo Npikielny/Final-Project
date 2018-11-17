@@ -22,20 +22,28 @@ def funcInterpreter(depVar, indepVar, equation,t):
             if i != " ":
                 newEquation += i
         #print("Interpreting:", newEquation)
-        if newEquation.find("=") != 1:
+        if newEquation.find("=") != 1 or newEquation[newEquation.find("=")+1:len(newEquation)].find(depVar) != -1:
             print("Implementation of implicits needed")
+            print(depVarSolver(depVar, indepVar, newEquation))
+            pluggableEquation = depVarSolver(depVar, indepVar, newEquation)
         else:
-             equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
-        #     print("equationR", equationR)
-             if equationR.count(indepVar) > 0 or indepVar == "nil":
-                  pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
-        #          print("pluggable:", pluggableEquation)
-             else:
-                  b = getOperandsAndTerms(equationR)
-                  pluggableEquation = prenEliminator(b[0],b[1])
+            equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
+        #    print("equationR", equationR)
+            letterOperands = "sincotaelg"
+            status = 0
+            for i in letterOperands:
+                if equationR.find(i) != -1:
+                    status += 1
+            if equationR.count(indepVar) > 0 and indepVar != "nil":
+                pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
+         #       print("pluggable:", pluggableEquation)
+            else:
+                b = getOperandsAndTerms(equationR)
+                pluggableEquation = prenEliminator(b[0],b[1])
         points = []
         #for i in range(1,10):
         #    points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), i)))
+        #print(pluggableEquation)
         points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), t)))
         #points = "nil"    
         return(points)
@@ -73,7 +81,7 @@ def expressionSplitter(depVar, expression):
             terms.append(term)
         print("DeVars found", terms)
         return(terms)
-
+                
 def funcCombiner(equation):
     #print(equation)
     equationL = getOperandsAndTerms(equation[0:equation.find("=")])
@@ -89,7 +97,7 @@ def funcCombiner(equation):
         else:
             equationLOperators.append(i)
     return(equationR[0] + equationL[0],equationR[1] + equationLOperators[:])
-
+      
 def funcCompiler(terms, operands):
     output = ""
     for i in range(0, len(terms)):
@@ -287,13 +295,13 @@ def funcSolver(terms, operands):
                 inside = i[i.find("(")+1:i.find(")")]
                 term = i[0:i.find("(")]
             else:
-                #term = i[i.find("(")+1:len(i)]
+                term = i
                 inside = ""
                 status = 0 
-                for i in term:
-                    if term.isdigit() == False and status == 0:
+                for k in term:
+                    if k.isdigit() and status == 0:
                         #THIS NEEDS TO CHANGE FOR NESTED COMPLEX OPERANDS
-                        inside += i
+                        inside += k
                     else:
                         status += 1
                     if status == 1:
@@ -313,7 +321,7 @@ def funcSolver(terms, operands):
                 else:
                     if len(inside) > 1:
                         inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
-                    newTerms.append(log(float(inside))/log(10))
+                    newTerms.append(round(log(float(inside))/log(10),5))
                 #print("logBase", logBase, "expression", expression)
 
                 #print("Term", term, float(term[3:len(term)]), log(float(term[3:len(term)])))
@@ -326,17 +334,17 @@ def funcSolver(terms, operands):
                 #print(term)
                 #print(i[0:3], term[0:3])
                 if term[0:3] == "sin":
-                    newTerms.append(sin(float(term[3:len(term)])))
+                    newTerms.append(round(sin(float(term[3:len(term)])),5))
                 elif term[0:3] == "cos":
-                    newTerms.append(cos(float(term[3:len(term)])))
+                    newTerms.append(round(cos(float(term[3:len(term)])),5))
                 elif term[0:3] == "tan":
-                    newTerms.append(tan(float(term[3:len(term)])))
+                    newTerms.append(round(tan(float(term[3:len(term)])),5))
                 elif term[0:3] == "sec":
-                    newTerms.append(1/cos(float(term[3:len(term)])))
+                    newTerms.append(round(1/cos(float(term[3:len(term)])),5))
                 elif term[0:3] == "csc":
-                    newTerms.append(1/sin(float(term[3:len(term)])))
+                    newTerms.append(round(1/sin(float(term[3:len(term)])),5))
                 elif term[0:3] == "cot":
-                    newTerms.append(1/tan(float(term[3:len(term)])))
+                    newTerms.append(round(1/tan(float(term[3:len(term)])),5))
                 else:
                     newTerms.append(i)
                     #print("The equation you entered was weird. Maybe you should check it.")
@@ -387,7 +395,7 @@ def funcSolver(terms, operands):
             for k in i:
                 if k.isdigit() == True or k == "." or k == "-":
                     final += str(k)
-        #print(final)
+        #print("FINAL:",final)
         final = float(final)
     ##print("solved:", final)
     return(final)
@@ -409,7 +417,7 @@ def funcPlugger(depVar, indepVar, equation, t):
         return(c,t)
     else:
         return(t,c)
- 
+        
 def pluggerSetup(depVar, indepVar, equation):
     output = ""
     #print("PluggerSetup", depVar, indepVar, equation)
@@ -437,15 +445,16 @@ def pluggerSetup(depVar, indepVar, equation):
     return output
 
 def getX(xValue):
+    #x = (xValue + float(frameWidth)/2.0)*4+2
     x = xValue + float(frameWidth) / 2.0 - 3
     return(x)
     
 def getY(yValue):
-    y = float(frameHeight) / 4.0 - yValue
+    y = (float(frameHeight) / 4.0 - yValue)
     return(y)
 
 def giveX(xValue):
-    x = xValue - float(frameWidth) / 2.0 + 3
+    x = (xValue - float(frameWidth) / 2.0 + 3)
     return(x)
     
 def giveY(yValue):
@@ -497,9 +506,9 @@ class drawnPoint(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-    initial = -1*float(frameWidth)/2 + 5.1
-    #initial = 0
-    increase = 1
+    initial = -1*float(frameWidth)/2
+    #initial = -20
+    increase = 5
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
     Sprite(quadrant, (float(frameWidth)/2,0))
@@ -509,7 +518,10 @@ class Grapher(App):
     #    return(x + 240)
     sproites = {}
     functions = []
-    functions.append(("y=x","y"))
+    #functions.append(("y=10sin(x)","y"))
+    functions.append(("y=cos(x)","y"))
+    #functions.append(("y=10tan(x)","y"))
+    functions.append(("y=(x^2)","y"))
     
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
@@ -566,10 +578,10 @@ class Grapher(App):
             #drawnPoint(sprite.x, sprite.y, colorRandom(funcNumber))
             drawnPoint.func((sprite.x,sprite.y),colorRandom(funcNumber))
             if sprite.depVar == "x":
-                if sprite.y > frameWidth or sprite.y < 0:
+                if sprite.y > frameWidth:
                     sprite.destroy()
             elif sprite.depVar == "y":
-                if sprite.x > frameHeight or sprite.x < 0:
+                if sprite.x > frameHeight:
                     sprite.destroy()
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
