@@ -389,7 +389,7 @@ class Grapher(App):
     increase = 1
     sproites = {}
     functions = []
-    #functions.append(("y=10", "y"))
+    functions.append(("y=10", "y"))
     #functions.append(("y=20", "y"))
     #functions.append(("y=30", "y"))
     #functions.append(("y=40", "y"))
