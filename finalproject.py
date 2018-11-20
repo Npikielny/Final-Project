@@ -1,4 +1,4 @@
-from ggame import App, Color, LineStyle, Sprite, CircleAsset, Frame, RectangleAsset
+from ggame import App, Color, LineStyle, Sprite, CircleAsset, Frame, RectangleAsset, TextAsset
 from math import floor, sin, cos
 
 #-----------------------------------------------------
@@ -293,20 +293,13 @@ def pluggerSetup(depVar, indepVar, equation):
     return output
 
 def getX(xValue):
-    x = xValue + float(frameWidth) / 2.0 - 3
+    x = xValue + float(frameWidth) / 2.0 + 60 - 11
     return(x)
     
 def getY(yValue):
     y = float(frameHeight) / 2.0 - yValue
     return(y)
 
-def giveX(xValue):
-    x = xValue - float(frameWidth) / 2.0 + 3
-    return(x)
-    
-def giveY(yValue):
-    y = (-1 * yValue + float(frameHeight) / 2.0)
-    return(y)
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
     letters = {10:"A",11:"B",12:"C",13:"D",14:"E",15:"F"}
@@ -352,19 +345,24 @@ class Grapher(App):
         super().__init__(width, height)
         Grapher.listenMouseEvent("click", self.mouseClick)
         Grapher.listenKeyEvent("keydown","space", self.spacePressed)
-        quadrant = RectangleAsset(float(frameWidth)/2-1, float(frameHeight)/2-1, outline, clear)
-        grid = RectangleAsset(40,40, outline, white)
-        for i in range(int(frameWidth/40)):
+        quadrant = RectangleAsset(float(frameWidth-100)/2-1, float(frameHeight)/2-1, outline, clear)
+        grid = RectangleAsset((frameWidth-100)/20,40, outline, white)
+        for i in range(int((frameWidth-100)/20)):
             for k in range(int(frameHeight/40)):
-                Sprite(grid, (i*40,k*40))
+                Sprite(grid, (i*((frameWidth-100)/20)+100,k*40))
                 #print(i,k)
         self.going = False
-        Sprite(quadrant, (0,0))
-        Sprite(quadrant, (float(frameWidth)/2,0))
-        Sprite(quadrant, (0,float(frameHeight)/2))
-        Sprite(quadrant, (float(frameWidth)/2,float(frameHeight)/2))
+        Sprite(RectangleAsset(100,frameHeight, outline, color(215,215,215, 1)), (0,0))
+        Sprite(quadrant, (100,0))
+        Sprite(quadrant, (float(frameWidth-100)/2+100,0))
+        Sprite(quadrant, (100,float(frameHeight)/2))
+        Sprite(quadrant, (float(frameWidth-100)/2+100,float(frameHeight)/2))
+        #EquationBoxes
         for i in range(20):
-            drawnPoint.func((i*6 + 10,10), colorRandom(i))
+            #drawnPoint.func((10,i*40+10), colorRandom(i))
+            Sprite(RectangleAsset(99,frameHeight/20,outline,colorRandom(i+1)),(0,i*frameHeight/20))
+            
+            
     def mouseClick(self,event):
         if self.going == False:
             equation = input("Equation")
@@ -380,16 +378,17 @@ class Grapher(App):
                     print("Function Failed, Going to (0,0)", equation)
                     b = (0,0)
         point((getX(b[0]),getY(b[1])), colorRandom(len(self.functions)), equation, indepVar)
+        Sprite(TextAsset(equation, width=100, align='center',style='12px Arial', fill=black),(5,(len(self.functions)-1)*frameHeight/20+2))
     def spacePressed(self,event):
         print(self.going)
         self.going = not self.going
     #-----------------------------------------------------
-    initial = -1*float(frameWidth)/2 + 5.1
+    initial = -1*float(frameWidth-100)/2 + 5.1
     #initial = 0
     increase = 1
     sproites = {}
     functions = []
-    functions.append(("y=10", "y"))
+    #functions.append(("y=10", "y"))
     #functions.append(("y=20", "y"))
     #functions.append(("y=30", "y"))
     #functions.append(("y=40", "y"))
@@ -418,7 +417,8 @@ class Grapher(App):
                 print("Function Failed, Going to (0,0)", functions[i])
                 b = (0,0)
         point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i][0], functions[i][1])
-        print("Graphing: ", functions[i])
+        Sprite(TextAsset(functions[i], width=100, align='center',style='12px Arial', fill=black),(5,(len(functions)-1)*frameHeight/20+2))
+        #print("Graphing: ", functions[i])
         print(functions[i][0], functions[i][1])
     #drawnPoint.deriv((0,0),colorRandom(1))
     t = initial
@@ -463,11 +463,11 @@ class Grapher(App):
                 #print(sproites[sprite])
                 #drawnPoint(sprite.x, sprite.y, colorRandom(funcNumber))
                 drawnPoint.func((sprite.x,sprite.y),colorRandom(funcNumber))
-                if sprite.depVar == "x":
-                    if sprite.y > frameWidth or sprite.y < 0:
-                        sprite.destroy()
-                elif sprite.depVar == "y":
-                    if sprite.x > frameHeight or sprite.x < 0:
-                        sprite.destroy()
+                #if sprite.depVar == "x":
+                #    if sprite.y > frameWidth or sprite.y < 0:
+                #        sprite.destroy()
+                #elif sprite.depVar == "y":
+                #    if sprite.x > frameHeight or sprite.x < 0:
+                #        sprite.destroy()
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
