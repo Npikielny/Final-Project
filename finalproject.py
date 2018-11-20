@@ -367,7 +367,19 @@ class Grapher(App):
             drawnPoint.func((i*6 + 10,10), colorRandom(i))
     def mouseClick(self,event):
         if self.going == False:
-            self.functions.append((input("Equation", input("IndepVar"))))
+            equation = input("Equation")
+            indepVar = input("IndepVar")
+            self.functions.append((equation, indepVar))
+            try:
+                b = funcInterpreter("y","x", equation, self.initial)[0]
+            except:
+                print("func failed")
+                try:
+                    b = funcInterpreter("y","x", equation, self.initial + self.increase / 2)[0]
+                except:
+                    print("Function Failed, Going to (0,0)", equation)
+                    b = (0,0)
+        point((getX(b[0]),getY(b[1])), colorRandom(len(self.functions)), equation, indepVar)
     def spacePressed(self,event):
         print(self.going)
         self.going = not self.going
@@ -377,23 +389,23 @@ class Grapher(App):
     increase = 1
     sproites = {}
     functions = []
-    functions.append(("y=10", "y"))
-    functions.append(("y=20", "y"))
-    functions.append(("y=30", "y"))
-    functions.append(("y=40", "y"))
-    functions.append(("y=50", "y"))
-    functions.append(("y=60", "y"))
-    functions.append(("y=70", "y"))
-    functions.append(("y=80", "y"))
-    functions.append(("y=90", "y"))
-    functions.append(("y=100", "y"))
-    functions.append(("y=110", "y"))
-    functions.append(("y=120", "y"))
-    functions.append(("y=130", "y"))
-    functions.append(("y=140", "y"))
-    functions.append(("y=150", "y"))
-    functions.append(("y=160", "y"))
-    functions.append(("y=170", "y"))
+    #functions.append(("y=10", "y"))
+    #functions.append(("y=20", "y"))
+    #functions.append(("y=30", "y"))
+    #functions.append(("y=40", "y"))
+    #functions.append(("y=50", "y"))
+    #functions.append(("y=60", "y"))
+    #functions.append(("y=70", "y"))
+    #functions.append(("y=80", "y"))
+    #functions.append(("y=90", "y"))
+    #functions.append(("y=100", "y"))
+    #functions.append(("y=110", "y"))
+    #functions.append(("y=120", "y"))
+    #functions.append(("y=130", "y"))
+    #functions.append(("y=140", "y"))
+    #functions.append(("y=150", "y"))
+    #functions.append(("y=160", "y"))
+    #functions.append(("y=170", "y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
