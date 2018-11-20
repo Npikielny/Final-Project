@@ -335,7 +335,6 @@ class point(Sprite):
         self.depVar = depVar
         super().__init__(point.pt, position)
 
-
 class drawnPoint(Sprite):
     def func(position, color):
         radius = 3
@@ -352,12 +351,14 @@ class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
         Grapher.listenMouseEvent("click", self.mouseClick)
+        Grapher.listenKeyEvent("keydown","space", self.spacePressed)
         quadrant = RectangleAsset(float(frameWidth)/2-1, float(frameHeight)/2-1, outline, clear)
         grid = RectangleAsset(40,40, outline, white)
         for i in range(int(frameWidth/40)):
             for k in range(int(frameHeight/40)):
                 Sprite(grid, (i*40,k*40))
                 #print(i,k)
+        self.going = False
         Sprite(quadrant, (0,0))
         Sprite(quadrant, (float(frameWidth)/2,0))
         Sprite(quadrant, (0,float(frameHeight)/2))
@@ -365,7 +366,11 @@ class Grapher(App):
         for i in range(20):
             drawnPoint.func((i*6 + 10,10), colorRandom(i))
     def mouseClick(self,event):
-        print("click")
+        if self.going == False:
+            self.functions.append((input("Equation", input("IndepVar"))))
+    def spacePressed(self,event):
+        print(self.going)
+        self.going = not self.going
     #-----------------------------------------------------
     initial = -1*float(frameWidth)/2 + 5.1
     #initial = 0
@@ -407,47 +412,50 @@ class Grapher(App):
     t = initial
     def step(self):
         g = self.increase
-        self.t += g
-        #print(self.t)
-        funcNumber = 0
-        for sprite in self.getSpritesbyClass(point):
-            funcNumber += 1
-            #print(self.sproites[sprite])
-            #sprite.x += funcInterpreter("y","x","y=x",1)[0]
-            indepVar = {"y":"x","x":"y"}
-            try:
-                a = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t)
-                b = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t - g)
-            except:
-                #print("Undefined value, shifting point.")
+        if self.going == False:
+            self.t = self.initial
+        if self.going == True:
+            self.t += g
+            #print(self.t)
+            funcNumber = 0
+            for sprite in self.getSpritesbyClass(point):
+                funcNumber += 1
+                #print(self.sproites[sprite])
+                #sprite.x += funcInterpreter("y","x","y=x",1)[0]
+                indepVar = {"y":"x","x":"y"}
                 try:
-                    a = funcInterpreter(sprite.depVar,indepVar[depVar],sprite.equation,self.t + g / 2)
-                    b = funcInterpreter(sprite.depVar,indepVar[depVar],sprite.equation,self.t - 1 + g / 2)
+                    a = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t)
+                    b = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t - g)
                 except:
-                    #print("Function Failed Twice, Going to (0,0)")
-                    a = [(0,0)]
-                    b = [(0,0)]
-            #print("step", a, (a[0])[0])
-            if isinstance(b, (list,)):
-                sprite.x = getX(((a[0])[0]))
-                sprite.y = getY(((a[0])[1]))
-                #print(getY(((a[0])[1])-((b[0])[1])))
-                #drawnPoint.deriv((getX(((a[0])[0])),getY(2*(((a[0])[1])-((b[0])[1])))), colorRandom(funcNumber))
-            else:
-                sprite.x = getX(a[0])
-                sprite.y = getY(a[0])
-                print("Maybe something is off?")
-                #drawnPoint(getX(a[0]),getY(a[0]-b[0]))
-            #print(a[1])
-            #print(self.t, (sprite.x, sprite.y), sprite.equation)
-            #print(sproites[sprite])
-            #drawnPoint(sprite.x, sprite.y, colorRandom(funcNumber))
-            drawnPoint.func((sprite.x,sprite.y),colorRandom(funcNumber))
-            if sprite.depVar == "x":
-                if sprite.y > frameWidth or sprite.y < 0:
-                    sprite.destroy()
-            elif sprite.depVar == "y":
-                if sprite.x > frameHeight or sprite.x < 0:
-                    sprite.destroy()
+                    #print("Undefined value, shifting point.")
+                    try:
+                        a = funcInterpreter(sprite.depVar,indepVar[depVar],sprite.equation,self.t + g / 2)
+                        b = funcInterpreter(sprite.depVar,indepVar[depVar],sprite.equation,self.t - 1 + g / 2)
+                    except:
+                        #print("Function Failed Twice, Going to (0,0)")
+                        a = [(0,0)]
+                        b = [(0,0)]
+                #print("step", a, (a[0])[0])
+                if isinstance(b, (list,)):
+                    sprite.x = getX(((a[0])[0]))
+                    sprite.y = getY(((a[0])[1]))
+                    #print(getY(((a[0])[1])-((b[0])[1])))
+                    #drawnPoint.deriv((getX(((a[0])[0])),getY(2*(((a[0])[1])-((b[0])[1])))), colorRandom(funcNumber))
+                else:
+                    sprite.x = getX(a[0])
+                    sprite.y = getY(a[0])
+                    print("Maybe something is off?")
+                    #drawnPoint(getX(a[0]),getY(a[0]-b[0]))
+                #print(a[1])
+                #print(self.t, (sprite.x, sprite.y), sprite.equation)
+                #print(sproites[sprite])
+                #drawnPoint(sprite.x, sprite.y, colorRandom(funcNumber))
+                drawnPoint.func((sprite.x,sprite.y),colorRandom(funcNumber))
+                if sprite.depVar == "x":
+                    if sprite.y > frameWidth or sprite.y < 0:
+                        sprite.destroy()
+                elif sprite.depVar == "y":
+                    if sprite.x > frameHeight or sprite.x < 0:
+                        sprite.destroy()
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
