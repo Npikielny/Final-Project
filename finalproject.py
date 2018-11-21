@@ -506,6 +506,7 @@ class Grapher(App):
                 Sprite(grid, (i*((frameWidth-100)/20)+100,k*40))
                 #print(i,k)
         self.going = False
+        self.doFuncs()
         Sprite(RectangleAsset(100,frameHeight, outline, color(215,215,215, 1)), (0,0))
         Sprite(quadrant, (100,0))
         Sprite(quadrant, (float(frameWidth-100)/2+100,0))
@@ -518,46 +519,73 @@ class Grapher(App):
             
             
     def mouseClick(self,event):
-        if self.going == False:
-            equation = input("Equation")
-            indepVar = input("IndepVar")
-            self.functions.append((equation, indepVar))
-            try:
-                b = funcInterpreter("y","x", equation, self.initial)[0]
-            except:
-                print("func failed")
-                try:
-                    b = funcInterpreter("y","x", equation, self.initial + self.increase / 2)[0]
-                except:
-                    print("Function Failed, Going to (0,0)", equation)
-                    b = (0,0)
-        point((getX(b[0]),getY(b[1])), colorRandom(len(self.functions)), equation, indepVar)
-        Sprite(TextAsset(equation, width=100, align='center',style='12px Arial', fill=black),(5,(len(self.functions)-1)*frameHeight/20+2))
+        operation = input("F = finished, D = delete, A = Add, R = Reset")
+        while operation.lower() != "f":
+            if operation.lower() == "a":
+                if self.going == False:
+                    equation = input("Equation")
+                    indepVar = input("IndepVar")
+                    self.functions.append((equation, indepVar))
+                    try:
+                        b = funcInterpreter("y","x", equation, self.initial)[0]
+                    except:
+                        print("func failed")
+                        try:
+                            b = funcInterpreter("y","x", equation, self.initial + self.increase / 2)[0]
+                        except:
+                            print("Function Failed, Going to (0,0)", equation)
+                            b = (0,0)
+                    point((getX(b[0]),getY(b[1])), colorRandom(len(self.functions)), equation, indepVar)
+                    #Sprite(TextAsset(equation, width=100, align='center',style='12px Arial', fill=black),(5,(len(self.functions)-1)*frameHeight/20+2))
+                    print(self.functions)
+                    print(self.functions)
+            elif operation.lower() == "d":
+                index = input("Which function do you want to delete? (All or index number)")
+                if index.lower() == "all":
+                    for sprite in self.getSpritesbyClass(point):
+                        del sprite
+                    self.functions = []
+                elif index.lower().isdigit() and int(index)-1 <= len(self.functions):
+                    found = 0
+                    for sprite in self.getSpritesbyClass(point):
+                        if sprite.equation == functions[index] and found == 0: 
+                            del sprite
+                            del functions[index]
+                            found += 1
+                else:
+                    print("Please use valid inputs")
+            elif operation.lower() == "r":
+                self.doFuncs()
+            operation = input("F = finished, D = delete, A = Add, R = Reset")
+        self.doFuncs()
     def spacePressed(self,event):
         print(self.going)
         self.going = not self.going
     #-----------------------------------------------------
     initial = -1*float(frameWidth-100)/2 + 5.1
     #initial = 0
-    increase = 0.5
+    increase = 1.6
     sproites = {}
     functions = []
     #for i in range(10):
     #    functions.append((("y=4*{0}sin(x/10)").format(str(i)),("y")))
-    for i in range(0,len(functions)):
-        try:
-            b = funcInterpreter("y","x", functions[i][0], initial)[0]
-        except:
-            print("func failed")
+    def doFuncs(self):
+        for i in self.getSpritesbyClass(drawnPoint):
+            del i
+        for i in range(0,len(self.functions)):
             try:
-                b = funcInterpreter("y","x", functions[i][0], initial + increase / 2)[0]
+                b = funcInterpreter("y","x", self.functions[i][0], initial)[0]
             except:
-                print("Function Failed, Going to (0,0)", functions[i])
-                b = (0,0)
-        point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i][0], functions[i][1])
-        Sprite(TextAsset(functions[i], width=100, align='center',style='12px Arial', fill=black),(5,(len(functions)-1)*frameHeight/20+2))
-        #print("Graphing: ", functions[i])
-        print(functions[i][0], functions[i][1])
+                print("func failed")
+                try:
+                    b = funcInterpreter("y","x", self.functions[i][0], self.initial + self.increase / 2)[0]
+                except:
+                    print("Function Failed, Going to (0,0)", functions[i])
+                    b = (0,0)
+            point((getX(b[0]),getY(b[1])), colorRandom(i), self.functions[i][0], self.functions[i][1])
+            Sprite(TextAsset(self.functions[i], width=100, align='center',style='12px Arial', fill=black),(5,(i)*frameHeight/20+2))
+            #print("Graphing: ", functions[i])
+            print(self.functions[i][0], self.functions[i][1])
     #drawnPoint.deriv((0,0),colorRandom(1))
     t = initial
     def step(self):
