@@ -504,7 +504,6 @@ class Grapher(App):
         for i in range(int((frameWidth-100)/20)):
             for k in range(int(frameHeight/40)):
                 Sprite(grid, (i*((frameWidth-100)/20)+100,k*40))
-                #print(i,k)
         self.going = False
         self.doFuncs()
         Sprite(RectangleAsset(100,frameHeight, outline, color(215,215,215, 1)), (0,0))
@@ -516,8 +515,7 @@ class Grapher(App):
         for i in range(20):
             #drawnPoint.func((10,i*40+10), colorRandom(i))
             Sprite(RectangleAsset(99,frameHeight/20,outline,colorRandom(i+1)),(0,i*frameHeight/20))
-            
-            
+    
     def mouseClick(self,event):
         operation = input("F = finished, D = delete, A = Add, R = Reset")
         while operation.lower() != "f":
@@ -567,8 +565,6 @@ class Grapher(App):
     increase = 1.6
     sproites = {}
     functions = []
-    #for i in range(10):
-    #    functions.append((("y=4*{0}sin(x/10)").format(str(i)),("y")))
     def doFuncs(self):
         for i in self.getSpritesbyClass(drawnPoint):
             del i
@@ -583,10 +579,8 @@ class Grapher(App):
                     print("Function Failed, Going to (0,0)", functions[i])
                     b = (0,0)
             point((getX(b[0]),getY(b[1])), colorRandom(i), self.functions[i][0], self.functions[i][1])
-            Sprite(TextAsset(self.functions[i], width=100, align='center',style='12px Arial', fill=black),(5,(i)*frameHeight/20+2))
-            #print("Graphing: ", functions[i])
+            Sprite(TextAsset(self.functions[i][0], width=100, align='center',style='12px Arial', fill=black),(5,(i)*frameHeight/20+2))
             print(self.functions[i][0], self.functions[i][1])
-    #drawnPoint.deriv((0,0),colorRandom(1))
     t = initial
     def step(self):
         g = self.increase
@@ -594,46 +588,27 @@ class Grapher(App):
             self.t = self.initial
         if self.going == True:
             self.t += g
-            #print(self.t)
             funcNumber = 0
             for sprite in self.getSpritesbyClass(point):
                 funcNumber += 1
-                #print(self.sproites[sprite])
-                #sprite.x += funcInterpreter("y","x","y=x",1)[0]
                 indepVar = {"y":"x","x":"y"}
                 try:
                     a = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t)
                     b = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t - g)
                 except:
-                    #print("Undefined value, shifting point.")
                     try:
                         a = funcInterpreter(sprite.depVar,indepVar[depVar],sprite.equation,self.t + g / 2)
                         b = funcInterpreter(sprite.depVar,indepVar[depVar],sprite.equation,self.t - 1 + g / 2)
                     except:
-                        #print("Function Failed Twice, Going to (0,0)")
                         a = [(0,0)]
                         b = [(0,0)]
-                #print("step", a, (a[0])[0])
                 if isinstance(b, (list,)):
                     sprite.x = getX(((a[0])[0]))
                     sprite.y = getY(((a[0])[1]))
-                    #print(getY(((a[0])[1])-((b[0])[1])))
-                    #drawnPoint.deriv((getX(((a[0])[0])),getY(2*(((a[0])[1])-((b[0])[1])))), colorRandom(funcNumber))
                 else:
                     sprite.x = getX(a[0])
                     sprite.y = getY(a[0])
                     print("Maybe something is off?")
-                    #drawnPoint(getX(a[0]),getY(a[0]-b[0]))
-                #print(a[1])
-                #print(self.t, (sprite.x, sprite.y), sprite.equation)
-                #print(sproites[sprite])
-                #drawnPoint(sprite.x, sprite.y, colorRandom(funcNumber))
                 drawnPoint.func((sprite.x,sprite.y),colorRandom(funcNumber))
-                #if sprite.depVar == "x":
-                #    if sprite.y > frameWidth or sprite.y < 0:
-                #        sprite.destroy()
-                #elif sprite.depVar == "y":
-                #    if sprite.x > frameHeight or sprite.x < 0:
-                #        sprite.destroy()
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
