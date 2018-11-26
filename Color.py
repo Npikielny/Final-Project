@@ -20,6 +20,7 @@ def color(red, green, blue, alpha):
 
 print(Color(0x050505, 1.0))
 print(color(5,5,5,1.0))
+print(Color(int("0x050505"),1.0))
 #print(type(0x000000))
 #print(Color(int("0x050505"),0.1))
 #print(int("0x050505"))
