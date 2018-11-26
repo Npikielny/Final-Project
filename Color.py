@@ -16,7 +16,7 @@ def color(red, green, blue, alpha):
             output += str(i - a*16)
     print("Final String: ", output)
     #print(int(output))
-    return (Color(int(output), alpha))
+    #return (Color(output, alpha))
 
 print(Color(0x050505, 0.1))
 print(color(5,5,5,0.1))
