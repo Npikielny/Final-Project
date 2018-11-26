@@ -14,17 +14,13 @@ def color(red, green, blue, alpha):
             output += str(letters[i - a*16])
         else:
             output += str(i - a*16)
-    print("RGB string just before feeding it through GGame color", output)
-    return (Color(output, alpha))
+    print("Final String: ", output)
+    #print(int(output))
+    return (Color(int(output), alpha))
 
-Outline = LineStyle(1,Color(0xFF0000,1.0))
-print("Color using GGame color", Color(0x050505, 1.0))
-print("Color using RGB conversion", color(5,5,5, 1.0))
-rect = RectangleAsset(10,10,Outline,Color(0x050505,1.0))
-Sprite(rect, (0,0))
-#rect = RectangleAsset(10,10,Outline,Color(0x00C549,1.0))
-#Sprite(rect, (0,0))
-    
-    
-myapp = App()
-myapp.run()
+print(Color(0x050505, 0.1))
+print(color(5,5,5,0.1))
+#print(Color(int("0x050505"),0.1))
+#print(int("0x050505"))
+#print(Color(550505-500000, 0.1))
+
