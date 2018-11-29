@@ -468,6 +468,8 @@ def color(red, green, blue, alpha):
             output += str(letters[i - a*16])
         else:
             output += str(i - a*16)
+            
+    output = int(output, base = 16)
     return (Color(output, alpha))
 def colorRandom(funcIndex):
     return color(abs(255*sin(0.89*funcIndex+2.3)),abs(255*sin(0.44*funcIndex+1.5)),abs(255*sin(0.25*funcIndex+0.75)), 1.0)
@@ -576,7 +578,7 @@ class Grapher(App):
                 try:
                     b = funcInterpreter("y","x", self.functions[i][0], self.initial + self.increase / 2)[0]
                 except:
-                    print("Function Failed, Going to (0,0)", functions[i])
+                    print("Function Failed, Going to (0,0)", self.functions[i])
                     b = (0,0)
             point((getX(b[0]),getY(b[1])), colorRandom(i), self.functions[i][0], self.functions[i][1])
             Sprite(TextAsset(self.functions[i][0], width=100, align='center',style='12px Arial', fill=black),(5,(i)*frameHeight/20+2))
