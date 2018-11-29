@@ -474,6 +474,7 @@ def color(red, green, blue, alpha):
             output += str(letters[i - a*16])
         else:
             output += str(i - a*16)
+    output = int(output, base=16)
     return (Color(output, alpha))
 
 def colorRandom(funcIndex):
@@ -508,7 +509,7 @@ class Grapher(App):
         super().__init__(width, height)
     initial = -1*float(frameWidth)/2
     #initial = -20
-    increase = 5
+    increase = 0.5
     quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
     Sprite(quadrant, (0,0))
     Sprite(quadrant, (float(frameWidth)/2,0))
@@ -519,10 +520,9 @@ class Grapher(App):
     sproites = {}
     functions = []
     #functions.append(("y=10sin(x)","y"))
-    functions.append(("y=cos(x)","y"))
-    #functions.append(("y=10tan(x)","y"))
-    functions.append(("y=(x^2)","y"))
-    
+    #functions.append(("y=cos(x)","y"))
+    functions.append(("y=10","y"))
+    functions.append(("y=(5x)^(5x)","y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
         try:
@@ -537,11 +537,12 @@ class Grapher(App):
         point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i][0], functions[i][1])
         print("Graphing: ", functions[i])
         print(functions[i][0], functions[i][1])
-    drawnPoint.deriv((0,0),colorRandom(1))
+    #drawnPoint.deriv((0,0),colorRandom(1))
     t = initial
     def step(self):
         g = self.increase
-        self.t += g
+        self.t = round(self.t + g,5)
+        print(self.t)
         #print(self.t)
         funcNumber = 0
         for sprite in self.getSpritesbyClass(point):
@@ -566,7 +567,7 @@ class Grapher(App):
                 sprite.x = getX(((a[0])[0]))
                 sprite.y = getY(((a[0])[1]))
                 #print(getY(((a[0])[1])-((b[0])[1])))
-                drawnPoint.deriv((getX(((a[0])[0])),getY(2*(((a[0])[1])-((b[0])[1])))), colorRandom(funcNumber))
+                #drawnPoint.deriv((getX(((a[0])[0])),getY(2*(((a[0])[1])-((b[0])[1])))), colorRandom(funcNumber))
             else:
                 sprite.x = getX(a[0])
                 sprite.y = getY(a[0])
