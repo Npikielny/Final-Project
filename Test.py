@@ -45,7 +45,9 @@ def funcInterpreter(depVar, indepVar, equation,t):
         #    points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), i)))
         #print(pluggableEquation)
         points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), t)))
-        #points = "nil"    
+        #points = "nil"   
+        if isinstance(points, (list,)):
+            points = points[0]
         return(points)
         
 def depVarSolver(depVar, indepVar, equation):
@@ -507,82 +509,6 @@ class drawnPoint(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-    initial = -1*float(frameWidth)/2
-    #initial = -20
-    increase = 0.5
-    quadrant = RectangleAsset(float(frameWidth)/2, float(frameHeight)/4, outline, white)
-    Sprite(quadrant, (0,0))
-    Sprite(quadrant, (float(frameWidth)/2,0))
-    Sprite(quadrant, (0,float(frameHeight)/4))
-    Sprite(quadrant, (float(frameWidth)/2,float(frameHeight)/4))
-    #def X(x):
-    #    return(x + 240)
-    sproites = {}
-    functions = []
-    #functions.append(("y=10sin(x)","y"))
-    #functions.append(("y=cos(x)","y"))
-    functions.append(("y=10","y"))
-    functions.append(("y=(5x)^(5x)","y"))
-    #drawnPoint((0,0),green)
-    for i in range(0,len(functions)):
-        try:
-            b = funcInterpreter("y","x", functions[i][0], initial)[0]
-        except:
-            print("func failed")
-            try:
-                b = funcInterpreter("y","x", functions[i][0], initial + increase / 2)[0]
-            except:
-                print("Function Failed, Going to (0,0)", functions[i])
-                b = (0,0)
-        point((getX(b[0]),getY(b[1])), colorRandom(i), functions[i][0], functions[i][1])
-        print("Graphing: ", functions[i])
-        print(functions[i][0], functions[i][1])
-    #drawnPoint.deriv((0,0),colorRandom(1))
-    t = initial
-    def step(self):
-        g = self.increase
-        self.t = round(self.t + g,5)
-        print(self.t)
-        #print(self.t)
-        funcNumber = 0
-        for sprite in self.getSpritesbyClass(point):
-            funcNumber += 1
-            #print(self.sproites[sprite])
-            #sprite.x += funcInterpreter("y","x","y=x",1)[0]
-            indepVar = {"y":"x","x":"y"}
-            try:
-                a = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t)
-                b = funcInterpreter(sprite.depVar,indepVar[sprite.depVar],sprite.equation,self.t - g)
-            except:
-                #print("Undefined value, shifting point.")
-                try:
-                    a = funcInterpreter(sprite.depVar,indepVar[depVar],sprite.equation,self.t + g / 2)
-                    b = funcInterpreter(sprite.depVar,indepVar[depVar],sprite.equation,self.t - 1 + g / 2)
-                except:
-                    #print("Function Failed Twice, Going to (0,0)")
-                    a = [(0,0)]
-                    b = [(0,0)]
-            #print("step", a, (a[0])[0])
-            if isinstance(b, (list,)):
-                sprite.x = getX(((a[0])[0]))
-                sprite.y = getY(((a[0])[1]))
-                #print(getY(((a[0])[1])-((b[0])[1])))
-                #drawnPoint.deriv((getX(((a[0])[0])),getY(2*(((a[0])[1])-((b[0])[1])))), colorRandom(funcNumber))
-            else:
-                sprite.x = getX(a[0])
-                sprite.y = getY(a[0])
-                print("Maybe something is off?")
-                #drawnPoint(getX(a[0]),getY(a[0]-b[0]))
-            #print(a[1])
-            #print(self.t, (sprite.x, sprite.y), sprite.equation)
-            #print(sproites[sprite])
-            #drawnPoint(sprite.x, sprite.y, colorRandom(funcNumber))
-            drawnPoint.func((sprite.x,sprite.y),colorRandom(funcNumber))
-            if sprite.depVar == "x":
-                if sprite.y > frameWidth:
-                    sprite.destroy()
-            elif sprite.depVar == "y":
-                if sprite.x > frameHeight:
-                    sprite.destroy()
+    
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
