@@ -400,6 +400,11 @@ def funcSolver(terms, operands):
         #print("FINAL:",final)
         final = float(final)
     ##print("solved:", final)
+    roundingTo = 10
+    while str(final).find("e")!= -1:
+        final = round(final,roundingTo)
+        roundTo -= 1
+        print(final)
     return(final)
 
 def funcPlugger(depVar, indepVar, equation, t):
@@ -452,7 +457,7 @@ def getX(xValue):
     return(x)
     
 def getY(yValue):
-    y = (float(frameHeight) / 4.0 - yValue)
+    y = (float(frameHeight) / 2.0 - yValue)
     return(y)
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
@@ -483,42 +488,79 @@ class point(Sprite):
         self.indepVar = indepVar
         self.t = t
         self.color = color
-        newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,t)
+        self.tries = 0
+        roundingTo = 10
+        while str(self.t).find("e") != -1:
+            self.t = round(self.t,roundingTo)
+            roundingTo -= 1
+            print("ROUNDING")
+        try:
+            newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,t)
+        except:
+            newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,t)
         self.increment = 1
+        self.shifting = False
+        print("SUCCESS")
         super().__init__(point.pt, (getX(newPosition[0]),getY(newPosition[1])))
     
     def move(self):
-        newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t+self.increment)
-        oldPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t)
-        newPosition = (getX(newPosition[0]),getY(newPosition[1]))
-        oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
-        #print(oldPosition, newPosition, self.t)
-        if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
-            if 2 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                if 0.5 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                    
-                    self.increment = self.increment * 1.1
+        pass
+    '''
+        try:
+            newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+            oldPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t)
+            newPosition = (getX(newPosition[0]),getY(newPosition[1]))
+            oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
+            #print(oldPosition, newPosition, self.t)
+            if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
+                if 2 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                    if 0.5 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                        
+                        self.increment = self.increment * 1.1
+                    else:
+                        self.x = newPosition[0]
+                        self.y = newPosition[1]
+                        self.t = self.t+self.increment
+                        path(self.color, (newPosition[0],newPosition[1]))
                 else:
-                    self.x = newPosition[0]
-                    self.y = newPosition[1]
-                    self.t = self.t+self.increment
-                    path(self.color, (newPosition[0],newPosition[1]))
+                    self.increment = self.increment * 0.9
             else:
-                self.increment = self.increment * 0.9
-        else:
-            self.t += self.increment
-
+                self.t += self.increment
+            self.tries = 0
+        except:
+            if self.shifting == False:
+                if self.tries <= 10:
+                    self.tries += 1
+                    self.increment = self.increment * 0.1
+                else:
+                    self.tries = 0
+                    self.increment = 0.5
+                    self.t += self.increment
+                    self.shifting == True
+                    print("Function failed, skipping some points.")
+            else:
+                self.t
+                self.t += self.increment
+    '''           
 class path(Sprite):
     def __init__(self,color, position):
         dot = CircleAsset(3,noLine, colorRandom(color))
         Sprite(dot, position)
 
 #-----------------------------------------------------
+
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
     initial = -frameWidth/2
-    point(1,"y=x*sin(x)+x*cos(x)","y","x",initial)
+    #point(1,"y=1/x","y","x",initial)
+    #point(2,"y=x","y","x",initial)
+    #point(3,"y=x^2","y","x",initial)
+    #point(4,"y=x^3","y","x",initial)
+    #point(5,"y=5*sin(10*x)","y","x",initial)
+    point(6,"y=log(x)","y","x",initial)
+    #point(7,"y=e^x","y","x",initial)
+    #point(8,"y=(100^2-x^2)^0.5","y","x",initial)
     
     def step(self):
         for sprite in self.getSpritesbyClass(point):
@@ -526,7 +568,11 @@ class Grapher(App):
                 sprite.move()
             except:
                 print("error")
+                print(sprite.t, sprite.increment)
             #print("RUNNING")
     
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
+#print(funcInterpreter("y","x","y=1/x",-1))
+
+print(funcInterpreter("y","x","y=log(x)",1))
