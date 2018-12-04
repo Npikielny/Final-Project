@@ -7,8 +7,8 @@ black = Color(0x000000, 1.0)
 green  = Color(0x0fff6f, 1.0)
 white = Color(0xffffff, 1.0)
 #-----------------------------------------------------
-frameWidth = 1000
-frameHeight = 1000
+frameWidth = 800
+frameHeight = 800
 #-----------------------------------------------------
 noLine  = LineStyle(0, black)
 outline = LineStyle(1,black)
