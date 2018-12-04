@@ -7,8 +7,8 @@ black = Color(0x000000, 1.0)
 green  = Color(0x0fff6f, 1.0)
 white = Color(0xffffff, 1.0)
 #-----------------------------------------------------
-frameWidth = 800
-frameHeight = 800
+frameWidth = 1000
+frameHeight = 1000
 #-----------------------------------------------------
 noLine  = LineStyle(0, black)
 outline = LineStyle(1,black)
@@ -454,14 +454,6 @@ def getX(xValue):
 def getY(yValue):
     y = (float(frameHeight) / 4.0 - yValue)
     return(y)
-
-def giveX(xValue):
-    x = (xValue - float(frameWidth) / 2.0 + 3)
-    return(x)
-    
-def giveY(yValue):
-    y = (-1 * yValue + float(frameHeight) / 4.0)
-    return(y)
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
     letters = {10:"A",11:"B",12:"C",13:"D",14:"E",15:"F"}
@@ -485,30 +477,39 @@ def colorRandom(funcIndex):
 #-----------------------------------------------------
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
-    def __init__(self, position, color, equation, depVar):
-        self.vy = 0
-        self.vx = 0
-        #print(funcInterpreter("y", "x", equation, 0.1))
+    def __init__(self, color, equation, depVar,indepVar,t):
         self.equation = equation
         self.depVar = depVar
-        super().__init__(point.pt, position)
-        self.visible = False
+        self.indepVar = indepVar
+        self.t = t
+        self.color = color
+        newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,t)
+        super().__init__(point.pt, (getX(newPosition[0]),getY(newPosition[1])))
+    
+    def move(self,t):
+        self.t += t
+        newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t)
+        self.x = getX(newPosition[0]-1)
+        self.y = getY(newPosition[1]+3)
+        path(self.color, (getX(newPosition[0]),getY(newPosition[1])))
+        #print(t,self.x)
+        
+class path(Sprite):
+    def __init__(self,color, position):
+        dot = CircleAsset(3,noLine, colorRandom(color))
+        Sprite(dot, position)
 
-class drawnPoint(Sprite):
-    def func(position, color):
-        radius = 3
-        pt = CircleAsset(radius, noLine, color)
-        newPos = (position[0], position[1]-float(radius)/2.0)
-        Sprite(pt, newPos)
-    def deriv(position, color):
-        radius = 3
-        dr = CircleAsset(radius/2, LineStyle(1, color), white)
-        newPos = (position[0], position[1]-float(radius)/2.0)
-        Sprite(dr,newPos)
 #-----------------------------------------------------
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
+    initial = -1*frameWidth/2
+    point(1,"y=x","y","x",initial)
+    path(20,(getX(0),getY(0)))
+    def step(self):
+        for sprite in self.getSpritesbyClass(point):
+            sprite.move(1)
+            #print("RUNNING")
     
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
