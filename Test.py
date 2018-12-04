@@ -484,16 +484,30 @@ class point(Sprite):
         self.t = t
         self.color = color
         newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,t)
+        self.increment = 1
         super().__init__(point.pt, (getX(newPosition[0]),getY(newPosition[1])))
     
-    def move(self,t):
-        self.t += t
-        newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t)
-        self.x = getX(newPosition[0]-1)
-        self.y = getY(newPosition[1]+3)
-        path(self.color, (getX(newPosition[0]),getY(newPosition[1])))
-        #print(t,self.x)
-        
+    def move(self):
+        newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+        oldPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t)
+        newPosition = (getX(newPosition[0]),getY(newPosition[1]))
+        oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
+        #print(oldPosition, newPosition, self.t)
+        if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
+            if 2 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                if 0.5 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                    
+                    self.increment = self.increment * 1.1
+                else:
+                    self.x = newPosition[0]
+                    self.y = newPosition[1]
+                    self.t = self.t+self.increment
+                    path(self.color, (newPosition[0],newPosition[1]))
+            else:
+                self.increment = self.increment * 0.9
+        else:
+            self.t += self.increment
+
 class path(Sprite):
     def __init__(self,color, position):
         dot = CircleAsset(3,noLine, colorRandom(color))
@@ -503,12 +517,15 @@ class path(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-    initial = -1*frameWidth/2
-    point(1,"y=x","y","x",initial)
-    path(20,(getX(0),getY(0)))
+    initial = -frameWidth/2
+    point(1,"y=x*sin(x)+x*cos(x)","y","x",initial)
+    
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            sprite.move(1)
+            try:
+                sprite.move()
+            except:
+                print("error")
             #print("RUNNING")
     
 myapp = Grapher(frameWidth, frameHeight)
