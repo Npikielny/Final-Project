@@ -511,9 +511,8 @@ class point(Sprite):
             oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
             #print(oldPosition, newPosition, self.t)
             if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
-                if 2 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                    if 0.5 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                        
+                if 5 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                    if 4 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
                         self.increment = self.increment * 1.1
                     else:
                         self.x = newPosition[0]
@@ -533,10 +532,10 @@ class point(Sprite):
                     self.increment = self.increment * 0.1
                 else:
                     self.tries = 0
-                    self.increment = 1
+                    self.increment = 10
                     self.t += self.increment
                     self.shifting == True
-                    print("Function failed, skipping some points.",self.t)
+                    #print("Function failed, skipping some points.",self.t)
             else:
                 self.t += self.increment
                 
@@ -554,11 +553,13 @@ class Grapher(App):
     #point(1,"y=1/40","y","x",initial)
     #point(2,"y=x/40","y","x",initial)
     #point(3,"y=x^2/40","y","x",initial)
-    point(4,"y=(x/40)^3","y","x",initial)
+    #point(4,"y=(x/40)^3","y","x",initial)
     #point(5,"y=5*sin(10*x)","y","x",initial)
     #point(6,"y=log(x)","y","x",initial)
     #point(7,"y=e^x","y","x",initial)
-    #point(8,"y=(100^2-x^2)^0.5","y","x",initial)
+    point(8,"y=(405^5-x^5)^(1/5)","y","x",initial)
+    point(8,"y=-(405^5-x^5)^(1/5)","y","x",initial)
+    #point(1,"y=1","y","x",initial)
     
     def step(self):
         for sprite in self.getSpritesbyClass(point):
