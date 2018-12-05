@@ -499,32 +499,42 @@ class point(Sprite):
         try:
             newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,t)
             super().__init__(point.pt, (getX(newPosition[0]),getY(newPosition[1])))
+            path(self.color,(getX(newPosition[0]),getY(newPosition[1])))
         except:
             print("ERROR FOUND")
             super().__init__(point.pt, (getX(0),getY(0)))
     
     def move(self):
         try:
-            newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t+self.increment)
-            oldPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t)
-            newPosition = (getX(newPosition[0]),getY(newPosition[1]))
-            oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
-            #print(oldPosition, newPosition, self.t)
-            if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
-                if 5 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                    if 4 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                        self.increment = self.increment * 1.1
+            if self.shifting == False:
+                newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+                oldPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t)
+                newPosition = (getX(newPosition[0]),getY(newPosition[1]))
+                oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
+                #print(oldPosition, newPosition, self.t)
+                if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
+                    if 5 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                        if 3 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                            self.increment = self.increment * 1.1
+                        else:
+                            self.x = newPosition[0]
+                            self.y = newPosition[1]
+                            self.t = self.t+self.increment
+                            path(self.color, (newPosition[0],newPosition[1]))
                     else:
-                        self.x = newPosition[0]
-                        self.y = newPosition[1]
-                        self.t = self.t+self.increment
-                        path(self.color, (newPosition[0],newPosition[1]))
+                        self.increment = self.increment * 0.9
                 else:
-                    self.increment = self.increment * 0.9
+                    self.t += self.increment
+                self.tries = 0
+                self.shifting = False
             else:
-                self.t += self.increment
-            self.tries = 0
-            self.shifting = False
+                newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+                newPosition = (getX(newPosition[0]),getY(newPosition[1]))
+                self.x = newPosition[0]
+                self.y = newPosition[1]
+                self.t = self.t+self.increment
+                path(self.color, (newPosition[0],newPosition[1]))
+                print(self.t)
         except:
             if self.shifting == False:
                 if self.tries <= 10:
@@ -550,17 +560,13 @@ class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
     initial = -frameWidth/2
-    #point(1,"y=1/40","y","x",initial)
-    #point(2,"y=x/40","y","x",initial)
-    #point(3,"y=x^2/40","y","x",initial)
-    #point(4,"y=(x/40)^3","y","x",initial)
-    #point(5,"y=5*sin(10*x)","y","x",initial)
-    #point(6,"y=log(x)","y","x",initial)
-    #point(7,"y=e^x","y","x",initial)
-    point(8,"y=(405^5-x^5)^(1/5)","y","x",initial)
-    point(8,"y=-(405^5-x^5)^(1/5)","y","x",initial)
-    #point(1,"y=1","y","x",initial)
-    
+    b = 10
+    pi = 3.1415926
+    R = 400
+    #for i in range(0,2*b):
+    #    a = i*pi/(b*20)
+    #    point(i,("y=(sin({0})-sin({0}+{1}))/(cos({0})-cos({1}+{0}))").format(str(a),str(pi/b)),"y","x", initial)
+    point(1,"y=(sin(3.1415926/10)+sin(3.1415926/10))","y","x", initial)
     def step(self):
         for sprite in self.getSpritesbyClass(point):
             try:
@@ -572,4 +578,4 @@ class Grapher(App):
     
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
-#print(funcInterpreter("y","x","y=1/x",-1))
+print(funcInterpreter("y","x","y=(sin(3.1415926/10)+sin(3.1415926/10))",-1))
