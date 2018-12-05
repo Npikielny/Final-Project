@@ -119,9 +119,9 @@ def prenEliminator(terms, operands):
     g = 0 #Just a method to stop infinite loops if there is an error in my code
     
     while pp == 1 and g != 20:
-        #print("while", newTerms, "g=", g)
-        #print("pren:", newTerms)
-        #print("pren:", operands)
+        print("while", newTerms, "g=", g)
+        print("pren:", newTerms)
+        print("pren:", operands)
         g += 1
         pcheck = ""
         letterOperands = "sincotaelg"
@@ -499,7 +499,7 @@ class point(Sprite):
         try:
             newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,t)
             super().__init__(point.pt, (getX(newPosition[0]),getY(newPosition[1])))
-            path(self.color,(getX(newPosition[0]),getY(newPosition[1])))
+            #path(self.color,(getX(newPosition[0]),getY(newPosition[1])))
         except:
             print("ERROR FOUND")
             super().__init__(point.pt, (getX(0),getY(0)))
@@ -563,10 +563,8 @@ class Grapher(App):
     b = 10
     pi = 3.1415926
     R = 400
-    #for i in range(0,2*b):
-    #    a = i*pi/(b*20)
-    #    point(i,("y=(sin({0})-sin({0}+{1}))/(cos({0})-cos({1}+{0}))").format(str(a),str(pi/b)),"y","x", initial)
-    point(1,"y=(sin(3.1415926/10)+sin(3.1415926/10))","y","x", initial)
+    
+    "y=(sin(3.1415926/10)+sin(3.1415926/10))"
     def step(self):
         for sprite in self.getSpritesbyClass(point):
             try:
