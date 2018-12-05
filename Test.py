@@ -490,22 +490,20 @@ class point(Sprite):
         self.color = color
         self.tries = 0
         roundingTo = 10
+        self.increment = 1
+        self.shifting = False
         while str(self.t).find("e") != -1:
             self.t = round(self.t,roundingTo)
             roundingTo -= 1
             print("ROUNDING")
         try:
             newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,t)
+            super().__init__(point.pt, (getX(newPosition[0]),getY(newPosition[1])))
         except:
-            newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,t)
-        self.increment = 1
-        self.shifting = False
-        print("SUCCESS")
-        super().__init__(point.pt, (getX(newPosition[0]),getY(newPosition[1])))
+            print("ERROR FOUND")
+            super().__init__(point.pt, (getX(0),getY(0)))
     
     def move(self):
-        pass
-    '''
         try:
             newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t+self.increment)
             oldPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t)
@@ -527,6 +525,7 @@ class point(Sprite):
             else:
                 self.t += self.increment
             self.tries = 0
+            self.shifting = False
         except:
             if self.shifting == False:
                 if self.tries <= 10:
@@ -534,14 +533,13 @@ class point(Sprite):
                     self.increment = self.increment * 0.1
                 else:
                     self.tries = 0
-                    self.increment = 0.5
+                    self.increment = 1
                     self.t += self.increment
                     self.shifting == True
-                    print("Function failed, skipping some points.")
+                    print("Function failed, skipping some points.",self.t)
             else:
-                self.t
                 self.t += self.increment
-    '''           
+                
 class path(Sprite):
     def __init__(self,color, position):
         dot = CircleAsset(3,noLine, colorRandom(color))
@@ -553,12 +551,12 @@ class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
     initial = -frameWidth/2
-    #point(1,"y=1/x","y","x",initial)
-    #point(2,"y=x","y","x",initial)
-    #point(3,"y=x^2","y","x",initial)
-    #point(4,"y=x^3","y","x",initial)
+    #point(1,"y=1/40","y","x",initial)
+    #point(2,"y=x/40","y","x",initial)
+    #point(3,"y=x^2/40","y","x",initial)
+    point(4,"y=(x/40)^3","y","x",initial)
     #point(5,"y=5*sin(10*x)","y","x",initial)
-    point(6,"y=log(x)","y","x",initial)
+    #point(6,"y=log(x)","y","x",initial)
     #point(7,"y=e^x","y","x",initial)
     #point(8,"y=(100^2-x^2)^0.5","y","x",initial)
     
@@ -574,5 +572,3 @@ class Grapher(App):
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
 #print(funcInterpreter("y","x","y=1/x",-1))
-
-print(funcInterpreter("y","x","y=log(x)",1))
