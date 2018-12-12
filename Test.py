@@ -119,9 +119,9 @@ def prenEliminator(terms, operands):
     g = 0 #Just a method to stop infinite loops if there is an error in my code
     
     while pp == 1 and g != 20:
-        print("while", newTerms, "g=", g)
-        print("pren:", newTerms)
-        print("pren:", operands)
+        # print("while", newTerms, "g=", g)
+        # print("pren:", newTerms)
+        # print("pren:", operands)
         g += 1
         pcheck = ""
         letterOperands = "sincotaelg"
@@ -576,4 +576,4 @@ class Grapher(App):
     
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
-print(funcInterpreter("y","x","y=(sin(3.1415926/10)+sin(3.1415926/10))",-1))
+# print(funcInterpreter("y","x","y=(sin(3.1415926/10)+sin(3.1415926/10))",-1))
