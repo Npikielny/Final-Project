@@ -566,7 +566,7 @@ class Grapher(App):
         super().__init__(width, height)
     initial = -frameWidth/2
     for i in range(10):
-        point(i,("y={0}+x").format(i*10),"y","x",initial)
+        point(i-5,("y=({0}^2-x^2)^0.5").format(i*100),"y","x",initial)
     # point(1,"y=x","y","x",initial)
     graphed = 0
     def step(self):
