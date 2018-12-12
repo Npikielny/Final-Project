@@ -565,7 +565,9 @@ class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
     initial = -frameWidth/2
-    point(1,"y=x","y","x",initial)
+    for i in range(10):
+        point(i,("y={0}+x").format(i*10),"y","x",initial)
+    # point(1,"y=x","y","x",initial)
     graphed = 0
     def step(self):
         instances = 0
