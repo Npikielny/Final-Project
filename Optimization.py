@@ -119,9 +119,9 @@ def prenEliminator(terms, operands):
     g = 0 #Just a method to stop infinite loops if there is an error in my code
     
     while pp == 1 and g != 20:
-        print("while", newTerms, "g=", g)
-        print("pren:", newTerms)
-        print("pren:", operands)
+        # print("while", newTerms, "g=", g)
+        # print("pren:", newTerms)
+        # print("pren:", operands)
         g += 1
         pcheck = ""
         letterOperands = "sincotaelg"
@@ -480,6 +480,7 @@ def colorRandom(funcIndex):
     return color(abs(255*sin(0.89*funcIndex+2.3)),abs(255*sin(0.44*funcIndex+1.5)),abs(255*sin(0.25*funcIndex+0.75)), 1.0)
     #return color(abs(sin(funcIndex*0.2+0.1)*255),abs(cos(funcIndex*1.31+1)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5+0.1)*255), 1.0)    
 #-----------------------------------------------------
+dpoints = []
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
     def __init__(self, color, equation, depVar,indepVar,t):
@@ -520,7 +521,8 @@ class point(Sprite):
                             self.x = newPosition[0]
                             self.y = newPosition[1]
                             self.t = self.t+self.increment
-                            path(self.color, (newPosition[0],newPosition[1]))
+                            # path(self.color, (newPosition[0],newPosition[1]))
+                            dpoints.append((self.color,(newPosition[0],newPosition[1])))
                     else:
                         self.increment = self.increment * 0.9
                 else:
@@ -533,8 +535,9 @@ class point(Sprite):
                 self.x = newPosition[0]
                 self.y = newPosition[1]
                 self.t = self.t+self.increment
-                path(self.color, (newPosition[0],newPosition[1]))
-                print(self.t)
+                # path(self.color, (newPosition[0],newPosition[1]))
+                dpoints.append((self.color,(newPosition[0],newPosition[1])))
+                # print(self.t)
         except:
             if self.shifting == False:
                 if self.tries <= 10:
@@ -549,6 +552,8 @@ class point(Sprite):
             else:
                 self.t += self.increment
                 
+        if self.t > 800:
+            self.destroy()
 class path(Sprite):
     def __init__(self,color, position):
         dot = CircleAsset(3,noLine, colorRandom(color))
@@ -560,19 +565,21 @@ class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
     initial = -frameWidth/2
-    b = 10
-    pi = 3.1415926
-    R = 400
-    
-    "y=(sin(3.1415926/10)+sin(3.1415926/10))"
+    point(1,"y=x","y","x",initial)
+    graphed = 0
     def step(self):
+        instances = 0
         for sprite in self.getSpritesbyClass(point):
+            instances += 1
             try:
                 sprite.move()
             except:
                 print("error")
                 print(sprite.t, sprite.increment)
             #print("RUNNING")
+        if instances == 0 and self.graphed == 0:
+            for i in range(len(dpoints)):
+                path(dpoints[i][0],dpoints[i][1])
     
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
