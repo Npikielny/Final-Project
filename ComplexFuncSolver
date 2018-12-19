@@ -113,7 +113,11 @@ def prenEliminator(terms, operands):
                 if newTerms[i].find(k) != -1:
                     status += 1
             if status != 0:
-                newTerms[i] = str(funcSolver(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
+                if newTerms[i][0] == "(":
+                    print("trigger")
+                    newTerms[i] = str(prenEliminator(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
+                else:
+                    newTerms[i] = str(funcSolver(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
         if status == 0:
             for i in range(0,len(newTerms)):
                 if str(newTerms[i]).isdigit() == False:
@@ -257,6 +261,6 @@ def getOperandsAndTerms(equation):
             terms[i] = "-1"
     return((terms,operands))
     
-a = "cos((1+69/3))+4"
+a = "(cos(1+69/3))"
 a = getOperandsAndTerms(a)
 print(funcSolver(a[0],a[1]))
