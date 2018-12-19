@@ -1,1 +1,262 @@
+from math import sin, cos, tan, log
+def funcSolver(terms, operands):
+    print("FuncSolver Called.")
+    print("FTerms: ", terms)
+    print("FOperands: ", operands)
+    letterOperands = "sincotaelg"
+    for i in range(len(terms)):
+        status = 0
+        for k in letterOperands:
+            if terms[i].find(k) != -1:
+                status = 1
+        if status == 1:
+            term = terms[i][0:3]
+            inside = terms[i][4:len(terms[i])-1]
+            if term != "log":
+                inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
+            
+            if term == "cos":
+                terms[i] = cos(inside)
+            elif term == "sin":
+                terms[i] = sin(inside)
+            elif term == "tan":
+                terms[i] = tan(inside)
+            elif term == "sec":
+                terms[i] = 1/cos(inside)
+            elif term == "csc":
+                terms[i] = 1/(inside)
+            elif term == "cot":
+                terms[i] = 1/tan(inside)
+            elif term == "log":
+                if inside.find(",") != 1:
+                    inside = inside[1:len(inside)-1]
+                    base = inside[inside.find(",")+1:len(inside)]
+                    inside = inside[0:inside.find(",")]
+                    base = prenEliminator(getOperandsAndTerms(base)[0],getOperandsAndTerms(base)[1])
+                    inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
+                    terms[i] = log(inside)/log(base)
+            else:
+                print("Confusion is upon us! :(. Substituting 0.")
+                terms[i] = 0
+    found = 0
+    newTerms = terms
+    if len(operands) > 0:
+        for i in range(0,len(operands)):
+            i = i - found
+            if operands[i] == "^":
+                #print("ExpoFound")
+                newTerms[i] = float(terms[i])**float(terms[i+1])
+                #print("NewTermsAdded", terms[i], terms[i+1], newTerms[i], "n")
+                del newTerms[i+1]
+                del operands[i]
+                found += 1
+                #print("done")
+        #print("expo:", newTerms, operands)
+        found = 0
+        for i in range(0,len(operands)):
+            #print(found, terms, newTerms, operands)
+            i = i - found
+            #print(i,len(terms),len(operands))
+            #print(terms,operands)
+            if operands[i] == "*":
+                newTerms[i] = float(terms[i])*float(terms[i+1])
+                del newTerms[i+1]
+                del operands[i]
+                found += 1
+            elif operands[i] == "/":
+                newTerms[i] = float(terms[i])/float(terms[i+1])
+                del newTerms[i+1]
+                del operands[i]
+                found += 1
+        #print("mult:", newTerms)
+        for i in range(0,len(operands)):
+            if operands[i] == "-":
+                newTerms[i+1] = str((-1)*float(terms[i+1]))
+        #print("sub:", newTerms)
+        final = 0
+        for i in newTerms:
+            final += float(i)
+        return(str(final))
+    else:
+        final = ""
+        for i in str(terms):
+            for k in i:
+                if k.isdigit() == True or k == "." or k == "-":
+                    final += str(k)
+        #print("FINAL:",final)
+        final = float(final)
+        return(final)
+    
+    
+    
+def prenEliminator(terms, operands):
+    newTerms = []
+    operators = []
+    for z in terms:
+        newTerms.append(z)
+    for z in operands:
+        operators.append(z)
+    pp = 1 #Status of parenthesis being present
+    g = 0 #Just a method to stop infinite loops if there is an error in my code
+    
+    while pp == 1 and g != 20:
+        print("while", newTerms, "g=", g)
+        print("pren:", newTerms)
+        print("pren:", operands)
+        g += 1
+        pcheck = ""
+        letterOperands = "sincotaelg"
+        status = 0
+        for i in range(0,len(newTerms)):
+            status = 0
+            for k in letterOperands:
+                if newTerms[i].find(k) != -1:
+                    status += 1
+            if status != 0:
+                newTerms[i] = str(funcSolver(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
+        if status == 0:
+            for i in range(0,len(newTerms)):
+                if str(newTerms[i]).isdigit() == False:
+                    #print("Non-int detected in prenElim")
+                    p = str(newTerms[i]).count("(")
+                    term = ""
+                    newTerm = ""
+                    outside = ""
+                    for k in range(len(newTerms[i])):
+                        currentTerm = (newTerms[i])[k]
+                        term += currentTerm
+                        if currentTerm == "(":
+                            #print("Hey we found an opening parenthesis!", newTerms, k)
+                            outside += term[0:len(term)-1:]
+                            #print("This is the outside:", outside)
+                            if len(outside) > 0:
+                                #print("The outside is longer than 0")
+                                if outside[len(outside) - 1] == ")" or outside[len(outside) - 1].isdigit() == True or outside[len(outside) - 1] == "x" or outside[len(outside) - 1] == "y":
+                                    #print("We decided to add a multiplier")
+                                    outside += "*"
+                            term = "("
+                        elif currentTerm == ")" and term[0] == "(" and len(term[1:len(term)-1:]) > 0:
+                            term = term[1:len(term)-1:]
+                            newTerm = str(funcSolver(getOperandsAndTerms(term)[0],getOperandsAndTerms(term)[1]))
+                            outside += "{0}"
+                            term = ""
+                            outside = outside.format(newTerm)
+                        elif currentTerm == ")" and term[0] == "(" and len(term[1:len(term)-1:]) == 0:
+                            #print("There is an empty term; Substituting 0")
+                            term = ""
+                            outside += "0"
+                    if len(term) > 0 and len(outside) > 0:
+                        if outside[len(outside) - 1].isdigit() == True and term[0].isdigit == True:
+                            term = "*" + term
+                        outside += term
+                        #print("cash me", outside, term)
+                    else:
+                        outside += term
 
+                    newTerms[i] = str(outside)
+                    ##print("newTerms[i]", newTerms[i])
+        for h in newTerms:
+            pcheck += str(h)
+        if pcheck.count("(") == 0:
+            pp = 0
+    
+    if len(newTerms) > 1:
+        #print("Int Solver", newTerms)
+        newTerms = funcSolver(newTerms, operands)
+        return(newTerms)
+    else:
+        output = ""
+        for i in newTerms:
+            output += i
+        output = float(output)
+        return(output) 
+def getOperandsAndTerms(equation):
+    #initial Seperation
+    terms = []
+    term = ""
+    operands = []
+    letterOperands = "sincotaelg" #Letters in complex operands like trig and log functions
+    p = 0
+    op = 1
+    for i in str(equation):
+        status = 0
+        for letterOp in letterOperands:
+            if i == letterOp:
+                status = 1
+        if i != " " and i != "'"  and i != "[" and i != "]":
+            if i == "(" or i == "{":
+                p += 1
+                if term != "" and term.count("(") == 0:
+                    if letterOperands.find(term[len(term)-1]) == -1:
+                        terms.append(term)
+                        term = ""
+                        op = 0
+                if op == 0 and p == 1:
+                    if len(term) > 0:
+                        if letterOperands.find(term[len(term)-1]) == -1:
+                            operands.append("*")
+                    #print("OP == 0", term, terms, operands)
+                    else:
+                        operands.append("*")
+            elif i == ")" or i == "}":
+                p -= 1
+            if p == 0 and i != ")" and i != "}":
+                if i == "+" or i == "*" or i == "/" or i == "^":
+                    operands.append(i)
+                    op = 1
+                    if term != "":
+                        terms.append(term)
+                        term = ""
+                elif i == "-":
+                    if op == 1:
+                        op = 2
+                        term += i
+                    elif op == 2:
+                        op = 0
+                        term = term[0:len(term)-1]
+                    else:
+                        #minusOperator
+                        operands.append(i)
+                        op = 1
+                        if term != "":
+                            terms.append(term)
+                            term = ""
+                elif i.isdigit() == True or i == "." or status == 1:
+                    if status == 1 and len(term) > 0:
+                        if term[0].isdigit():
+                            terms.append(term)
+                            term = i
+                            operands.append("*")
+                        else:
+                            term += i
+                    else:
+                        term += i
+                        op = 0
+                elif i.isdigit() == False:
+                    if term != "":
+                        terms.append(term)
+                        term = ""
+                        op = 0
+                    terms.append(i)
+                if len(terms) > len(operands) + 1:
+                    operands.append("*")
+                    op = 1
+            elif p == 0 and (i == ")" or i == "}"):
+                term += i
+                terms.append(term)
+                term = ""
+                op = 0
+            else:
+                term += i
+    if term != "":
+        terms.append(term)
+    #print("GottenTerms", terms, "GottenOperands", operands, "from", equation)
+    for i in range(0,len(terms)):
+        #print(terms[i])
+        if terms[i] == "-":
+            terms[i] = "-1"
+    return((terms,operands))
+    
+a = "cos((1+69/3))+4"
+a = getOperandsAndTerms(a)
+print(funcSolver(a[0],a[1]))
