@@ -114,6 +114,7 @@ def prenEliminator(terms, operands):
                     status += 1
             if status != 0:
                 if newTerms[i][0] == "(":
+                    newTerms[i]= newTerms[i][1:len(newTerms[i])-1]
                     newTerms[i] = str(prenEliminator(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
                 else:
                     newTerms[i] = str(funcSolver(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
@@ -259,6 +260,6 @@ def getOperandsAndTerms(equation):
         if terms[i] == "-":
             terms[i] = "-1"
     return((terms,operands))
-a = "(cos(1+69/3))"
+a = "(cos(1+69/3)+sin(4+2))"
 a = getOperandsAndTerms(a)
 print(prenEliminator(a[0],a[1]))
