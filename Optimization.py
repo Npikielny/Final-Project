@@ -272,7 +272,7 @@ def funcSolver(terms, operands):
         final = 0
         for i in newTerms:
             final += float(i)
-        return(str(final))
+        return(float(final))
     else:
         final = ""
         for i in str(terms):
@@ -551,6 +551,7 @@ class point(Sprite):
             #path(self.color,(getX(newPosition[0]),getY(newPosition[1])))
         except:
             print("ERROR FOUND")
+            print(self.equation)
             super().__init__(point.pt, (getX(0),getY(0)))
     
     def move(self):
@@ -573,6 +574,7 @@ class point(Sprite):
                     else:
                         self.increment = self.increment * 0.9
                 else:
+                    self.increment = 5 ######
                     self.t += self.increment
                 self.tries = 0
                 self.shifting = False
@@ -597,6 +599,7 @@ class point(Sprite):
                     #print("Function failed, skipping some points.",self.t)
             else:
                 self.t += self.increment
+        # print(self.t)
  
 class path(Sprite):
     def __init__(self,color, position):
@@ -609,11 +612,11 @@ class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
     initial = -frameWidth/2
-    b = 10
-    pi = 3.1415926
-    R = 400
-    point(1,"y=sin(x)/sin(x)","y","x",initial)
-    "y=(sin(3.1415926/10)+sin(3.1415926/10))"
+    pi = 3.14159265359
+    b = 5
+    for i in range(10):
+        a = ("y=(sin({0}+{1})-sin({0}))/(cos({0}+{1})-cos({0}))*(x-cos({0}))+sin({0})").format(i*2*pi/b,pi/b)
+        point(1,a,"y","x",initial)
     def step(self):
         for sprite in self.getSpritesbyClass(point):
             try:
