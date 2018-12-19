@@ -108,6 +108,181 @@ def funcCompiler(terms, operands):
             output += operands[i]
     return(output)
 
+def getOperandsAndTerms(equation):
+    #initial Seperation
+    terms = []
+    term = ""
+    operands = []
+    letterOperands = "sincotaelg" #Letters in complex operands like trig and log functions
+    p = 0
+    op = 1
+    for i in str(equation):
+        status = 0
+        for letterOp in letterOperands:
+            if i == letterOp:
+                status = 1
+        if i != " " and i != "'"  and i != "[" and i != "]":
+            if i == "(" or i == "{":
+                p += 1
+                if term != "" and term.count("(") == 0:
+                    if letterOperands.find(term[len(term)-1]) == -1:
+                        terms.append(term)
+                        term = ""
+                        op = 0
+                if op == 0 and p == 1:
+                    if len(term) > 0:
+                        if letterOperands.find(term[len(term)-1]) == -1:
+                            operands.append("*")
+                    #print("OP == 0", term, terms, operands)
+                    else:
+                        operands.append("*")
+            elif i == ")" or i == "}":
+                p -= 1
+            if p == 0 and i != ")" and i != "}":
+                if i == "+" or i == "*" or i == "/" or i == "^":
+                    operands.append(i)
+                    op = 1
+                    if term != "":
+                        terms.append(term)
+                        term = ""
+                elif i == "-":
+                    if op == 1:
+                        op = 2
+                        term += i
+                    elif op == 2:
+                        op = 0
+                        term = term[0:len(term)-1]
+                    else:
+                        #minusOperator
+                        operands.append(i)
+                        op = 1
+                        if term != "":
+                            terms.append(term)
+                            term = ""
+                elif i.isdigit() == True or i == "." or status == 1:
+                    if status == 1 and len(term) > 0:
+                        if term[0].isdigit():
+                            terms.append(term)
+                            term = i
+                            operands.append("*")
+                        else:
+                            term += i
+                    else:
+                        term += i
+                        op = 0
+                elif i.isdigit() == False:
+                    if term != "":
+                        terms.append(term)
+                        term = ""
+                        op = 0
+                    terms.append(i)
+                if len(terms) > len(operands) + 1:
+                    operands.append("*")
+                    op = 1
+            elif p == 0 and (i == ")" or i == "}"):
+                term += i
+                terms.append(term)
+                term = ""
+                op = 0
+            else:
+                term += i
+    if term != "":
+        terms.append(term)
+    #print("GottenTerms", terms, "GottenOperands", operands, "from", equation)
+    for i in range(0,len(terms)):
+        #print(terms[i])
+        if terms[i] == "-":
+            terms[i] = "-1"
+    return((terms,operands))
+    
+def funcSolver(terms, operands):
+    # print("FuncSolver Called.")
+    # print("FTerms: ", terms)
+    # print("FOperands: ", operands)
+    letterOperands = "sincotaelg"
+    for i in range(len(terms)):
+        status = 0
+        for k in letterOperands:
+            if terms[i].find(k) != -1:
+                status = 1
+        if status == 1:
+            term = terms[i][0:3]
+            inside = terms[i][4:len(terms[i])-1]
+            if term != "log":
+                inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
+            
+            if term == "cos":
+                terms[i] = cos(inside)
+            elif term == "sin":
+                terms[i] = sin(inside)
+            elif term == "tan":
+                terms[i] = tan(inside)
+            elif term == "sec":
+                terms[i] = 1/cos(inside)
+            elif term == "csc":
+                terms[i] = 1/(inside)
+            elif term == "cot":
+                terms[i] = 1/tan(inside)
+            elif term == "log":
+                if inside.find(",") != 1:
+                    inside = inside[1:len(inside)-1]
+                    base = inside[inside.find(",")+1:len(inside)]
+                    inside = inside[0:inside.find(",")]
+                    base = prenEliminator(getOperandsAndTerms(base)[0],getOperandsAndTerms(base)[1])
+                    inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
+                    terms[i] = log(inside)/log(base)
+            else:
+                print("Confusion is upon us! :(. Substituting 0.")
+                terms[i] = 0
+    found = 0
+    newTerms = terms
+    if len(operands) > 0:
+        for i in range(0,len(operands)):
+            i = i - found
+            if operands[i] == "^":
+                #print("ExpoFound")
+                newTerms[i] = float(terms[i])**float(terms[i+1])
+                #print("NewTermsAdded", terms[i], terms[i+1], newTerms[i], "n")
+                del newTerms[i+1]
+                del operands[i]
+                found += 1
+                #print("done")
+        #print("expo:", newTerms, operands)
+        found = 0
+        for i in range(0,len(operands)):
+            #print(found, terms, newTerms, operands)
+            i = i - found
+            #print(i,len(terms),len(operands))
+            #print(terms,operands)
+            if operands[i] == "*":
+                newTerms[i] = float(terms[i])*float(terms[i+1])
+                del newTerms[i+1]
+                del operands[i]
+                found += 1
+            elif operands[i] == "/":
+                newTerms[i] = float(terms[i])/float(terms[i+1])
+                del newTerms[i+1]
+                del operands[i]
+                found += 1
+        #print("mult:", newTerms)
+        for i in range(0,len(operands)):
+            if operands[i] == "-":
+                newTerms[i+1] = str((-1)*float(terms[i+1]))
+        #print("sub:", newTerms)
+        final = 0
+        for i in newTerms:
+            final += float(i)
+        return(str(final))
+    else:
+        final = ""
+        for i in str(terms):
+            for k in i:
+                if k.isdigit() == True or k == "." or k == "-":
+                    final += str(k)
+        #print("FINAL:",final)
+        final = float(final)
+        return(final)
+    
 def prenEliminator(terms, operands):
     newTerms = []
     operators = []
@@ -132,7 +307,11 @@ def prenEliminator(terms, operands):
                 if newTerms[i].find(k) != -1:
                     status += 1
             if status != 0:
-                newTerms[i] = str(funcSolver(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
+                if newTerms[i][0] == "(":
+                    newTerms[i]= newTerms[i][1:len(newTerms[i])-1]
+                    newTerms[i] = str(prenEliminator(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
+                else:
+                    newTerms[i] = str(funcSolver(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
         if status == 0:
             for i in range(0,len(newTerms)):
                 if str(newTerms[i]).isdigit() == False:
@@ -276,136 +455,6 @@ def getOperandsAndTerms(equation):
         if terms[i] == "-":
             terms[i] = "-1"
     return((terms,operands))
-    
-def funcSolver(terms, operands):
-    letterOperands = "sincotaelg"
-    #print("funcSolverCalled")
-    #print("terms:", terms)
-    #print("operands:", operands)
-    newTerms = []
-    for i in terms:
-        status = 0
-        for letter in letterOperands:
-            if i.find(letter) != -1:
-                status = 1
-        if status == 1:
-            if i.find("(") != -1:
-                term = ""
-                for k in i:
-                    if i != "(" and i != ")":
-                        term += k
-                inside = i[i.find("(")+1:i.find(")")]
-                term = i[0:i.find("(")]
-            else:
-                term = i
-                inside = ""
-                status = 0 
-                for k in term:
-                    if k.isdigit() and status == 0:
-                        #THIS NEEDS TO CHANGE FOR NESTED COMPLEX OPERANDS
-                        inside += k
-                    else:
-                        status += 1
-                    if status == 1:
-                        term = term[0:term.find(i)-1]
-            #print(i, "term", term, "inside", inside)
-            if term[0:3] == "log":
-                #print("INSIDE", inside)
-                expression = ""
-                logBase = 0
-                if inside.find(",") != -1:
-                    expression = inside[0:inside.find(",")]
-                    logBase = inside[inside.find(",")+1:len(inside)]
-                    #print(logBase)
-                    if len(expression) > 1:
-                        expression = str(prenEliminator(getOperandsAndTerms(expression)[0],getOperandsAndTerms(expression)[1]))
-                    newTerms.append(log(float(expression))/log(float(logBase)))
-                else:
-                    if len(inside) > 1:
-                        inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
-                    newTerms.append(round(log(float(inside))/log(10),5))
-                #print("logBase", logBase, "expression", expression)
-
-                #print("Term", term, float(term[3:len(term)]), log(float(term[3:len(term)])))
-                #newTerms.append(log(float(term[3:len(term)])))
-                
-            else:
-                #print(term, "NOT LOG")
-                if len(inside) > 0:
-                    term = term + str(prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1]))
-                #print(term)
-                #print(i[0:3], term[0:3])
-                if term[0:3] == "sin":
-                    newTerms.append(round(sin(float(term[3:len(term)])),5))
-                elif term[0:3] == "cos":
-                    newTerms.append(round(cos(float(term[3:len(term)])),5))
-                elif term[0:3] == "tan":
-                    newTerms.append(round(tan(float(term[3:len(term)])),5))
-                elif term[0:3] == "sec":
-                    newTerms.append(round(1/cos(float(term[3:len(term)])),5))
-                elif term[0:3] == "csc":
-                    newTerms.append(round(1/sin(float(term[3:len(term)])),5))
-                elif term[0:3] == "cot":
-                    newTerms.append(round(1/tan(float(term[3:len(term)])),5))
-                else:
-                    newTerms.append(i)
-                    #print("The equation you entered was weird. Maybe you should check it.")
-        else:
-            newTerms.append(i)
-    terms = newTerms
-    final = 0
-    holder = ""
-    found = 0
-    if len(operands) > 0:
-        for i in range(0,len(operands)):
-            i = i - found
-            if operands[i] == "^":
-                #print("ExpoFound")
-                newTerms[i] = float(terms[i])**float(terms[i+1])
-                #print("NewTermsAdded", terms[i], terms[i+1], newTerms[i], "n")
-                del newTerms[i+1]
-                del operands[i]
-                found += 1
-                #print("done")
-        #print("expo:", newTerms, operands)
-        found = 0
-        for i in range(0,len(operands)):
-            #print(found, terms, newTerms, operands)
-            i = i - found
-            #print(i,len(terms),len(operands))
-            #print(terms,operands)
-            if operands[i] == "*":
-                newTerms[i] = float(terms[i])*float(terms[i+1])
-                del newTerms[i+1]
-                del operands[i]
-                found += 1
-            elif operands[i] == "/":
-                newTerms[i] = float(terms[i])/float(terms[i+1])
-                del newTerms[i+1]
-                del operands[i]
-                found += 1
-        #print("mult:", newTerms)
-        for i in range(0,len(operands)):
-            if operands[i] == "-":
-                newTerms[i+1] = str((-1)*float(terms[i+1]))
-        #print("sub:", newTerms)
-        for i in newTerms:
-            final += float(i)
-    else:
-        final = ""
-        for i in str(terms):
-            for k in i:
-                if k.isdigit() == True or k == "." or k == "-":
-                    final += str(k)
-        #print("FINAL:",final)
-        final = float(final)
-    ##print("solved:", final)
-    roundingTo = 10
-    while str(final).find("e")!= -1:
-        final = round(final,roundingTo)
-        roundTo -= 1
-        print(final)
-    return(final)
 
 def funcPlugger(depVar, indepVar, equation, t):
     if equation.find("=") != -1:
@@ -453,11 +502,11 @@ def pluggerSetup(depVar, indepVar, equation):
 
 def getX(xValue):
     #x = (xValue + float(frameWidth)/2.0)*4+2
-    x = xValue + float(frameWidth) / 2.0 - 3
+    x = float(xValue) + float(frameWidth) / 2.0 - 3
     return(x)
     
 def getY(yValue):
-    y = (float(frameHeight) / 2.0 - yValue)
+    y = (float(frameHeight) / 2.0 - float(yValue))
     return(y)
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
@@ -480,7 +529,6 @@ def colorRandom(funcIndex):
     return color(abs(255*sin(0.89*funcIndex+2.3)),abs(255*sin(0.44*funcIndex+1.5)),abs(255*sin(0.25*funcIndex+0.75)), 1.0)
     #return color(abs(sin(funcIndex*0.2+0.1)*255),abs(cos(funcIndex*1.31+1)*255),abs(cos(2*funcIndex)*sin(funcIndex*0.5+0.1)*255), 1.0)    
 #-----------------------------------------------------
-dpoints = []
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
     def __init__(self, color, equation, depVar,indepVar,t):
@@ -521,8 +569,7 @@ class point(Sprite):
                             self.x = newPosition[0]
                             self.y = newPosition[1]
                             self.t = self.t+self.increment
-                            # path(self.color, (newPosition[0],newPosition[1]))
-                            dpoints.append((self.color,(newPosition[0],newPosition[1])))
+                            path(self.color, (newPosition[0],newPosition[1]))
                     else:
                         self.increment = self.increment * 0.9
                 else:
@@ -535,9 +582,8 @@ class point(Sprite):
                 self.x = newPosition[0]
                 self.y = newPosition[1]
                 self.t = self.t+self.increment
-                # path(self.color, (newPosition[0],newPosition[1]))
-                dpoints.append((self.color,(newPosition[0],newPosition[1])))
-                # print(self.t)
+                path(self.color, (newPosition[0],newPosition[1]))
+                print(self.t)
         except:
             if self.shifting == False:
                 if self.tries <= 10:
@@ -551,9 +597,7 @@ class point(Sprite):
                     #print("Function failed, skipping some points.",self.t)
             else:
                 self.t += self.increment
-                
-        if self.t > 800:
-            self.destroy()
+ 
 class path(Sprite):
     def __init__(self,color, position):
         dot = CircleAsset(3,noLine, colorRandom(color))
@@ -565,23 +609,20 @@ class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
     initial = -frameWidth/2
-    for i in range(10):
-        point(i-5,("y=({0}^2-x^2)^0.5").format(i*100),"y","x",initial)
-    # point(1,"y=x","y","x",initial)
-    graphed = 0
+    b = 10
+    pi = 3.1415926
+    R = 400
+    point(1,"y=sin(x)/sin(x)","y","x",initial)
+    "y=(sin(3.1415926/10)+sin(3.1415926/10))"
     def step(self):
-        instances = 0
         for sprite in self.getSpritesbyClass(point):
-            instances += 1
             try:
                 sprite.move()
             except:
                 print("error")
                 print(sprite.t, sprite.increment)
             #print("RUNNING")
-        if instances == 0 and self.graphed == 0:
-            for i in range(len(dpoints)):
-                path(dpoints[i][0],dpoints[i][1])
     
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
+# print(funcInterpreter("y","x","y=(sin(3.1415926/10)+sin(3.1415926/10))",-1))
