@@ -614,9 +614,10 @@ class Grapher(App):
     initial = -frameWidth/2
     pi = 3.14159265359
     b = 5
-    for i in range(10):
+    for i in range(1):
         a = ("y=(sin({0}+{1})-sin({0}))/(cos({0}+{1})-cos({0}))*(x-cos({0}))+sin({0})").format(i*2*pi/b,pi/b)
         point(1,a,"y","x",initial)
+    # point(1,"y=x","y","x",initial)
     def step(self):
         for sprite in self.getSpritesbyClass(point):
             try:
