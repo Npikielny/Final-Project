@@ -439,9 +439,7 @@ def funcPlugger(depVar, indepVar, equation, t):
         
 def pluggerSetup(depVar, indepVar, equation):
     output = ""
-    #print("PluggerSetup", depVar, indepVar, equation)
     for i in equation:
-        #print("plug?", i, i == indepVar)
         if i == indepVar:
             if len(output)>0:
                 if output[len(output)-1].isdigit():
@@ -452,7 +450,6 @@ def pluggerSetup(depVar, indepVar, equation):
                     output += "{0}"
             else:
                 output += "{0}"
-                
         elif len(output)>0: 
             if output[len(output)-1] == "}" and (i.isdigit() or i == "(" or i == "{"):
                 output += "*"+i
@@ -460,7 +457,15 @@ def pluggerSetup(depVar, indepVar, equation):
                 output += i
         else:
             output += i
-        #print(output)
+    output = getOperandsAndTerms(output)
+    print("OP",output[0])
+    for i in range(len(output[0])):
+        if output[0][i].find("{0}") == -1:
+            print("FIXING",output[0][i])
+            output[0][i] = str(prenEliminator(getOperandsAndTerms(output[0][i])[0],getOperandsAndTerms(output[0][i])[1]))
+            print("FIXED", output[0][i])
+    output = funcCompiler(output[0],output[1])
+    print("FINAL",output)
     return output
 
 def getX(xValue):
@@ -525,19 +530,6 @@ class point(Sprite):
                     pluggableEquation = prenEliminator(b[0],b[1])
         self.equation = pluggableEquation
         
-        while str(self.t).find("e") != -1:
-            self.t = round(self.t,roundingTo)
-            roundingTo -= 1
-            print("ROUNDING")
-        try:
-            newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,t)
-            super().__init__(point.pt, (getX(newPosition[0]),getY(newPosition[1])))
-            #path(self.color,(getX(newPosition[0]),getY(newPosition[1])))
-        except:
-            print("ERROR FOUND")
-            print(self.equation)
-            super().__init__(point.pt, (getX(0),getY(0)))
-    
     def move(self):
         try:
             if self.shifting == False:
@@ -558,7 +550,7 @@ class point(Sprite):
                     else:
                         self.increment = self.increment * 0.9
                 else:
-                    self.increment = 5 ######
+                    self.increment = 5
                     self.t += self.increment
                 self.tries = 0
                 self.shifting = False
@@ -601,7 +593,6 @@ class Grapher(App):
     for i in range(10):
         a = ("y=(sin({0}+{1})-sin({0}))/(cos({0}+{1})-cos({0}))*(x-cos({0}))+sin({0})").format(i*2*pi/b,pi/b)
         point(1,a,"y","x",initial)
-    # point(1,"y=x","y","x",initial)
     def step(self):
         for sprite in self.getSpritesbyClass(point):
             try:
