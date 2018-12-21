@@ -13,43 +13,6 @@ frameHeight = 800
 noLine  = LineStyle(0, black)
 outline = LineStyle(1,black)
 #-----------------------------------------------------
-def funcInterpreter(depVar, indepVar, equation,t):
-    if equation.count("(") != equation.count(")") or equation.count("=") != 1:
-        print("Invalid input given")
-    else:
-        newEquation = ""
-        for i in equation:
-            if i != " ":
-                newEquation += i
-        #print("Interpreting:", newEquation)
-        if newEquation.find("=") != 1 or newEquation[newEquation.find("=")+1:len(newEquation)].find(depVar) != -1:
-            print("Implementation of implicits needed")
-            print(depVarSolver(depVar, indepVar, newEquation))
-            pluggableEquation = depVarSolver(depVar, indepVar, newEquation)
-        else:
-            equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
-        #    print("equationR", equationR)
-            letterOperands = "sincotaelg"
-            status = 0
-            for i in letterOperands:
-                if equationR.find(i) != -1:
-                    status += 1
-            if equationR.count(indepVar) > 0 and indepVar != "nil":
-                pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
-         #       print("pluggable:", pluggableEquation)
-            else:
-                b = getOperandsAndTerms(equationR)
-                pluggableEquation = prenEliminator(b[0],b[1])
-        points = []
-        #for i in range(1,10):
-        #    points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), i)))
-        #print(pluggableEquation)
-        points.append((funcPlugger(depVar, indepVar, str(pluggableEquation), t)))
-        #points = "nil"   
-        if isinstance(points, (list,)):
-            points = points[0]
-        return(points)
-        
 def depVarSolver(depVar, indepVar, equation):
     print("Implicit function entered, Isolating dependent variable")
     if equation.find("=")!= 1:
@@ -532,7 +495,6 @@ def colorRandom(funcIndex):
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
     def __init__(self, color, equation, depVar,indepVar,t):
-        self.equation = equation
         self.depVar = depVar
         self.indepVar = indepVar
         self.t = t
@@ -541,12 +503,34 @@ class point(Sprite):
         roundingTo = 10
         self.increment = 1
         self.shifting = False
+        
+        if equation.count("(") != equation.count(")") or equation.count("=") != 1:
+            print("Invalid input given")
+        else:
+            newEquation = ""
+            for i in equation:
+                if i != " ":
+                    newEquation += i
+            #print("Interpreting:", newEquation)
+            if newEquation.find("=") != 1 or newEquation[newEquation.find("=")+1:len(newEquation)].find(depVar) != -1:
+                print("Implementation of implicits needed")
+                print(depVarSolver(depVar, indepVar, newEquation))
+                pluggableEquation = depVarSolver(depVar, indepVar, newEquation)
+            else:
+                equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
+                if equationR.count(indepVar) > 0:
+                    pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
+                else:
+                    b = getOperandsAndTerms(equationR)
+                    pluggableEquation = prenEliminator(b[0],b[1])
+        self.equation = pluggableEquation
+        
         while str(self.t).find("e") != -1:
             self.t = round(self.t,roundingTo)
             roundingTo -= 1
             print("ROUNDING")
         try:
-            newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,t)
+            newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,t)
             super().__init__(point.pt, (getX(newPosition[0]),getY(newPosition[1])))
             #path(self.color,(getX(newPosition[0]),getY(newPosition[1])))
         except:
@@ -557,8 +541,8 @@ class point(Sprite):
     def move(self):
         try:
             if self.shifting == False:
-                newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t+self.increment)
-                oldPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t)
+                newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+                oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
                 newPosition = (getX(newPosition[0]),getY(newPosition[1]))
                 oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
                 #print(oldPosition, newPosition, self.t)
@@ -579,7 +563,7 @@ class point(Sprite):
                 self.tries = 0
                 self.shifting = False
             else:
-                newPosition = funcInterpreter(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+                newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
                 newPosition = (getX(newPosition[0]),getY(newPosition[1]))
                 self.x = newPosition[0]
                 self.y = newPosition[1]
@@ -614,7 +598,7 @@ class Grapher(App):
     initial = -frameWidth/2
     pi = 3.14159265359
     b = 5
-    for i in range(1):
+    for i in range(10):
         a = ("y=(sin({0}+{1})-sin({0}))/(cos({0}+{1})-cos({0}))*(x-cos({0}))+sin({0})").format(i*2*pi/b,pi/b)
         point(1,a,"y","x",initial)
     # point(1,"y=x","y","x",initial)
