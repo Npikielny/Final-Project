@@ -439,7 +439,9 @@ def funcPlugger(depVar, indepVar, equation, t):
         
 def pluggerSetup(depVar, indepVar, equation):
     output = ""
+    #print("PluggerSetup", depVar, indepVar, equation)
     for i in equation:
+        #print("plug?", i, i == indepVar)
         if i == indepVar:
             if len(output)>0:
                 if output[len(output)-1].isdigit():
@@ -450,6 +452,7 @@ def pluggerSetup(depVar, indepVar, equation):
                     output += "{0}"
             else:
                 output += "{0}"
+                
         elif len(output)>0: 
             if output[len(output)-1] == "}" and (i.isdigit() or i == "(" or i == "{"):
                 output += "*"+i
@@ -458,14 +461,11 @@ def pluggerSetup(depVar, indepVar, equation):
         else:
             output += i
     output = getOperandsAndTerms(output)
-    print("OP",output[0])
     for i in range(len(output[0])):
         if output[0][i].find("{0}") == -1:
-            print("FIXING",output[0][i])
+            print("I",output[0][i])
             output[0][i] = str(prenEliminator(getOperandsAndTerms(output[0][i])[0],getOperandsAndTerms(output[0][i])[1]))
-            print("FIXED", output[0][i])
     output = funcCompiler(output[0],output[1])
-    print("FINAL",output)
     return output
 
 def getX(xValue):
@@ -529,7 +529,7 @@ class point(Sprite):
                     b = getOperandsAndTerms(equationR)
                     pluggableEquation = prenEliminator(b[0],b[1])
         self.equation = pluggableEquation
-        
+        print(self.equation)
     def move(self):
         try:
             if self.shifting == False:
