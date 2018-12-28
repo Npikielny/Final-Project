@@ -74,6 +74,7 @@ def funcCompiler(terms, operands):
 def getOperandsAndTerms(equation):
     #initial Seperation
     terms = []
+    newTerms = terms
     term = ""
     operands = []
     letterOperands = "sincotaelg" #Letters in complex operands like trig and log functions
@@ -82,7 +83,7 @@ def getOperandsAndTerms(equation):
     for i in str(equation):
         status = 0
         for letterOp in letterOperands:
-            if i == letterOp:
+            if i == letterOp and i != "e":
                 status = 1
         if i != " " and i != "'"  and i != "[" and i != "]":
             if i == "(" or i == "{":
@@ -102,29 +103,42 @@ def getOperandsAndTerms(equation):
             elif i == ")" or i == "}":
                 p -= 1
             if p == 0 and i != ")" and i != "}":
-                if i == "+" or i == "*" or i == "/" or i == "^":
+                if i == "*" or i == "/" or i == "^":
                     operands.append(i)
                     op = 1
                     if term != "":
                         terms.append(term)
                         term = ""
-                elif i == "-":
-                    if op == 1:
-                        op = 2
+                elif i == "+":
+                    if term[len(term)] == "e":
                         term += i
-                    elif op == 2:
-                        op = 0
-                        term = term[0:len(term)-1]
                     else:
-                        #minusOperator
                         operands.append(i)
                         op = 1
                         if term != "":
                             terms.append(term)
                             term = ""
-                elif i.isdigit() == True or i == "." or status == 1:
+                elif i == "-":
+                    if op == 1:
+                        op = 2
+                        term += i
+                    elif len(term)>0:
+                        if term[len(term)] == "e":
+                            term += i
+                        elif op == 2:
+                            op = 0
+                            term = term[0:len(term)]
+                        else:
+                            #minusOperator
+                            operands.append(i)
+                            op = 1
+                            if term != "":
+                                terms.append(term)
+                                term = ""
+                elif i.isdigit() == True or i == "." or i == "e" or status == 1:
                     if status == 1 and len(term) > 0:
-                        if term[0].isdigit():
+                        print("HM", term, i)
+                        if term[0].isdigit() or term[0] == "-":
                             terms.append(term)
                             term = i
                             operands.append("*")
@@ -133,7 +147,7 @@ def getOperandsAndTerms(equation):
                     else:
                         term += i
                         op = 0
-                elif i.isdigit() == False:
+                elif i.isdigit() == False and i != "e" and i != ".":
                     if term != "":
                         terms.append(term)
                         term = ""
@@ -159,14 +173,14 @@ def getOperandsAndTerms(equation):
     return((terms,operands))
     
 def funcSolver(terms, operands):
-    # print("FuncSolver Called.")
-    # print("FTerms: ", terms)
-    # print("FOperands: ", operands)
-    letterOperands = "sincotaelg"
+#     print("FuncSolver Called.")
+#     print("FTerms: ", terms)
+#     print("FOperands: ", operands)
+    letterOperands = "sincotalg"
     for i in range(len(terms)):
         status = 0
         for k in letterOperands:
-            if terms[i].find(k) != -1:
+            if terms[i].find(k) != -1 and i != "e":
                 status = 1
         if status == 1:
             term = terms[i][0:3]
@@ -195,7 +209,6 @@ def funcSolver(terms, operands):
                     inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
                     terms[i] = log(inside)/log(base)
             else:
-                print("Confusion is upon us! :(. Substituting 0.")
                 terms[i] = 0
     found = 0
     newTerms = terms
@@ -235,15 +248,16 @@ def funcSolver(terms, operands):
         final = 0
         for i in newTerms:
             final += float(i)
+#         print("SOLVED:", final)
         return(float(final))
     else:
-        final = ""
-        for i in str(terms):
-            for k in i:
-                if k.isdigit() == True or k == "." or k == "-":
-                    final += str(k)
-        #print("FINAL:",final)
-        final = float(final)
+        if len(terms) > 1:
+            final = 0
+            for i in terms:
+                final += float(i)
+        else:
+            final = float(terms[0])
+#         print("SOLVED:", final)
         return(final)
     
 def prenEliminator(terms, operands):
@@ -257,9 +271,9 @@ def prenEliminator(terms, operands):
     g = 0 #Just a method to stop infinite loops if there is an error in my code
     
     while pp == 1 and g != 20:
-        # print("while", newTerms, "g=", g)
-        # print("pren:", newTerms)
-        # print("pren:", operands)
+#         print("while", newTerms, "g=", g)
+#         print("pren:", newTerms)
+#         print("pren:", operands)
         g += 1
         pcheck = ""
         letterOperands = "sincotaelg"
@@ -322,14 +336,13 @@ def prenEliminator(terms, operands):
             pp = 0
     
     if len(newTerms) > 1:
-        #print("Int Solver", newTerms)
+#         print("Int Solver", newTerms)
         newTerms = funcSolver(newTerms, operands)
+#         print("Eliminated:", newTerms)
         return(newTerms)
-    else:
-        output = ""
-        for i in newTerms:
-            output += i
-        output = float(output)
+    elif len(newTerms) == 1:
+        output = float(newTerms[0])
+#         print("Eliminated:", output)
         return(output) 
 
 def getOperandsAndTerms(equation):
@@ -343,7 +356,7 @@ def getOperandsAndTerms(equation):
     for i in str(equation):
         status = 0
         for letterOp in letterOperands:
-            if i == letterOp:
+            if i == letterOp and i != "e":
                 status = 1
         if i != " " and i != "'"  and i != "[" and i != "]":
             if i == "(" or i == "{":
@@ -363,14 +376,46 @@ def getOperandsAndTerms(equation):
             elif i == ")" or i == "}":
                 p -= 1
             if p == 0 and i != ")" and i != "}":
-                if i == "+" or i == "*" or i == "/" or i == "^":
+                if i == "*" or i == "/" or i == "^":
                     operands.append(i)
                     op = 1
                     if term != "":
                         terms.append(term)
                         term = ""
+                elif i == "+":
+                    if len(term) > 0:
+                        if term[len(term)-1] == "e":
+                            term += i
+                        else:
+                            operands.append(i)
+                            op = 1
+                            if term != "":
+                                terms.append(term)
+                                term = ""
+                    else:
+                        operands.append(i)
+                        op = 1
+                        if term != "":
+                            terms.append(term)
+                            term = ""
                 elif i == "-":
-                    if op == 1:
+                    if op == 0:
+                        if len(term) == 0:
+                            operands.append(i)
+                            op = 1
+                            if term != "":
+                                terms.append(term)
+                                term = ""
+                        else:
+                            if term[len(term)-1] == "e":
+                                term += i
+                            else:
+                                operands.append(i)
+                                op = 1
+                                if term != "":
+                                    terms.append(term)
+                                    term = ""
+                    elif op == 1:
                         op = 2
                         term += i
                     elif op == 2:
@@ -383,7 +428,7 @@ def getOperandsAndTerms(equation):
                         if term != "":
                             terms.append(term)
                             term = ""
-                elif i.isdigit() == True or i == "." or status == 1:
+                elif i.isdigit() == True or i == "." or i == "e" or status == 1:
                     if status == 1 and len(term) > 0:
                         if term[0].isdigit():
                             terms.append(term)
@@ -463,11 +508,11 @@ def pluggerSetup(depVar, indepVar, equation):
     output = getOperandsAndTerms(output)
     for i in range(len(output[0])):
         if output[0][i].find("{0}") == -1:
-            print("I",output[0][i])
             output[0][i] = str(prenEliminator(getOperandsAndTerms(output[0][i])[0],getOperandsAndTerms(output[0][i])[1]))
     output = funcCompiler(output[0],output[1])
+#     print(output)
     return output
-
+#-----------------------------------------------------
 def getX(xValue):
     #x = (xValue + float(frameWidth)/2.0)*4+2
     x = float(xValue) + float(frameWidth) / 2.0 - 3
@@ -476,6 +521,15 @@ def getX(xValue):
 def getY(yValue):
     y = (float(frameHeight) / 2.0 - float(yValue))
     return(y)
+
+def giveX(xValue):
+    x = xValue + 3 - float(frameWidth)/2
+    return x
+
+def giveY(yValue):
+    y = -1*yValue + float(frameHeight)/2
+    return(y)
+
 #----------------------------------------------------- 
 def color(red, green, blue, alpha):
     letters = {10:"A",11:"B",12:"C",13:"D",14:"E",15:"F"}
@@ -505,10 +559,9 @@ class point(Sprite):
         self.t = t
         self.color = color
         self.tries = 0
-        roundingTo = 10
         self.increment = 1
+        self.jump = 10
         self.shifting = False
-        
         if equation.count("(") != equation.count(")") or equation.count("=") != 1:
             print("Invalid input given")
         else:
@@ -529,70 +582,80 @@ class point(Sprite):
                     b = getOperandsAndTerms(equationR)
                     pluggableEquation = prenEliminator(b[0],b[1])
         self.equation = pluggableEquation
-        print(self.equation)
-    def move(self):
+#         print("EQ",self.equation)
+        position = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
+        # print("POSITION:",position)
         try:
-            if self.shifting == False:
-                newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
-                oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
-                newPosition = (getX(newPosition[0]),getY(newPosition[1]))
-                oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
-                #print(oldPosition, newPosition, self.t)
-                if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
-                    if 5 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                        if 3 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                            self.increment = self.increment * 1.1
-                        else:
-                            self.x = newPosition[0]
-                            self.y = newPosition[1]
-                            self.t = self.t+self.increment
-                            path(self.color, (newPosition[0],newPosition[1]))
+            position = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
+            # print("POSITION:",position)
+            super().__init__(point.pt, (0,0))
+            self.x = position[0]
+            self.y = position[1]
+        except:
+            print("Function failed initial point, going to (0,0)")
+            super().__init__(point.pt, (0,0))
+            self.x = 0
+            self.y = 0
+            self.tries += 1
+        
+    def move(self):
+#         print("MOVE")
+        try:
+            newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+            oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
+            newPosition = (getX(newPosition[0]),getY(newPosition[1]))
+            oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
+            if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
+                if 5 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                    if 3 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                        self.increment = self.increment * 1.1
                     else:
-                        self.increment = self.increment * 0.9
+                        self.x = newPosition[0]
+                        self.y = newPosition[1]
+                        self.t = self.t+self.increment
+    #                             path(self.color, (newPosition[0],newPosition[1]))
                 else:
-                    self.increment = 5
-                    self.t += self.increment
-                self.tries = 0
-                self.shifting = False
+                    self.increment = self.increment * 0.9
             else:
-                newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
-                newPosition = (getX(newPosition[0]),getY(newPosition[1]))
-                self.x = newPosition[0]
-                self.y = newPosition[1]
-                self.t = self.t+self.increment
-                path(self.color, (newPosition[0],newPosition[1]))
-                print(self.t)
+                self.increment = self.jump
+                self.t += self.increment
+                self.tries = 0
+                self.shifting = True
         except:
             if self.shifting == False:
+# #                 print(self.tries)
                 if self.tries <= 10:
                     self.tries += 1
                     self.increment = self.increment * 0.1
                 else:
                     self.tries = 0
-                    self.increment = 10
+                    self.increment = self.jump
                     self.t += self.increment
-                    self.shifting == True
-                    #print("Function failed, skipping some points.",self.t)
+                    self.shifting = True
+                    print("Function failed, skipping some points.",self.t)
             else:
+#                 print("SHIFTING = TRUE")
                 self.t += self.increment
-        # print(self.t)
- 
-class path(Sprite):
-    def __init__(self,color, position):
-        dot = CircleAsset(3,noLine, colorRandom(color))
-        Sprite(dot, position)
-
-#-----------------------------------------------------
+        # print(giveX(newPosition[0]),giveY(newPosition[1]))
+        # print(self.x,self.y)
+        # print(giveX(self.x),giveY(self.y))
+        # print(self.t,self.increment)
 
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
     initial = -frameWidth/2
     pi = 3.14159265359
-    b = 5
-    for i in range(10):
-        a = ("y=(sin({0}+{1})-sin({0}))/(cos({0}+{1})-cos({0}))*(x-cos({0}))+sin({0})").format(i*2*pi/b,pi/b)
-        point(1,a,"y","x",initial)
+    b = 20
+    theta = 0
+    i = 0
+    while i <= 10:
+        # print(i)
+        theta = (i)*2*pi/(b)
+        # print(theta)
+        a = ("y=(sin({0})-sin({1}))/(cos({0})-cos({1}))(x-{2})+{3}").format(theta,theta+2*pi/b,cos(theta)*100,sin(theta)*100)
+        a = point(1,a,"y","x",initial)
+        i += 1
     def step(self):
         for sprite in self.getSpritesbyClass(point):
             try:
