@@ -137,7 +137,6 @@ def getOperandsAndTerms(equation):
                                 term = ""
                 elif i.isdigit() == True or i == "." or i == "e" or status == 1:
                     if status == 1 and len(term) > 0:
-                        print("HM", term, i)
                         if term[0].isdigit() or term[0] == "-":
                             terms.append(term)
                             term = i
@@ -571,13 +570,12 @@ class point(Sprite):
                     pluggableEquation = prenEliminator(b[0],b[1])
         
         self.equation = pluggableEquation
-        position = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
         try:
             position = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
             x = position[0]
             y = position[1]
         except:
-            print("Function failed initial point, going to (0,0)")
+            # print("Function failed initial point, going to (0,0)")
             x = 0
             y = 0
             self.tries += 1
@@ -591,7 +589,7 @@ class point(Sprite):
             oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
             if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
                 if 5 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                    if 3 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                    if 2.5 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
                         self.increment = self.increment * 1.1
                     else:
                         self.x = newPosition[0]
@@ -615,7 +613,7 @@ class point(Sprite):
                     self.increment = self.jump
                     self.t += self.increment
                     self.shifting = True
-                    print("Function failed, skipping some points.",self.t)
+                    # print("Function failed, skipping some points.",self.t)
             else:
                 self.t += self.increment
 
@@ -632,19 +630,22 @@ class Grapher(App):
         b = 20
         theta = 0
         i = 0
-        # while i <= 20:
-        #     # print(i)
-        #     theta = (i)*2*pi/(b)
-        #     # print(theta)
-        #     a = ("y=(sin({0})-sin({1}))/(cos({0})-cos({1}))(x-100*cos({0}))+100sin({0})").format(theta,theta+2*pi/b)
-        #     a = point(i,a,"y","x",initial)
-        #     i+= 1
-        point(1,"y=x","y","x",initial)
+        while i <= 20:
+            # print(i)
+            theta = (i)*2*pi/(b)
+            # print(theta)
+            a = ("y=(sin({0})-sin({1}))/(cos({0})-cos({1}))(x-100*cos({0}))+100sin({0})").format(theta,theta+2*pi/b)
+            a = point(i,a,"y","x",initial)
+            i+= 1
+        # point(1,"y=x","y","x",initial)
         # point(2,"y=x^2","y","x",initial)
         # point(3,"y=(x/30)^3","y","x",initial)
         # point(4,"y=sin(x)","y","x",initial)
         # point(5,"y=30*sin(x/30)","y","x",initial)
         # point(6,"y=200*sin(x)","y","x",initial)
+        # for i in range(1,11):
+        #     point(i,"y=({0}^2-x^2)^0.5".format(i*20),"y","x",initial)
+        #     point(i,"y=-1*({0}^2-x^2)^0.5".format(i*20),"y","x",initial)
     def step(self):
         for sprite in self.getSpritesbyClass(point):
             if sprite.t > 800:
