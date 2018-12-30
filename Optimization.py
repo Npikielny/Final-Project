@@ -173,9 +173,6 @@ def getOperandsAndTerms(equation):
     return((terms,operands))
     
 def funcSolver(terms, operands):
-#     print("FuncSolver Called.")
-#     print("FTerms: ", terms)
-#     print("FOperands: ", operands)
     letterOperands = "sincotalg"
     for i in range(len(terms)):
         status = 0
@@ -248,7 +245,6 @@ def funcSolver(terms, operands):
         final = 0
         for i in newTerms:
             final += float(i)
-#         print("SOLVED:", final)
         return(float(final))
     else:
         if len(terms) > 1:
@@ -257,7 +253,6 @@ def funcSolver(terms, operands):
                 final += float(i)
         else:
             final = float(terms[0])
-#         print("SOLVED:", final)
         return(final)
     
 def prenEliminator(terms, operands):
@@ -271,9 +266,6 @@ def prenEliminator(terms, operands):
     g = 0 #Just a method to stop infinite loops if there is an error in my code
     
     while pp == 1 and g != 20:
-#         print("while", newTerms, "g=", g)
-#         print("pren:", newTerms)
-#         print("pren:", operands)
         g += 1
         pcheck = ""
         letterOperands = "sincotaelg"
@@ -336,13 +328,10 @@ def prenEliminator(terms, operands):
             pp = 0
     
     if len(newTerms) > 1:
-#         print("Int Solver", newTerms)
         newTerms = funcSolver(newTerms, operands)
-#         print("Eliminated:", newTerms)
         return(newTerms)
     elif len(newTerms) == 1:
         output = float(newTerms[0])
-#         print("Eliminated:", output)
         return(output) 
 
 def getOperandsAndTerms(equation):
@@ -510,7 +499,6 @@ def pluggerSetup(depVar, indepVar, equation):
         if output[0][i].find("{0}") == -1:
             output[0][i] = str(prenEliminator(getOperandsAndTerms(output[0][i])[0],getOperandsAndTerms(output[0][i])[1]))
     output = funcCompiler(output[0],output[1])
-#     print(output)
     return output
 #-----------------------------------------------------
 def getX(xValue):
@@ -581,25 +569,21 @@ class point(Sprite):
                 else:
                     b = getOperandsAndTerms(equationR)
                     pluggableEquation = prenEliminator(b[0],b[1])
+        
         self.equation = pluggableEquation
-#         print("EQ",self.equation)
         position = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
-        # print("POSITION:",position)
         try:
             position = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
-            # print("POSITION:",position)
-            super().__init__(point.pt, (0,0))
-            self.x = position[0]
-            self.y = position[1]
+            x = position[0]
+            y = position[1]
         except:
             print("Function failed initial point, going to (0,0)")
-            super().__init__(point.pt, (0,0))
-            self.x = 0
-            self.y = 0
+            x = 0
+            y = 0
             self.tries += 1
-        
+        super().__init__(point.pt,(x,y))
+    
     def move(self):
-#         print("MOVE")
         try:
             newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
             oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
@@ -613,7 +597,7 @@ class point(Sprite):
                         self.x = newPosition[0]
                         self.y = newPosition[1]
                         self.t = self.t+self.increment
-    #                             path(self.color, (newPosition[0],newPosition[1]))
+                        path(self.color, (newPosition[0],newPosition[1]))
                 else:
                     self.increment = self.increment * 0.9
             else:
@@ -623,7 +607,6 @@ class point(Sprite):
                 self.shifting = True
         except:
             if self.shifting == False:
-# #                 print(self.tries)
                 if self.tries <= 10:
                     self.tries += 1
                     self.increment = self.increment * 0.1
@@ -634,37 +617,44 @@ class point(Sprite):
                     self.shifting = True
                     print("Function failed, skipping some points.",self.t)
             else:
-#                 print("SHIFTING = TRUE")
                 self.t += self.increment
-        # print(giveX(newPosition[0]),giveY(newPosition[1]))
-        # print(self.x,self.y)
-        # print(giveX(self.x),giveY(self.y))
-        # print(self.t,self.increment)
+
+class path(Sprite):
+    def __init__(self,color, position):
+        dot = CircleAsset(3,noLine, colorRandom(color))
+        Sprite(dot, position)
 
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-    initial = -frameWidth/2
-    pi = 3.14159265359
-    b = 20
-    theta = 0
-    i = 0
-    while i <= 10:
-        # print(i)
-        theta = (i)*2*pi/(b)
-        # print(theta)
-        a = ("y=(sin({0})-sin({1}))/(cos({0})-cos({1}))(x-{2})+{3}").format(theta,theta+2*pi/b,cos(theta)*100,sin(theta)*100)
-        a = point(1,a,"y","x",initial)
-        i += 1
+        initial = -800/2
+        pi = 3.14159265359
+        b = 20
+        theta = 0
+        i = 0
+        # while i <= 20:
+        #     # print(i)
+        #     theta = (i)*2*pi/(b)
+        #     # print(theta)
+        #     a = ("y=(sin({0})-sin({1}))/(cos({0})-cos({1}))(x-100*cos({0}))+100sin({0})").format(theta,theta+2*pi/b)
+        #     a = point(i,a,"y","x",initial)
+        #     i+= 1
+        point(1,"y=x","y","x",initial)
+        # point(2,"y=x^2","y","x",initial)
+        # point(3,"y=(x/30)^3","y","x",initial)
+        # point(4,"y=sin(x)","y","x",initial)
+        # point(5,"y=30*sin(x/30)","y","x",initial)
+        # point(6,"y=200*sin(x)","y","x",initial)
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            try:
-                sprite.move()
-            except:
-                print("error")
-                print(sprite.t, sprite.increment)
-            #print("RUNNING")
-    
+            if sprite.t > 800:
+                sprite.destroy()
+            else:
+                try:
+                    sprite.move()
+                except:
+                    print("error")
+                    print(sprite.t, sprite.increment)
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
 # print(funcInterpreter("y","x","y=(sin(3.1415926/10)+sin(3.1415926/10))",-1))
