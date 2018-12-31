@@ -625,7 +625,7 @@ class path(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
-        initial = -800/2
+        initial = -frameWidth/2
         pi = 3.14159265359
         b = 20
         theta = 0
@@ -648,7 +648,7 @@ class Grapher(App):
         #     point(i,"y=-1*({0}^2-x^2)^0.5".format(i*20),"y","x",initial)
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            if sprite.t > 800:
+            if sprite.t > frameWidth:
                 sprite.destroy()
             else:
                 try:
