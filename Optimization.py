@@ -172,6 +172,9 @@ def getOperandsAndTerms(equation):
     return((terms,operands))
     
 def funcSolver(terms, operands):
+    #print("FuncSolver Called.")
+    #print("FTerms: ", terms)
+    #print("FOperands: ", operands)
     letterOperands = "sincotalg"
     for i in range(len(terms)):
         status = 0
@@ -197,15 +200,20 @@ def funcSolver(terms, operands):
             elif term == "cot":
                 terms[i] = 1/tan(inside)
             elif term == "log":
-                if inside.find(",") != 1:
-                    inside = inside[1:len(inside)-1]
+                if inside.count(",") == 1:
                     base = inside[inside.find(",")+1:len(inside)]
                     inside = inside[0:inside.find(",")]
                     base = prenEliminator(getOperandsAndTerms(base)[0],getOperandsAndTerms(base)[1])
                     inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
                     terms[i] = log(inside)/log(base)
+                elif inside.count(",") == 0:
+                    terms[i] = log(prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1]))
+                else:
+                    terms[i] = 0
+                    print("FAILED")
             else:
                 terms[i] = 0
+                print("FAILED")
     found = 0
     newTerms = terms
     if len(operands) > 0:
@@ -244,6 +252,7 @@ def funcSolver(terms, operands):
         final = 0
         for i in newTerms:
             final += float(i)
+        #print("SOLVED:", final)
         return(float(final))
     else:
         if len(terms) > 1:
@@ -252,6 +261,7 @@ def funcSolver(terms, operands):
                 final += float(i)
         else:
             final = float(terms[0])
+        #print("SOLVED:", final)
         return(final)
     
 def prenEliminator(terms, operands):
@@ -630,22 +640,7 @@ class Grapher(App):
         b = 20
         theta = 0
         i = 0
-        while i <= 20:
-            # print(i)
-            theta = (i)*2*pi/(b)
-            # print(theta)
-            a = ("y=(sin({0})-sin({1}))/(cos({0})-cos({1}))(x-100*cos({0}))+100sin({0})").format(theta,theta+2*pi/b)
-            a = point(i,a,"y","x",initial)
-            i+= 1
-        # point(1,"y=x","y","x",initial)
-        # point(2,"y=x^2","y","x",initial)
-        # point(3,"y=(x/30)^3","y","x",initial)
-        # point(4,"y=sin(x)","y","x",initial)
-        # point(5,"y=30*sin(x/30)","y","x",initial)
-        # point(6,"y=200*sin(x)","y","x",initial)
-        # for i in range(1,11):
-        #     point(i,"y=({0}^2-x^2)^0.5".format(i*20),"y","x",initial)
-        #     point(i,"y=-1*({0}^2-x^2)^0.5".format(i*20),"y","x",initial)
+        point(6,"y=log(x)","y","x",initial)
     def step(self):
         for sprite in self.getSpritesbyClass(point):
             if sprite.t > frameWidth:
@@ -658,4 +653,3 @@ class Grapher(App):
                     print(sprite.t, sprite.increment)
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
-# print(funcInterpreter("y","x","y=(sin(3.1415926/10)+sin(3.1415926/10))",-1))
