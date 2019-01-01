@@ -559,6 +559,7 @@ class point(Sprite):
         self.increment = 1
         self.jump = 10
         self.shifting = False
+        self.tries = 0
         if equation.count("(") != equation.count(")") or equation.count("=") != 1:
             print("Invalid input given")
         else:
@@ -597,22 +598,29 @@ class point(Sprite):
             oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
             newPosition = (getX(newPosition[0]),getY(newPosition[1]))
             oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
-            if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
-                if 5 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                    if 2.5 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                        self.increment = self.increment * 1.1
+            if self.tries <= 200:
+                if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
+                    if 5 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                        if 2.5 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                            self.increment = self.increment * (1.1+0.1*self.tries)
+                            self.tries += 1
+                        else:
+                            self.x = newPosition[0]
+                            self.y = newPosition[1]
+                            self.t = self.t+self.increment
+                            path(self.color, (newPosition[0],newPosition[1]))
+                            self.tries = 0
                     else:
-                        self.x = newPosition[0]
-                        self.y = newPosition[1]
-                        self.t = self.t+self.increment
-                        path(self.color, (newPosition[0],newPosition[1]))
+                        self.increment = self.increment * (0.9-0.01*self.tries)
+                        self.tries += 1
                 else:
-                    self.increment = self.increment * 0.9
+                    self.increment = self.jump
+                    self.t += self.increment
+                    self.shifting = True
             else:
-                self.increment = self.jump
-                self.t += self.increment
-                self.tries = 0
+                self.t += self.jump
                 self.shifting = True
+                self.tries = 0
         except:
             if self.shifting == False:
                 if self.tries <= 10:
@@ -643,6 +651,7 @@ class Grapher(App):
         point(6,"y=log(x)","y","x",initial)
     def step(self):
         for sprite in self.getSpritesbyClass(point):
+            print(sprite.increment,sprite.t,sprite.tries)
             if sprite.t > frameWidth:
                 sprite.destroy()
             else:
