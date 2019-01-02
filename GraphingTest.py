@@ -106,6 +106,99 @@ def funcCompiler(terms, operands):
             output += operands[i]
     return(output)
 
+def funcSolver(terms, operands):
+    #print("FuncSolver Called.")
+    #print("FTerms: ", terms)
+    #print("FOperands: ", operands)
+    letterOperands = "sincotalg"
+    for i in range(len(terms)):
+        status = 0
+        for k in letterOperands:
+            if terms[i].find(k) != -1 and i != "e":
+                status = 1
+        if status == 1:
+            term = terms[i][0:3]
+            inside = terms[i][4:len(terms[i])-1]
+            if term != "log":
+                inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
+            
+            if term == "cos":
+                terms[i] = cos(inside)
+            elif term == "sin":
+                terms[i] = sin(inside)
+            elif term == "tan":
+                terms[i] = tan(inside)
+            elif term == "sec":
+                terms[i] = 1/cos(inside)
+            elif term == "csc":
+                terms[i] = 1/(inside)
+            elif term == "cot":
+                terms[i] = 1/tan(inside)
+            elif term == "log":
+                if inside.count(",") == 1:
+                    base = inside[inside.find(",")+1:len(inside)]
+                    inside = inside[0:inside.find(",")]
+                    base = prenEliminator(getOperandsAndTerms(base)[0],getOperandsAndTerms(base)[1])
+                    inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
+                    terms[i] = log(inside)/log(base)
+                elif inside.count(",") == 0:
+                    terms[i] = log(prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1]))
+                else:
+                    terms[i] = 0
+                    print("FAILED")
+            else:
+                terms[i] = 0
+                print("FAILED")
+    found = 0
+    newTerms = terms
+    if len(operands) > 0:
+        for i in range(0,len(operands)):
+            i = i - found
+            if operands[i] == "^":
+                #print("ExpoFound")
+                newTerms[i] = float(terms[i])**float(terms[i+1])
+                #print("NewTermsAdded", terms[i], terms[i+1], newTerms[i], "n")
+                del newTerms[i+1]
+                del operands[i]
+                found += 1
+                #print("done")
+        #print("expo:", newTerms, operands)
+        found = 0
+        for i in range(0,len(operands)):
+            #print(found, terms, newTerms, operands)
+            i = i - found
+            #print(i,len(terms),len(operands))
+            #print(terms,operands)
+            if operands[i] == "*":
+                newTerms[i] = float(terms[i])*float(terms[i+1])
+                del newTerms[i+1]
+                del operands[i]
+                found += 1
+            elif operands[i] == "/":
+                newTerms[i] = float(terms[i])/float(terms[i+1])
+                del newTerms[i+1]
+                del operands[i]
+                found += 1
+        #print("mult:", newTerms)
+        for i in range(0,len(operands)):
+            if operands[i] == "-":
+                newTerms[i+1] = str((-1)*float(terms[i+1]))
+        #print("sub:", newTerms)
+        final = 0
+        for i in newTerms:
+            final += float(i)
+        #print("SOLVED:", final)
+        return(float(final))
+    else:
+        if len(terms) > 1:
+            final = 0
+            for i in terms:
+                final += float(i)
+        else:
+            final = float(terms[0])
+        #print("SOLVED:", final)
+        return(final)
+    
 def prenEliminator(terms, operands):
     newTerms = []
     operators = []
@@ -117,9 +210,6 @@ def prenEliminator(terms, operands):
     g = 0 #Just a method to stop infinite loops if there is an error in my code
     
     while pp == 1 and g != 20:
-        #print("while", newTerms, "g=", g)
-        #print("pren:", newTerms)
-        #print("pren:", operands)
         g += 1
         pcheck = ""
         letterOperands = "sincotaelg"
@@ -130,7 +220,11 @@ def prenEliminator(terms, operands):
                 if newTerms[i].find(k) != -1:
                     status += 1
             if status != 0:
-                newTerms[i] = str(funcSolver(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
+                if newTerms[i][0] == "(":
+                    newTerms[i]= newTerms[i][1:len(newTerms[i])-1]
+                    newTerms[i] = str(prenEliminator(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
+                else:
+                    newTerms[i] = str(funcSolver(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
         if status == 0:
             for i in range(0,len(newTerms)):
                 if str(newTerms[i]).isdigit() == False:
@@ -178,14 +272,10 @@ def prenEliminator(terms, operands):
             pp = 0
     
     if len(newTerms) > 1:
-        #print("Int Solver", newTerms)
         newTerms = funcSolver(newTerms, operands)
         return(newTerms)
-    else:
-        output = ""
-        for i in newTerms:
-            output += i
-        output = float(output)
+    elif len(newTerms) == 1:
+        output = float(newTerms[0])
         return(output) 
 
 def getOperandsAndTerms(equation):
@@ -199,7 +289,7 @@ def getOperandsAndTerms(equation):
     for i in str(equation):
         status = 0
         for letterOp in letterOperands:
-            if i == letterOp:
+            if i == letterOp and i != "e":
                 status = 1
         if i != " " and i != "'"  and i != "[" and i != "]":
             if i == "(" or i == "{":
@@ -219,14 +309,46 @@ def getOperandsAndTerms(equation):
             elif i == ")" or i == "}":
                 p -= 1
             if p == 0 and i != ")" and i != "}":
-                if i == "+" or i == "*" or i == "/" or i == "^":
+                if i == "*" or i == "/" or i == "^":
                     operands.append(i)
                     op = 1
                     if term != "":
                         terms.append(term)
                         term = ""
+                elif i == "+":
+                    if len(term) > 0:
+                        if term[len(term)-1] == "e":
+                            term += i
+                        else:
+                            operands.append(i)
+                            op = 1
+                            if term != "":
+                                terms.append(term)
+                                term = ""
+                    else:
+                        operands.append(i)
+                        op = 1
+                        if term != "":
+                            terms.append(term)
+                            term = ""
                 elif i == "-":
-                    if op == 1:
+                    if op == 0:
+                        if len(term) == 0:
+                            operands.append(i)
+                            op = 1
+                            if term != "":
+                                terms.append(term)
+                                term = ""
+                        else:
+                            if term[len(term)-1] == "e":
+                                term += i
+                            else:
+                                operands.append(i)
+                                op = 1
+                                if term != "":
+                                    terms.append(term)
+                                    term = ""
+                    elif op == 1:
                         op = 2
                         term += i
                     elif op == 2:
@@ -239,7 +361,7 @@ def getOperandsAndTerms(equation):
                         if term != "":
                             terms.append(term)
                             term = ""
-                elif i.isdigit() == True or i == "." or status == 1:
+                elif i.isdigit() == True or i == "." or i == "e" or status == 1:
                     if status == 1 and len(term) > 0:
                         if term[0].isdigit():
                             terms.append(term)
@@ -274,131 +396,6 @@ def getOperandsAndTerms(equation):
         if terms[i] == "-":
             terms[i] = "-1"
     return((terms,operands))
-    
-def funcSolver(terms, operands):
-    letterOperands = "sincotaelg"
-    #print("funcSolverCalled")
-    #print("terms:", terms)
-    #print("operands:", operands)
-    newTerms = []
-    for i in terms:
-        status = 0
-        for letter in letterOperands:
-            if i.find(letter) != -1:
-                status = 1
-        if status == 1:
-            if i.find("(") != -1:
-                term = ""
-                for k in i:
-                    if i != "(" and i != ")":
-                        term += k
-                inside = i[i.find("(")+1:i.find(")")]
-                term = i[0:i.find("(")]
-            else:
-                term = i
-                inside = ""
-                status = 0 
-                for k in term:
-                    if k.isdigit() and status == 0:
-                        #THIS NEEDS TO CHANGE FOR NESTED COMPLEX OPERANDS
-                        inside += k
-                    else:
-                        status += 1
-                    if status == 1:
-                        term = term[0:term.find(i)-1]
-            #print(i, "term", term, "inside", inside)
-            if term[0:3] == "log":
-                #print("INSIDE", inside)
-                expression = ""
-                logBase = 0
-                if inside.find(",") != -1:
-                    expression = inside[0:inside.find(",")]
-                    logBase = inside[inside.find(",")+1:len(inside)]
-                    #print(logBase)
-                    if len(expression) > 1:
-                        expression = str(prenEliminator(getOperandsAndTerms(expression)[0],getOperandsAndTerms(expression)[1]))
-                    newTerms.append(log(float(expression))/log(float(logBase)))
-                else:
-                    if len(inside) > 1:
-                        inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
-                    newTerms.append(round(log(float(inside))/log(10),5))
-                #print("logBase", logBase, "expression", expression)
-
-                #print("Term", term, float(term[3:len(term)]), log(float(term[3:len(term)])))
-                #newTerms.append(log(float(term[3:len(term)])))
-                
-            else:
-                #print(term, "NOT LOG")
-                if len(inside) > 0:
-                    term = term + str(prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1]))
-                #print(term)
-                #print(i[0:3], term[0:3])
-                if term[0:3] == "sin":
-                    newTerms.append(round(sin(float(term[3:len(term)])),5))
-                elif term[0:3] == "cos":
-                    newTerms.append(round(cos(float(term[3:len(term)])),5))
-                elif term[0:3] == "tan":
-                    newTerms.append(round(tan(float(term[3:len(term)])),5))
-                elif term[0:3] == "sec":
-                    newTerms.append(round(1/cos(float(term[3:len(term)])),5))
-                elif term[0:3] == "csc":
-                    newTerms.append(round(1/sin(float(term[3:len(term)])),5))
-                elif term[0:3] == "cot":
-                    newTerms.append(round(1/tan(float(term[3:len(term)])),5))
-                else:
-                    newTerms.append(i)
-                    #print("The equation you entered was weird. Maybe you should check it.")
-        else:
-            newTerms.append(i)
-    terms = newTerms
-    final = 0
-    holder = ""
-    found = 0
-    if len(operands) > 0:
-        for i in range(0,len(operands)):
-            i = i - found
-            if operands[i] == "^":
-                #print("ExpoFound")
-                newTerms[i] = float(terms[i])**float(terms[i+1])
-                #print("NewTermsAdded", terms[i], terms[i+1], newTerms[i], "n")
-                del newTerms[i+1]
-                del operands[i]
-                found += 1
-                #print("done")
-        #print("expo:", newTerms, operands)
-        found = 0
-        for i in range(0,len(operands)):
-            #print(found, terms, newTerms, operands)
-            i = i - found
-            #print(i,len(terms),len(operands))
-            #print(terms,operands)
-            if operands[i] == "*":
-                newTerms[i] = float(terms[i])*float(terms[i+1])
-                del newTerms[i+1]
-                del operands[i]
-                found += 1
-            elif operands[i] == "/":
-                newTerms[i] = float(terms[i])/float(terms[i+1])
-                del newTerms[i+1]
-                del operands[i]
-                found += 1
-        #print("mult:", newTerms)
-        for i in range(0,len(operands)):
-            if operands[i] == "-":
-                newTerms[i+1] = str((-1)*float(terms[i+1]))
-        #print("sub:", newTerms)
-        for i in newTerms:
-            final += float(i)
-    else:
-        final = ""
-        for i in str(terms):
-            for k in i:
-                if k.isdigit() == True or k == "." or k == "-":
-                    final += str(k)
-        #print("FINAL:",final)
-        final = float(final)
-    ##print("solved:", final)
-    return(final)
 
 def funcPlugger(depVar, indepVar, equation, t):
     if equation.find("=") != -1:
@@ -417,7 +414,7 @@ def funcPlugger(depVar, indepVar, equation, t):
         return(c,t)
     else:
         return(t,c)
-        
+   
 def pluggerSetup(depVar, indepVar, equation):
     output = ""
     #print("PluggerSetup", depVar, indepVar, equation)
@@ -521,7 +518,7 @@ class Grapher(App):
     functions = []
     #functions.append(("y=10sin(x)","y"))
     #functions.append(("y=cos(x)","y"))
-    functions.append(("y=10","y"))
+    functions.append(("y=x^3","y"))
     functions.append(("y=(5x)^(5x)","y"))
     #drawnPoint((0,0),green)
     for i in range(0,len(functions)):
@@ -542,7 +539,6 @@ class Grapher(App):
     def step(self):
         g = self.increase
         self.t = round(self.t + g,5)
-        print(self.t)
         #print(self.t)
         funcNumber = 0
         for sprite in self.getSpritesbyClass(point):
