@@ -70,106 +70,6 @@ def funcCompiler(terms, operands):
         if i < len(terms) - 1:
             output += operands[i]
     return(output)
-
-def getOperandsAndTerms(equation):
-    #initial Seperation
-    terms = []
-    newTerms = terms
-    term = ""
-    operands = []
-    letterOperands = "sincotaelg" #Letters in complex operands like trig and log functions
-    p = 0
-    op = 1
-    for i in str(equation):
-        status = 0
-        for letterOp in letterOperands:
-            if i == letterOp and i != "e":
-                status = 1
-        if i != " " and i != "'"  and i != "[" and i != "]":
-            if i == "(" or i == "{":
-                p += 1
-                if term != "" and term.count("(") == 0:
-                    if letterOperands.find(term[len(term)-1]) == -1:
-                        terms.append(term)
-                        term = ""
-                        op = 0
-                if op == 0 and p == 1:
-                    if len(term) > 0:
-                        if letterOperands.find(term[len(term)-1]) == -1:
-                            operands.append("*")
-                    #print("OP == 0", term, terms, operands)
-                    else:
-                        operands.append("*")
-            elif i == ")" or i == "}":
-                p -= 1
-            if p == 0 and i != ")" and i != "}":
-                if i == "*" or i == "/" or i == "^":
-                    operands.append(i)
-                    op = 1
-                    if term != "":
-                        terms.append(term)
-                        term = ""
-                elif i == "+":
-                    if term[len(term)] == "e":
-                        term += i
-                    else:
-                        operands.append(i)
-                        op = 1
-                        if term != "":
-                            terms.append(term)
-                            term = ""
-                elif i == "-":
-                    if op == 1:
-                        op = 2
-                        term += i
-                    elif len(term)>0:
-                        if term[len(term)] == "e":
-                            term += i
-                        elif op == 2:
-                            op = 0
-                            term = term[0:len(term)]
-                        else:
-                            #minusOperator
-                            operands.append(i)
-                            op = 1
-                            if term != "":
-                                terms.append(term)
-                                term = ""
-                elif i.isdigit() == True or i == "." or i == "e" or status == 1:
-                    if status == 1 and len(term) > 0:
-                        if term[0].isdigit() or term[0] == "-":
-                            terms.append(term)
-                            term = i
-                            operands.append("*")
-                        else:
-                            term += i
-                    else:
-                        term += i
-                        op = 0
-                elif i.isdigit() == False and i != "e" and i != ".":
-                    if term != "":
-                        terms.append(term)
-                        term = ""
-                        op = 0
-                    terms.append(i)
-                if len(terms) > len(operands) + 1:
-                    operands.append("*")
-                    op = 1
-            elif p == 0 and (i == ")" or i == "}"):
-                term += i
-                terms.append(term)
-                term = ""
-                op = 0
-            else:
-                term += i
-    if term != "":
-        terms.append(term)
-    #print("GottenTerms", terms, "GottenOperands", operands, "from", equation)
-    for i in range(0,len(terms)):
-        #print(terms[i])
-        if terms[i] == "-":
-            terms[i] = "-1"
-    return((terms,operands))
     
 def funcSolver(terms, operands):
     #print("FuncSolver Called.")
@@ -650,10 +550,10 @@ class Grapher(App):
         theta = 0
         i = 0
         graphs = 1
-        # point(6,"y=log(x)","y","x",initial,graphs)
-        for i in range(1,11):
-            point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
-            point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
+        point(6,"y=log(x)","y","x",initial,graphs)
+        # for i in range(1,11):
+        #     point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
+        #     point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
     graphs = 1    
     def step(self):
         for sprite in self.getSpritesbyClass(point):
