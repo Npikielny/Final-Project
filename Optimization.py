@@ -550,14 +550,15 @@ def colorRandom(funcIndex):
 #-----------------------------------------------------
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
-    def __init__(self, color, equation, depVar,indepVar,t):
+    def __init__(self, color, equation, depVar,indepVar,t,sprites):
         self.depVar = depVar
         self.indepVar = indepVar
         self.t = t
         self.color = color
         self.tries = 0
         self.increment = 1
-        self.jump = 10
+        self.sprites = sprites
+        self.jump = sprites + 4
         self.shifting = False
         self.tries = 0
         if equation.count("(") != equation.count(")") or equation.count("=") != 1:
@@ -598,11 +599,11 @@ class point(Sprite):
             oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
             newPosition = (getX(newPosition[0]),getY(newPosition[1]))
             oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
-            if self.tries <= 200:
+            if self.tries <= 100:
                 if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
-                    if 5 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                        if 2.5 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                            self.increment = self.increment * (1.1+0.1*self.tries)
+                    if 5+self.sprites*0.2 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                        if 2.5+self.sprites*0.1 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                            self.increment = self.increment * (1.1)
                             self.tries += 1
                         else:
                             self.x = newPosition[0]
@@ -611,7 +612,7 @@ class point(Sprite):
                             path(self.color, (newPosition[0],newPosition[1]))
                             self.tries = 0
                     else:
-                        self.increment = self.increment * (0.9-0.01*self.tries)
+                        self.increment = self.increment * (0.9)
                         self.tries += 1
                 else:
                     self.increment = self.jump
@@ -648,10 +649,15 @@ class Grapher(App):
         b = 20
         theta = 0
         i = 0
-        point(6,"y=log(x)","y","x",initial)
+        graphs = 1
+        # point(6,"y=log(x)","y","x",initial,graphs)
+        for i in range(1,11):
+            point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
+            point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
+    graphs = 1    
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            print(sprite.increment,sprite.t,sprite.tries)
+            # print(sprite.increment, sprite.t)
             if sprite.t > frameWidth:
                 sprite.destroy()
             else:
@@ -660,5 +666,8 @@ class Grapher(App):
                 except:
                     print("error")
                     print(sprite.t, sprite.increment)
+        self.graphs = 1
+        for sprite in self.getSpritesbyClass(point):
+            self.graphs += 1
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
