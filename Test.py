@@ -563,7 +563,9 @@ class Grapher(App):
     b = 10
     pi = 3.1415926
     R = 400
-    
+    # point(1,"y=sin(x/10)","y","x",initial)
+    point(1,"y=sin(0)+sin(0)+sin(0)+sin(0)+sin(0)+sin(0)+x","y","x",initial)
+    point(1,"y=0+0+0+0+0+0+x","y","x",initial)
     "y=(sin(3.1415926/10)+sin(3.1415926/10))"
     def step(self):
         for sprite in self.getSpritesbyClass(point):
