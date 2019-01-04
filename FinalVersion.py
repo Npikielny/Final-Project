@@ -540,20 +540,27 @@ class path(Sprite):
     def __init__(self,color, position):
         dot = CircleAsset(3,noLine, colorRandom(color))
         Sprite(dot, position)
+        
+
+class bg(Sprite):
+    def __init__(self,position):
+        bg_asset = ImageAsset("images/BackgroundPngWhite.png")
+        super().__init__(bg_asset, (10,10))
+        self.scale = 1
+        self.visible = True
+        
 
 class Grapher(App):
-    bg_asset = ImageAsset("images/ProgramBackground.png")
     def __init__(self, width, height):
         super().__init__(width, height)
-        bg = Sprite(self.bg_asset,(10,10))
-        bg.scale = 0.5
+        bg((0,0))
         initial = -frameWidth/2
         pi = 3.14159265359
         b = 20
         theta = 0
         i = 0
         graphs = 1
-        # point(6,"y=log(x)","y","x",initial,graphs)
+        point(6,"y=(x)","y","x",initial,graphs)
         # for i in range(1,11):
         #     point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
         #     point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
