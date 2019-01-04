@@ -1,4 +1,4 @@
-from ggame import App, Color, LineStyle, Sprite, CircleAsset, Frame, RectangleAsset
+from ggame import App, Color, LineStyle, Sprite, CircleAsset, Frame, RectangleAsset, ImageAsset
 from math import floor, sin, cos, tan, log
 #-----------------------------------------------------
 red = Color(0xff0000, 1.0)
@@ -542,15 +542,18 @@ class path(Sprite):
         Sprite(dot, position)
 
 class Grapher(App):
+    bg_asset = ImageAsset("images/ProgramBackground.png")
     def __init__(self, width, height):
         super().__init__(width, height)
+        bg = Sprite(self.bg_asset,(10,10))
+        bg.scale = 0.5
         initial = -frameWidth/2
         pi = 3.14159265359
         b = 20
         theta = 0
         i = 0
         graphs = 1
-        point(6,"y=log(x)","y","x",initial,graphs)
+        # point(6,"y=log(x)","y","x",initial,graphs)
         # for i in range(1,11):
         #     point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
         #     point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
