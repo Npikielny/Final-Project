@@ -100,24 +100,20 @@ def funcSolver(terms, operands):
                 terms[i] = 1/tan(inside)
             elif term == "log":
                 if inside.count(",") == 1:
-                    print(",")
                     base = inside[inside.find(",")+1:len(inside)]
                     inside = inside[0:inside.find(",")]
                     base = prenEliminator(getOperandsAndTerms(base)[0],getOperandsAndTerms(base)[1])
                     inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
                     if inside < 0:
-                        print("FAIL")
                         terms[i] = "FAIL"
                     else:
                         terms[i] = log(inside)/log(base)
-                elif inside.count(",") == 0 and inside > 0:
-                    terms[i] = log(prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1]))
+                elif inside.count(",") == 0 and prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1]) > 0:
+                    terms[i] = log(prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1]))/log(10)
                 else:
-                    print("FAIL")
                     terms[i] = "FAIL"
             else:
                 terms[i] = 0
-                print("FAILED")
     found = 0
     newTerms = terms
     if len(operands) > 0:
@@ -573,10 +569,8 @@ class point(Sprite):
                         self.shifting = False
                         self.moved()
                 else:
-                    print("HM")
                     self.newPointProtocol()
             except:
-                print("HMMMM")
                 self.newPointProtocol()
         except:
             self.tries += 1
@@ -586,7 +580,7 @@ class point(Sprite):
                 self.t += self.jump
     
     def newPointProtocol(self):
-        print("NEW")
+        # print("NEW")
         self.t += self.increment
         original = self.t
         i = 0
@@ -622,7 +616,7 @@ class point(Sprite):
         elif self.t > 800:
             self.destroy()
         else:
-            print("SHIFTING()")
+            # print("SHIFTING()")
             self.t += self.jump
 
 class path(Sprite):
@@ -648,14 +642,14 @@ class Grapher(App):
         theta = 0
         i = 0
         graphs = 1
-        point(6,"y=log(x)","y","x",initial)
+        point(6,"y=100*log(x/300)","y","x",initial)
         # for i in range(9,12):
         #     point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
         #     point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
     graphs = 1    
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            print(sprite.increment, sprite.t)
+            print(sprite.t)
             if sprite.t > frameWidth:
                 sprite.destroy()
             else:
