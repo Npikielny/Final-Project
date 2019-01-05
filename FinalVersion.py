@@ -251,6 +251,10 @@ def getOperandsAndTerms(equation):
     letterOperands = "sincotaelg" #Letters in complex operands like trig and log functions
     p = 0
     op = 1
+    if equation[0] == "-":
+        terms.append("-1")
+        operands.append("*")
+        equation = equation[1:len(equation)]
     for i in str(equation):
         status = 0
         for letterOp in letterOperands:
@@ -450,15 +454,14 @@ def colorRandom(funcIndex):
 #-----------------------------------------------------
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
-    def __init__(self, color, equation, depVar,indepVar,t,sprites):
+    def __init__(self, color, equation, depVar,indepVar,t):
         self.depVar = depVar
         self.indepVar = indepVar
         self.t = t
         self.color = color
         self.tries = 0
         self.increment = 1
-        self.sprites = sprites
-        self.jump = sprites + 4
+        self.jump = 4
         self.shifting = False
         self.tries = 0
         if equation.count("(") != equation.count(")") or equation.count("=") != 1:
@@ -501,8 +504,8 @@ class point(Sprite):
             oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
             if self.tries <= 100:
                 if newPosition[0] >= 0 and newPosition[0] <= frameWidth and newPosition[1] >= 0 and newPosition[1] <= frameHeight:
-                    if 5+self.sprites*0.2 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
-                        if 2.5+self.sprites*0.1 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                    if 5 >= ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
+                        if 2.5 > ((newPosition[0]-oldPosition[0])**2+(newPosition[1] - oldPosition[1])**2)**0.5:
                             self.increment = self.increment * (1.1)
                             self.tries += 1
                         else:
@@ -551,6 +554,7 @@ class bg(Sprite):
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
+        Grapher.listenMouseEvent("click", self.addPoint)
         bg((0,0))
         initial = -frameWidth/2
         pi = 3.14159265359
@@ -558,10 +562,10 @@ class Grapher(App):
         theta = 0
         i = 0
         graphs = 1
-        # point(6,"y=(x)","y","x",initial,graphs)
-        for i in range(9,12):
-            point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
-            point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
+        point(6,"y=(x)","y","x",initial)
+        # for i in range(9,12):
+        #     point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
+        #     point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
     graphs = 1    
     def step(self):
         for sprite in self.getSpritesbyClass(point):
@@ -577,5 +581,15 @@ class Grapher(App):
         self.graphs = 1
         for sprite in self.getSpritesbyClass(point):
             self.graphs += 1
+    def addPoint(self,event):
+        equation = input("Equation: ")
+        depVar = equation[0]
+        indepVars = {"y":"x","x":"y"}
+        try:
+            indepVar=indepVars[depVar]
+            point(self.graphs,equation,depVar,indepVar,-frameWidth/2)
+        except:
+            print("FUNCFAILED")
+            
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
