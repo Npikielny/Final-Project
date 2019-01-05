@@ -540,44 +540,43 @@ class path(Sprite):
     def __init__(self,color, position):
         dot = CircleAsset(3,noLine, colorRandom(color))
         Sprite(dot, position)
-        
 
 class bg(Sprite):
-    def __init__(self,position):
-        bg_asset = ImageAsset("images/BackgroundPngWhite.png")
-        super().__init__(bg_asset, (10,10))
-        self.scale = 1
-        self.visible = True
-        
+    bg_asset = ImageAsset("images/Background.jpg")
+    def __init__(self, position):
+        super().__init__(bg.bg_asset, position)
+        self.scale=0.78788
+        self.vx=-5.5
+ 
 
 class Grapher(App):
     def __init__(self, width, height):
         super().__init__(width, height)
         bg((0,0))
-        initial = -frameWidth/2
-        pi = 3.14159265359
-        b = 20
-        theta = 0
-        i = 0
-        graphs = 1
-        point(6,"y=(x)","y","x",initial,graphs)
-        # for i in range(1,11):
-        #     point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
-        #     point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
-    graphs = 1    
-    def step(self):
-        for sprite in self.getSpritesbyClass(point):
-            # print(sprite.increment, sprite.t)
-            if sprite.t > frameWidth:
-                sprite.destroy()
-            else:
-                try:
-                    sprite.move()
-                except:
-                    print("error")
-                    print(sprite.t, sprite.increment)
-        self.graphs = 1
-        for sprite in self.getSpritesbyClass(point):
-            self.graphs += 1
+    #     initial = -frameWidth/2
+    #     pi = 3.14159265359
+    #     b = 20
+    #     theta = 0
+    #     i = 0
+    #     graphs = 1
+    #     point(6,"y=(x)","y","x",initial,graphs)
+    #     # for i in range(1,11):
+    #     #     point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
+    #     #     point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
+    # graphs = 1    
+    # def step(self):
+    #     for sprite in self.getSpritesbyClass(point):
+    #         # print(sprite.increment, sprite.t)
+    #         if sprite.t > frameWidth:
+    #             sprite.destroy()
+    #         else:
+    #             try:
+    #                 sprite.move()
+    #             except:
+    #                 print("error")
+    #                 print(sprite.t, sprite.increment)
+    #     self.graphs = 1
+    #     for sprite in self.getSpritesbyClass(point):
+    #         self.graphs += 1
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
