@@ -72,9 +72,9 @@ def funcCompiler(terms, operands):
     return(output)
     
 def funcSolver(terms, operands):
-    #print("FuncSolver Called.")
-    #print("FTerms: ", terms)
-    #print("FOperands: ", operands)
+    # print("FuncSolver Called.")
+    # print("FTerms: ", terms)
+    # print("FOperands: ", operands)
     letterOperands = "sincotalg"
     for i in range(len(terms)):
         status = 0
@@ -86,7 +86,6 @@ def funcSolver(terms, operands):
             inside = terms[i][4:len(terms[i])-1]
             if term != "log":
                 inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
-            
             if term == "cos":
                 terms[i] = cos(inside)
             elif term == "sin":
@@ -101,21 +100,21 @@ def funcSolver(terms, operands):
                 terms[i] = 1/tan(inside)
             elif term == "log":
                 if inside.count(",") == 1:
+                    print(",")
                     base = inside[inside.find(",")+1:len(inside)]
                     inside = inside[0:inside.find(",")]
                     base = prenEliminator(getOperandsAndTerms(base)[0],getOperandsAndTerms(base)[1])
                     inside = prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1])
-                    print(inside)
                     if inside < 0:
                         print("FAIL")
                         terms[i] = "FAIL"
                     else:
                         terms[i] = log(inside)/log(base)
-                elif inside.count(",") == 0:
+                elif inside.count(",") == 0 and inside > 0:
                     terms[i] = log(prenEliminator(getOperandsAndTerms(inside)[0],getOperandsAndTerms(inside)[1]))
                 else:
-                    terms[i] = 0
-                    print("FAILED")
+                    print("FAIL")
+                    terms[i] = "FAIL"
             else:
                 terms[i] = 0
                 print("FAILED")
@@ -544,6 +543,48 @@ class point(Sprite):
                 self.newPointProtocol()
             
     
+    def move(self):
+        try:
+            #Determining if the new point exists
+            newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+            newPosition = (getX(newPosition[0]),getY(newPosition[1]))
+            try:
+                #Determining self.t of last point
+                oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
+                oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
+#                 print(oldPosition,(self.x,self.y))
+                if self.x == oldPosition[0] and self.y == oldPosition[1]:
+                    distance = ((self.x - newPosition[0])**2+(self.y - newPosition[1])**2)**0.5
+                    print(distance)
+                    if distance > 7:
+#                         print("BIG",self.increment)
+                        self.increment = self.increment * 0.6
+                        self.shifting = False
+                    elif distance < 1:
+#                         print("SMALL")
+                        self.increment = self.increment * 1.9
+                        self.shifting = False
+                    else:
+#                         print("WORKING")
+                        self.t += self.increment
+                        self.x = newPosition[0]
+                        self.y = newPosition[1]
+                        self.tries = 0
+                        self.shifting = False
+                        self.moved()
+                else:
+                    print("HM")
+                    self.newPointProtocol()
+            except:
+                print("HMMMM")
+                self.newPointProtocol()
+        except:
+            self.tries += 1
+            if self.tries > 10:
+                self.shifting = True
+            if self.shifting == True:
+                self.t += self.jump
+    
     def newPointProtocol(self):
         print("NEW")
         self.t += self.increment
@@ -580,9 +621,9 @@ class point(Sprite):
             path(self.color,(self.x,self.y))
         elif self.t > 800:
             self.destroy()
-        # else:
-        #     print("SHIFTING()")
-        #     self.t += self.jump
+        else:
+            print("SHIFTING()")
+            self.t += self.jump
 
 class path(Sprite):
     def __init__(self,color, position):
@@ -614,7 +655,7 @@ class Grapher(App):
     graphs = 1    
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            # print(sprite.increment, sprite.t)
+            print(sprite.increment, sprite.t)
             if sprite.t > frameWidth:
                 sprite.destroy()
             else:
@@ -626,6 +667,8 @@ class Grapher(App):
         self.graphs = 1
         for sprite in self.getSpritesbyClass(point):
             self.graphs += 1
+
+
     def addPoint(self,event):
         equation = input("Equation: ")
         depVar = equation[0]
