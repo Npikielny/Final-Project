@@ -416,7 +416,7 @@ def pluggerSetup(depVar, indepVar, equation):
 #-----------------------------------------------------
 def getX(xValue):
     #x = (xValue + float(frameWidth)/2.0)*4+2
-    x = float(xValue) + float(frameWidth) / 2.0 - 3
+    x = float(xValue) + float(frameWidth) / 2.0
     return(x)
     
 def getY(yValue):
@@ -424,7 +424,7 @@ def getY(yValue):
     return(y)
 
 def giveX(xValue):
-    x = xValue + 3 - float(frameWidth)/2
+    x = xValue - float(frameWidth)/2
     return x
 
 def giveY(yValue):
@@ -489,6 +489,7 @@ class point(Sprite):
             print("POSITION:",position)
             self.x = getX(position[0])
             self.y = getY(position[1])
+            print("__INIT__", self.x,self.y,self.t)
         except:
             print("Function failed initial point.")
             self.x = getX(-500)
@@ -513,7 +514,7 @@ class point(Sprite):
                 #Determining self.t of last point
                 oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
                 oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
-#                 print(oldPosition,(self.x,self.y))
+                print(oldPosition,(self.x,self.y),self.t)
                 if self.x == oldPosition[0] and self.y == oldPosition[1]:
                     distance = ((self.x - newPosition[0])**2+(self.y - newPosition[1])**2)**0.5
                     # print(distance)
@@ -548,20 +549,19 @@ class point(Sprite):
                 #Determining self.t of last point
                 oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
                 oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
-#                 print(oldPosition,(self.x,self.y))
                 if self.x == oldPosition[0] and self.y == oldPosition[1]:
                     distance = ((self.x - newPosition[0])**2+(self.y - newPosition[1])**2)**0.5
-                    print(distance)
+        #                     print(distance)
                     if distance > 7:
-#                         print("BIG",self.increment)
+        #                         print("BIG",self.increment)
                         self.increment = self.increment * 0.6
                         self.shifting = False
                     elif distance < 1:
-#                         print("SMALL")
+        #                         print("SMALL")
                         self.increment = self.increment * 1.9
                         self.shifting = False
                     else:
-#                         print("WORKING")
+        #                         print("WORKING")
                         self.t += self.increment
                         self.x = newPosition[0]
                         self.y = newPosition[1]
@@ -569,8 +569,10 @@ class point(Sprite):
                         self.shifting = False
                         self.moved()
                 else:
+                    print("YUP")
                     self.newPointProtocol()
             except:
+                print("YOINK")
                 self.newPointProtocol()
         except:
             self.tries += 1
@@ -580,44 +582,48 @@ class point(Sprite):
                 self.t += self.jump
     
     def newPointProtocol(self):
-        # print("NEW")
+        print("NEW")
         self.t += self.increment
         original = self.t
         i = 0
         worked = True
         shifted = 0
         shift = self.increment*0.5
-        while i < 100:
+        while i < 400:
+            print(i)
             if worked == True:
-                shift = self.increment * 0.5
+                shift = shift*1.6
             else:
-                shift = shift*0.9
+                shift = shift/4
+#             print(shifted)
+#             print(shift)
             try:
                 newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t-(shifted + shift))
                 worked = True
                 shifted += shift
+                print("SUCC")
             except:
+                print("FAIL")
                 worked = False
             i += 1
-        self.t -= shifted
+            
+        if shifted <self.increment:
+            self.t -= shifted
         newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
         self.x = getX(newPosition[0])
         self.y = getY(newPosition[1])
         self.shifting = False
-        self.moved()
         if shifted == 0:
             self.tries += 1
         else:
             self.tries = 0
+        self.moved()
             
     def moved(self):
         if self.x > 0 and self.x<frameWidth and self.y>0 and self.y<frameHeight:
             path(self.color,(self.x,self.y))
-        elif self.t > 800:
+        elif self.t > 400:
             self.destroy()
-        else:
-            # print("SHIFTING()")
-            self.t += self.jump
 
 class path(Sprite):
     def __init__(self,color, position):
@@ -642,14 +648,14 @@ class Grapher(App):
         theta = 0
         i = 0
         graphs = 1
-        point(6,"y=100*log(x/300)","y","x",initial)
+        point(6,"y=log(x)","y","x",initial)
         # for i in range(9,12):
         #     point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
         #     point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
     graphs = 1    
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            print(sprite.t)
+            print(sprite.t,getX(sprite.x),giveY(sprite.y))
             if sprite.t > frameWidth:
                 sprite.destroy()
             else:
