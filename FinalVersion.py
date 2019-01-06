@@ -621,7 +621,7 @@ class Grapher(App):
         Grapher.listenMouseEvent("click", self.addPoint)
         bg((0,0))
     global initial
-    
+    graphs = 0
     def step(self):
         for sprite in self.getSpritesbyClass(point):
             # print(sprite.t)
@@ -633,9 +633,6 @@ class Grapher(App):
                 except:
                     print("error")
                     print(sprite.t, sprite.increment)
-        self.graphs = 1
-        for sprite in self.getSpritesbyClass(point):
-            self.graphs += 1
 
 
     def addPoint(self,event):
@@ -650,6 +647,15 @@ class Grapher(App):
                 radius = float(input("Radius: "))
                 point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",initial)
                 point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",initial)
+                try:
+                    pass
+                except:
+                    print("Please enter valid radii")
+            elif equation.lower() == "circlefilled":
+                radius = float(input("Radius: "))
+                point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",initial)
+                point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",initial)
+                point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",initial)
                 try:
                     pass
                 except:
