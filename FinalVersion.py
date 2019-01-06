@@ -72,16 +72,22 @@ def funcCompiler(terms, operands):
     return(output)
     
 def funcSolver(terms, operands):
-    # print("FuncSolver Called.")
-    # print("FTerms: ", terms)
-    # print("FOperands: ", operands)
-    letterOperands = "sincotalg"
+#     print("FuncSolver Called.")
+#     print("FTerms: ", terms)
+#     print("FOperands: ", operands)
+    letterOperands = "sincotalgb"
+    operand = ""
     for i in range(len(terms)):
         status = 0
         for k in letterOperands:
             if terms[i].find(k) != -1 and i != "e":
                 status = 1
         if status == 1:
+            if terms[i][0] == "-":
+                operand = "-"
+                terms[i][1:len(terms[i])]
+            else:
+                operand = ""
             term = terms[i][0:3]
             inside = terms[i][4:len(terms[i])-1]
             if term != "log":
@@ -98,6 +104,8 @@ def funcSolver(terms, operands):
                 terms[i] = 1/(inside)
             elif term == "cot":
                 terms[i] = 1/tan(inside)
+            elif term == "abs":
+                terms[i] = abs(inside)
             elif term == "log":
                 if inside.count(",") == 1:
                     base = inside[inside.find(",")+1:len(inside)]
@@ -114,6 +122,8 @@ def funcSolver(terms, operands):
                     terms[i] = "FAIL"
             else:
                 terms[i] = 0
+        if operand == "-":
+            terms[i] = -1*float(terms[i])
     found = 0
     newTerms = terms
     if len(operands) > 0:
@@ -152,7 +162,7 @@ def funcSolver(terms, operands):
         final = 0
         for i in newTerms:
             final += float(i)
-        #print("SOLVED:", final)
+#         print("SOLVED:", final)
         return(float(final))
     else:
         if len(terms) > 1:
@@ -161,10 +171,13 @@ def funcSolver(terms, operands):
                 final += float(i)
         else:
             final = float(terms[0])
-        #print("SOLVED:", final)
+#         print("SOLVED:", final)
         return(final)
     
 def prenEliminator(terms, operands):
+#     print("PREN")
+#     print("PRENT:",terms)
+#     print("PRENO:",operands)
     newTerms = []
     operators = []
     for z in terms:
@@ -177,7 +190,7 @@ def prenEliminator(terms, operands):
     while pp == 1 and g != 20:
         g += 1
         pcheck = ""
-        letterOperands = "sincotaelg"
+        letterOperands = "sincotaelgb"
         status = 0
         for i in range(0,len(newTerms)):
             status = 0
@@ -189,7 +202,11 @@ def prenEliminator(terms, operands):
                     newTerms[i]= newTerms[i][1:len(newTerms[i])-1]
                     newTerms[i] = str(prenEliminator(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
                 else:
-                    newTerms[i] = str(funcSolver(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
+                    if newTerms[i][0] == "-":
+                        newTerms[i] = newTerms[i][1:len(newTerms[i])]
+                        newTerms[i] = str(-1*funcSolver(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
+                    else:
+                        newTerms[i] = str(funcSolver(getOperandsAndTerms(newTerms[i])[0],getOperandsAndTerms(newTerms[i])[1]))
         if status == 0:
             for i in range(0,len(newTerms)):
                 if str(newTerms[i]).isdigit() == False:
@@ -238,9 +255,11 @@ def prenEliminator(terms, operands):
     
     if len(newTerms) > 1:
         newTerms = funcSolver(newTerms, operands)
+#         print("ELIM", newTerms)
         return(newTerms)
     elif len(newTerms) == 1:
         output = float(newTerms[0])
+#         print("ElIM", output)
         return(output) 
 
 def getOperandsAndTerms(equation):
@@ -248,13 +267,9 @@ def getOperandsAndTerms(equation):
     terms = []
     term = ""
     operands = []
-    letterOperands = "sincotaelg" #Letters in complex operands like trig and log functions
+    letterOperands = "sincotaelgb" #Letters in complex operands like trig and log functions
     p = 0
     op = 1
-    if equation[0] == "-":
-        terms.append("-1")
-        operands.append("*")
-        equation = equation[1:len(equation)]
     for i in str(equation):
         status = 0
         for letterOp in letterOperands:
@@ -489,7 +504,6 @@ class point(Sprite):
             print("POSITION:",position)
             self.x = getX(position[0])
             self.y = getY(position[1])
-            print("__INIT__", self.x,self.y,self.t)
         except:
             print("Function failed initial point.")
             self.x = getX(-500)
@@ -501,33 +515,19 @@ class point(Sprite):
             #Determining if the new point exists
             newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
             newPosition = (getX(newPosition[0]),getY(newPosition[1]))
-            worked = 1
-        except:
-            worked = 0
-            self.tries += 1
-            if self.tries > 10:
-                self.shifting = True
-            if self.shifting == True:
-                self.t += self.jump
-        if worked == 1:
             try:
                 #Determining self.t of last point
                 oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
                 oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
-                print(oldPosition,(self.x,self.y),self.t)
                 if self.x == oldPosition[0] and self.y == oldPosition[1]:
                     distance = ((self.x - newPosition[0])**2+(self.y - newPosition[1])**2)**0.5
-                    # print(distance)
                     if distance > 5:
-#                         print("BIG",self.increment)
                         self.increment = self.increment * 0.6
                         self.shifting = False
-                    elif distance < 2.5:
-#                         print("SMALL")
+                    elif distance < 2:
                         self.increment = self.increment * 1.9
                         self.shifting = False
                     else:
-#                         print("WORKING")
                         self.t += self.increment
                         self.x = newPosition[0]
                         self.y = newPosition[1]
@@ -537,42 +537,6 @@ class point(Sprite):
                 else:
                     self.newPointProtocol()
             except:
-                self.newPointProtocol()
-            
-    
-    def move(self):
-        try:
-            #Determining if the new point exists
-            newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
-            newPosition = (getX(newPosition[0]),getY(newPosition[1]))
-            try:
-                #Determining self.t of last point
-                oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
-                oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
-                if self.x == oldPosition[0] and self.y == oldPosition[1]:
-                    distance = ((self.x - newPosition[0])**2+(self.y - newPosition[1])**2)**0.5
-        #                     print(distance)
-                    if distance > 7:
-        #                         print("BIG",self.increment)
-                        self.increment = self.increment * 0.6
-                        self.shifting = False
-                    elif distance < 1:
-        #                         print("SMALL")
-                        self.increment = self.increment * 1.9
-                        self.shifting = False
-                    else:
-        #                         print("WORKING")
-                        self.t += self.increment
-                        self.x = newPosition[0]
-                        self.y = newPosition[1]
-                        self.tries = 0
-                        self.shifting = False
-                        self.moved()
-                else:
-                    print("YUP")
-                    self.newPointProtocol()
-            except:
-                print("YOINK")
                 self.newPointProtocol()
         except:
             self.tries += 1
@@ -589,26 +553,26 @@ class point(Sprite):
         worked = True
         shifted = 0
         shift = self.increment*0.5
+        print(self.t)
+        last = 0
+        consec = 0
         while i < 400:
-            print(i)
             if worked == True:
                 shift = shift*1.6
             else:
                 shift = shift/4
-#             print(shifted)
-#             print(shift)
+            print(shifted,shift,i)
             try:
                 newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t-(shifted + shift))
                 worked = True
                 shifted += shift
-                print("SUCC")
             except:
-                print("FAIL")
                 worked = False
             i += 1
             
-        if shifted <self.increment:
+        if shifted <self.jump:
             self.t -= shifted
+            print(self.t)
         newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
         self.x = getX(newPosition[0])
         self.y = getY(newPosition[1])
@@ -617,6 +581,7 @@ class point(Sprite):
             self.tries += 1
         else:
             self.tries = 0
+        print(self.t)
         self.moved()
             
     def moved(self):
@@ -647,15 +612,14 @@ class Grapher(App):
         b = 20
         theta = 0
         i = 0
-        graphs = 1
-        point(6,"y=log(x)","y","x",initial)
+        graphs = 0
+        point(i,"y=(x/20)^2*(1-abs(x)/x)/2     +     x^2*(abs(x)/x+1)/2","y","x",initial)
         # for i in range(9,12):
-        #     point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
-        #     point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial,graphs)
-    graphs = 1    
+        #     point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial)
+        #     point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial)
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            print(sprite.t,getX(sprite.x),giveY(sprite.y))
+            # print(sprite.t,getX(sprite.x),giveY(sprite.y))
             if sprite.t > frameWidth:
                 sprite.destroy()
             else:
