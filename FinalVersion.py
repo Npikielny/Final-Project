@@ -520,7 +520,7 @@ class point(Sprite):
             #Determining if the new point exists
             newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
             newPosition = (getX(newPosition[0]),getY(newPosition[1]))
-            if newPosition[0] < frameWidth and newPosition[0] > 0 and newPosition[1] > 0 and newPosition[1] < frameHeight:
+            if self.tries < 10 or (newPosition[0] > 0 and newPosition[0] < frameWidth and newPosition[1] > 0 and newPosition[1] < frameHeight):
                 try:
                     #Determining self.t of last point
                     oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
@@ -537,7 +537,6 @@ class point(Sprite):
                             self.t += self.increment
                             self.x = newPosition[0]
                             self.y = newPosition[1]
-                            self.tries = 0
                             self.shifting = False
                             self.moved()
                     else:
@@ -548,7 +547,6 @@ class point(Sprite):
                 self.t += self.increment
                 self.x = newPosition[0]
                 self.y = newPosition[1]
-                self.tries = 0
                 self.shifting = False
                 self.moved()
         except:
@@ -569,12 +567,11 @@ class point(Sprite):
         print(self.t)
         last = 0
         consec = 0
-        while i < 400:
+        while i < 100:
             if worked == True:
                 shift = shift*1.6
             else:
                 shift = shift/4
-            print(shifted,shift,i)
             try:
                 newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t-(shifted + shift))
                 worked = True
@@ -585,7 +582,6 @@ class point(Sprite):
             
         if shifted <self.jump:
             self.t -= shifted
-            print(self.t)
         newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
         self.x = getX(newPosition[0])
         self.y = getY(newPosition[1])
@@ -594,15 +590,18 @@ class point(Sprite):
             self.tries += 1
         else:
             self.tries = 0
-        print(self.t)
         self.moved()
             
     def moved(self):
         global width
         if self.x > 0 and self.x<frameWidth and self.y>0 and self.y<frameHeight:
             path(self.color,(self.x,self.y))
+            self.tries = 0
         elif self.t > width/2:
             self.destroy()
+        else:
+            self.tries += 1
+            self.increment = self.increment*1.1
 
 class path(Sprite):
     def __init__(self,color, position):
@@ -621,13 +620,8 @@ class Grapher(App):
         super().__init__(width, height)
         Grapher.listenMouseEvent("click", self.addPoint)
         bg((0,0))
-    pi = 3.14159265359
-    b = 20
-    theta = 0
-    i = 0
     global initial
-    # point(1,"y=(x/20)^2*(1-abs(x)/x)/2     +     x^2*(abs(x)/x+1)/2","y","x",initial)
-    point(1,"y=1/x","y","x",initial)
+    
     def step(self):
         for sprite in self.getSpritesbyClass(point):
             print(sprite.t)
@@ -650,9 +644,23 @@ class Grapher(App):
         indepVars = {"y":"x","x":"y"}
         try:
             indepVar=indepVars[depVar]
-            point(self.graphs,equation,depVar,indepVar,self.initial)
+            point(self.graphs,equation,depVar,indepVar,initial)
         except:
-            print("FUNCFAILED")
+            if equation.lower() == "circle":
+                radius = float(input("Radius: "))
+                point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",initial)
+                point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",initial)
+                try:
+                    pass
+                except:
+                    print("Please enter valid radii")
+            elif equation.lower() == "approximation":
+                pi = 3.14159265359
+                b = 20
+                theta = 0
+                i = 0
+            else:
+                print("FUNCFAILED")
             
             
 print("Y",getY(0))
