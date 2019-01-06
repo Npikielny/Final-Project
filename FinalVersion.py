@@ -429,7 +429,7 @@ def pluggerSetup(depVar, indepVar, equation):
     output = funcCompiler(output[0],output[1])
     return output
 #-----------------------------------------------------    
-width = int(input("Width?"))
+width = float(input("Width?"))
 initial = -width/2
 print("The height is " + str(width*4/5) +".")
 #-----------------------------------------------------
@@ -624,7 +624,7 @@ class Grapher(App):
     
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            print(sprite.t)
+            # print(sprite.t)
             if sprite.t > frameWidth:
                 sprite.destroy()
             else:
@@ -663,6 +663,5 @@ class Grapher(App):
                 print("FUNCFAILED")
             
             
-print("Y",getY(0))
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
