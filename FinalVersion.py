@@ -428,22 +428,26 @@ def pluggerSetup(depVar, indepVar, equation):
             output[0][i] = str(prenEliminator(getOperandsAndTerms(output[0][i])[0],getOperandsAndTerms(output[0][i])[1]))
     output = funcCompiler(output[0],output[1])
     return output
+#-----------------------------------------------------    
+width = int(input("Width?"))
+initial = -width/2
+print("The height is " + str(width*4/5) +".")
 #-----------------------------------------------------
 def getX(xValue):
     #x = (xValue + float(frameWidth)/2.0)*4+2
-    x = float(xValue) + float(frameWidth) / 2.0
+    x = float(xValue)*frameWidth/width + float(frameWidth) / 2.0
     return(x)
     
 def getY(yValue):
-    y = (float(frameHeight) / 2.0 - float(yValue))
+    y = (float(frameHeight) / 2.0 - frameHeight/(width*4/5)*float(yValue))
     return(y)
 
 def giveX(xValue):
-    x = xValue - float(frameWidth)/2
+    x = (xValue - float(frameWidth)/2)*width/frameWidth
     return x
 
 def giveY(yValue):
-    y = -1*yValue + float(frameHeight)/2
+    y = (-1*yValue + float(frameHeight)/2)/(width*4/5)
     return(y)
 
 #----------------------------------------------------- 
@@ -476,7 +480,8 @@ class point(Sprite):
         self.color = color
         self.tries = 0
         self.increment = 1
-        self.jump = 10
+        global width
+        self.jump = width/100
         self.shifting = False
         if equation.count("(") != equation.count(")") or equation.count("=") != 1:
             print("Invalid input given")
@@ -515,29 +520,37 @@ class point(Sprite):
             #Determining if the new point exists
             newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
             newPosition = (getX(newPosition[0]),getY(newPosition[1]))
-            try:
-                #Determining self.t of last point
-                oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
-                oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
-                if self.x == oldPosition[0] and self.y == oldPosition[1]:
-                    distance = ((self.x - newPosition[0])**2+(self.y - newPosition[1])**2)**0.5
-                    if distance > 5:
-                        self.increment = self.increment * 0.6
-                        self.shifting = False
-                    elif distance < 2:
-                        self.increment = self.increment * 1.9
-                        self.shifting = False
+            if newPosition[0] < frameWidth and newPosition[0] > 0 and newPosition[1] > 0 and newPosition[1] < frameHeight:
+                try:
+                    #Determining self.t of last point
+                    oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
+                    oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
+                    if self.x == oldPosition[0] and self.y == oldPosition[1]:
+                        distance = ((self.x - newPosition[0])**2+(self.y - newPosition[1])**2)**0.5
+                        if distance > 5:
+                            self.increment = self.increment * 0.6
+                            self.shifting = False
+                        elif distance < 2:
+                            self.increment = self.increment * 1.9
+                            self.shifting = False
+                        else:
+                            self.t += self.increment
+                            self.x = newPosition[0]
+                            self.y = newPosition[1]
+                            self.tries = 0
+                            self.shifting = False
+                            self.moved()
                     else:
-                        self.t += self.increment
-                        self.x = newPosition[0]
-                        self.y = newPosition[1]
-                        self.tries = 0
-                        self.shifting = False
-                        self.moved()
-                else:
+                        self.newPointProtocol()
+                except:
                     self.newPointProtocol()
-            except:
-                self.newPointProtocol()
+            else:
+                self.t += self.increment
+                self.x = newPosition[0]
+                self.y = newPosition[1]
+                self.tries = 0
+                self.shifting = False
+                self.moved()
         except:
             self.tries += 1
             if self.tries > 10:
@@ -585,9 +598,10 @@ class point(Sprite):
         self.moved()
             
     def moved(self):
+        global width
         if self.x > 0 and self.x<frameWidth and self.y>0 and self.y<frameHeight:
             path(self.color,(self.x,self.y))
-        elif self.t > 400:
+        elif self.t > width/2:
             self.destroy()
 
 class path(Sprite):
@@ -607,19 +621,16 @@ class Grapher(App):
         super().__init__(width, height)
         Grapher.listenMouseEvent("click", self.addPoint)
         bg((0,0))
-        initial = -frameWidth/2
-        pi = 3.14159265359
-        b = 20
-        theta = 0
-        i = 0
-        graphs = 0
-        point(i,"y=(x/20)^2*(1-abs(x)/x)/2     +     x^2*(abs(x)/x+1)/2","y","x",initial)
-        # for i in range(9,12):
-        #     point(i,"y=({0}^2-x^2)^0.5".format(i*30),"y","x",initial)
-        #     point(i,"y=-({0}^2-x^2)^0.5".format(i*30),"y","x",initial)
+    pi = 3.14159265359
+    b = 20
+    theta = 0
+    i = 0
+    global initial
+    # point(1,"y=(x/20)^2*(1-abs(x)/x)/2     +     x^2*(abs(x)/x+1)/2","y","x",initial)
+    point(1,"y=1/x","y","x",initial)
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            # print(sprite.t,getX(sprite.x),giveY(sprite.y))
+            print(sprite.t)
             if sprite.t > frameWidth:
                 sprite.destroy()
             else:
@@ -639,9 +650,11 @@ class Grapher(App):
         indepVars = {"y":"x","x":"y"}
         try:
             indepVar=indepVars[depVar]
-            point(self.graphs,equation,depVar,indepVar,-frameWidth/2)
+            point(self.graphs,equation,depVar,indepVar,self.initial)
         except:
             print("FUNCFAILED")
             
+            
+print("Y",getY(0))
 myapp = Grapher(frameWidth, frameHeight)
 myapp.run()
