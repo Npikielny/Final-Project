@@ -372,6 +372,9 @@ def getOperandsAndTerms(equation):
                 op = 0
             else:
                 term += i
+            if len(terms) > len(operands) + 1 and term == "":
+                operands.append("*")
+                op = 1
     if term != "":
         terms.append(term)
     #print("GottenTerms", terms, "GottenOperands", operands, "from", equation)
@@ -625,8 +628,8 @@ class Grapher(App):
     graphs = 0
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            # print(sprite.t)
-            if sprite.t > frameWidth:
+            print(sprite.t)
+            if sprite.t > abs(2*initial):
                 sprite.destroy()
             else:
                 try:
@@ -648,8 +651,8 @@ class Grapher(App):
             if equation.lower() == "circle":
                 radius = float(input("Radius: "))
                 try:
-                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",initial)
-                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",initial)
+                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1)
+                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1)
                     self.graphs += 1
                 except:
                     print("Circle Failed!")
@@ -657,9 +660,9 @@ class Grapher(App):
                 global width
                 radius = float(input("Radius: "))
                 try:
-                    point(self.graphs,"y=({0}^2-x^2)^0.5*sin(x*{1})".format(radius,1000/(width*1.2)),"y","x",initial)
-                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",initial)
-                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",initial)
+                    point(self.graphs,"y=({0}^2-x^2)^0.5*sin(x*{1})".format(radius,1000/(width*1.2)),"y","x",-abs(radius)-0.1)
+                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1)
+                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1)
                     self.graphs += 1
                 except:
                     print("Filled circle failed!")
