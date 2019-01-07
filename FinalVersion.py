@@ -489,43 +489,50 @@ class point(Sprite):
         self.shifting = False
         self.left = left
         self.right = right
-        if equation.count("(") != equation.count(")") or equation.count("=") != 1:
-            print("Invalid input given")
-        else:
-            newEquation = ""
-            for i in equation:
-                if i != " ":
-                    newEquation += i
-            #print("Interpreting:", newEquation)
-            if newEquation.find("=") != 1 or newEquation[newEquation.find("=")+1:len(newEquation)].find(depVar) != -1:
-                print("Implementation of implicits needed")
-                print(depVarSolver(depVar, indepVar, newEquation))
-                pluggableEquation = depVarSolver(depVar, indepVar, newEquation)
+        if self.depVar == "param":
+            self.equationX = 
+            self.equationY = 
+            if equation.count("(") != equation.count(")") or equation.count("=") != 1:
+                print("Invalid input given")
             else:
-                equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
-                if equationR.count(indepVar) > 0:
-                    pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
+                newEquation = ""
+                for i in equation:
+                    if i != " ":
+                        newEquation += i
+                #print("Interpreting:", newEquation)
+                if newEquation.find("=") != 1 or newEquation[newEquation.find("=")+1:len(newEquation)].find(depVar) != -1:
+                    print("Implementation of implicits needed")
+                    print(depVarSolver(depVar, indepVar, newEquation))
+                    pluggableEquation = depVarSolver(depVar, indepVar, newEquation)
                 else:
-                    b = getOperandsAndTerms(equationR)
-                    pluggableEquation = prenEliminator(b[0],b[1])
-        self.equation = pluggableEquation
-        super().__init__(point.pt,(0,0))
-        try:
-            position = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
-            print("POSITION:",position)
-            self.x = getX(position[0])
-            self.y = getY(position[1])
-        except:
-            print("Function failed initial point.")
-            self.x = getX(-500)
-            self.y = getY(-500)
-            self.tries += 1
+                    equationR = newEquation[newEquation.find("=")+1: len(newEquation)]
+                    if equationR.count(indepVar) > 0:
+                        pluggableEquation = pluggerSetup(depVar, indepVar, equationR)
+                    else:
+                        b = getOperandsAndTerms(equationR)
+                        pluggableEquation = prenEliminator(b[0],b[1])
+            self.equation = pluggableEquation
+            super().__init__(point.pt,(0,0))
+            try:
+                position = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
+                print("POSITION:",position)
+                self.x = getX(position[0])
+                self.y = getY(position[1])
+            except:
+                print("Function failed initial point.")
+                self.x = getX(-500)
+                self.y = getY(-500)
+                self.tries += 1
         
     def move(self):
         try:
             #Determining if the new point exists
-            newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
-            newPosition = (getX(newPosition[0]),getY(newPosition[1]))
+            if self.depVar == "param":
+                newPositionx = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+                newPositionx = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+            else:
+                newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+                newPosition = (getX(newPosition[0]),getY(newPosition[1]))
             if self.tries < 10 or (newPosition[0] > 0 and newPosition[0] < frameWidth and newPosition[1] > 0 and newPosition[1] < frameHeight):
                 try:
                     #Determining self.t of last point
@@ -676,8 +683,8 @@ class Grapher(App):
                 i = 0
             elif equation.lower() == "parametric":
                 x = str(input("x: "))
-                y = str(input("x: "))
-                point(self.graphs,x+":"+y,"param",t,initial,0,frameWidth*width/1000)
+                y = str(input("y: "))
+                point(self.graphs,"x="+x +":"+ "y="+"y","param","t",initial,0,frameWidth*width/1000)
             else:
                 print("FUNCFAILED")
             
