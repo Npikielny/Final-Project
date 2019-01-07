@@ -382,6 +382,7 @@ def getOperandsAndTerms(equation):
     return((terms,operands))
 
 def funcPlugger(depVar, indepVar, equation, t):
+    equation = str(equation)
     if equation.find("=") != -1:
         equation = equation[equation.find("=")+1:len(equation)]
     a = getOperandsAndTerms(equation.format(t))
@@ -642,24 +643,26 @@ class Grapher(App):
         try:
             indepVar=indepVars[depVar]
             point(self.graphs,equation,depVar,indepVar,initial)
+            self.graphs += 1
         except:
             if equation.lower() == "circle":
                 radius = float(input("Radius: "))
-                point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",initial)
-                point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",initial)
                 try:
-                    pass
+                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",initial)
+                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",initial)
+                    self.graphs += 1
                 except:
-                    print("Please enter valid radii")
+                    print("Circle Failed!")
             elif equation.lower() == "circlefilled":
+                global width
                 radius = float(input("Radius: "))
-                point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",initial)
-                point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",initial)
-                point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",initial)
                 try:
-                    pass
+                    point(self.graphs,"y=({0}^2-x^2)^0.5*sin(x*{1})".format(radius,1000/(width*1.2)),"y","x",initial)
+                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",initial)
+                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",initial)
+                    self.graphs += 1
                 except:
-                    print("Please enter valid radii")
+                    print("Filled circle failed!")
             elif equation.lower() == "approximation":
                 pi = 3.14159265359
                 b = 20
