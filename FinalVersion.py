@@ -477,7 +477,7 @@ def colorRandom(funcIndex):
 #-----------------------------------------------------
 class point(Sprite):
     pt = CircleAsset(5, outline, red)
-    def __init__(self, color, equation, depVar,indepVar,t):
+    def __init__(self, color, equation, depVar,indepVar,t,left,right):
         self.depVar = depVar
         self.indepVar = indepVar
         self.t = t
@@ -487,6 +487,8 @@ class point(Sprite):
         global width
         self.jump = width/100
         self.shifting = False
+        self.left = left
+        self.right = right
         if equation.count("(") != equation.count(")") or equation.count("=") != 1:
             print("Invalid input given")
         else:
@@ -628,7 +630,7 @@ class Grapher(App):
     graphs = 0
     def step(self):
         for sprite in self.getSpritesbyClass(point):
-            print(sprite.t)
+            # print(sprite.t)
             if sprite.t > abs(2*initial):
                 sprite.destroy()
             else:
@@ -643,16 +645,17 @@ class Grapher(App):
         equation = input("Equation: ")
         depVar = equation[0]
         indepVars = {"y":"x","x":"y"}
+        global width
         try:
             indepVar=indepVars[depVar]
-            point(self.graphs,equation,depVar,indepVar,initial)
+            point(self.graphs,equation,depVar,indepVar,initial,0,frameWidth*width/1000)
             self.graphs += 1
         except:
             if equation.lower() == "circle":
                 radius = float(input("Radius: "))
                 try:
-                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1)
-                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1)
+                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1,0,frameWidth*width/1000)
+                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1,0,frameWidth*width/1000)
                     self.graphs += 1
                 except:
                     print("Circle Failed!")
@@ -660,9 +663,9 @@ class Grapher(App):
                 global width
                 radius = float(input("Radius: "))
                 try:
-                    point(self.graphs,"y=({0}^2-x^2)^0.5*sin(x*{1})".format(radius,1000/(width*1.2)),"y","x",-abs(radius)-0.1)
-                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1)
-                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1)
+                    point(self.graphs,"y=({0}^2-x^2)^0.5*sin(x*{1})".format(radius,1000/(width*1.2)),"y","x",-abs(radius)-0.1,0,frameWidth*width/1000)
+                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1,0,frameWidth*width/1000)
+                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1,0,frameWidth*width/1000)
                     self.graphs += 1
                 except:
                     print("Filled circle failed!")
@@ -671,6 +674,10 @@ class Grapher(App):
                 b = 20
                 theta = 0
                 i = 0
+            elif equation.lower() == "parametric":
+                x = str(input("x: "))
+                y = str(input("x: "))
+                point(self.graphs,x+":"+y,"param",t,initial,0,frameWidth*width/1000)
             else:
                 print("FUNCFAILED")
             
