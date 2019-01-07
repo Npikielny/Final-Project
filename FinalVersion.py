@@ -72,9 +72,6 @@ def funcCompiler(terms, operands):
     return(output)
     
 def funcSolver(terms, operands):
-#     print("FuncSolver Called.")
-#     print("FTerms: ", terms)
-#     print("FOperands: ", operands)
     letterOperands = "sincotalgb"
     operand = ""
     for i in range(len(terms)):
@@ -162,7 +159,6 @@ def funcSolver(terms, operands):
         final = 0
         for i in newTerms:
             final += float(i)
-#         print("SOLVED:", final)
         return(float(final))
     else:
         if len(terms) > 1:
@@ -171,13 +167,9 @@ def funcSolver(terms, operands):
                 final += float(i)
         else:
             final = float(terms[0])
-#         print("SOLVED:", final)
         return(final)
     
 def prenEliminator(terms, operands):
-#     print("PREN")
-#     print("PRENT:",terms)
-#     print("PRENO:",operands)
     newTerms = []
     operators = []
     for z in terms:
@@ -255,11 +247,9 @@ def prenEliminator(terms, operands):
     
     if len(newTerms) > 1:
         newTerms = funcSolver(newTerms, operands)
-#         print("ELIM", newTerms)
         return(newTerms)
     elif len(newTerms) == 1:
         output = float(newTerms[0])
-#         print("ElIM", output)
         return(output) 
 
 def getOperandsAndTerms(equation):
@@ -447,11 +437,11 @@ def getY(yValue):
     return(y)
 
 def giveX(xValue):
-    x = (xValue - float(frameWidth)/2)*width/frameWidth
+    x = (float(xValue) - float(frameWidth)/2.0)/(frameWidth/width)
     return x
 
 def giveY(yValue):
-    y = (-1*yValue + float(frameHeight)/2)/(width*4/5)
+    y = (float(yValue)-float(frameHeight))/(-frameHeight/(width*4/5))
     return(y)
 
 #----------------------------------------------------- 
@@ -490,8 +480,20 @@ class point(Sprite):
         self.left = left
         self.right = right
         if self.depVar == "param":
-            self.equationX = 
-            self.equationY = 
+            self.equationX = equation[2:equation.find(":")]
+            self.equationY = equation[equation.find(":")+1:len(equation)]
+            super().__init__(point.pt,(0,0))
+            try:
+                positionY = funcPlugger("y","t",self.equationY,self.t)
+                positionX = funcPlugger("x","t",self.equationY,self.t)
+                self.x = getX(positionX[0])
+                self.y = getY(positionY[1])
+            except:
+                print("Function failed initial point.")
+                self.x = getX(-500)
+                self.y = getY(-500)
+                self.tries += 1
+        else:
             if equation.count("(") != equation.count(")") or equation.count("=") != 1:
                 print("Invalid input given")
             else:
@@ -528,16 +530,22 @@ class point(Sprite):
         try:
             #Determining if the new point exists
             if self.depVar == "param":
-                newPositionx = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
-                newPositionx = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
+                newPositionX = funcPlugger("x","t",self.equationX,self.t+self.increment)
+                newPositionY = funcPlugger("y","t",self.equationY,self.t+self.increment)
+                newPosition = (newPositionX[0],newPositionY[1])
             else:
                 newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t+self.increment)
                 newPosition = (getX(newPosition[0]),getY(newPosition[1]))
             if self.tries < 10 or (newPosition[0] > 0 and newPosition[0] < frameWidth and newPosition[1] > 0 and newPosition[1] < frameHeight):
                 try:
                     #Determining self.t of last point
-                    oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
-                    oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
+                    if self.depVar == "param":
+                        oldPositionX = funcPlugger("x","t",self.equationX,self.t+self.increment)
+                        oldPositionY = funcPlugger("y","t",self.equationY,self.t+self.increment)
+                        oldPosition = (oldPositionX[0],oldPositionY[1])
+                    else:
+                        oldPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
+                        oldPosition = (getX(oldPosition[0]),getY(oldPosition[1]))
                     if self.x == oldPosition[0] and self.y == oldPosition[1]:
                         distance = ((self.x - newPosition[0])**2+(self.y - newPosition[1])**2)**0.5
                         if distance > 5:
@@ -586,7 +594,12 @@ class point(Sprite):
             else:
                 shift = shift/4
             try:
-                newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t-(shifted + shift))
+                if self.depVar == "param":
+                    newPositionx = funcPlugger("x","t",self.equationX,self.t+self.increment)
+                    newPositiony = funcPlugger("y","t",self.equationY,self.t+self.increment)
+                    newPosition = (newPositionX[0],newPositionY[1])
+                else:
+                    newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t-(shifted + shift))
                 worked = True
                 shifted += shift
             except:
@@ -595,7 +608,12 @@ class point(Sprite):
             
         if shifted <self.jump:
             self.t -= shifted
-        newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
+        if self.depVar == "param":
+            newPositionx = funcPlugger("x","t",self.equationX,self.t+self.increment)
+            newPositiony = funcPlugger("y","t",self.equationY,self.t+self.increment)
+            newPosition = (newPositionX[0],newPositionY[1])
+        else:
+            newPosition = funcPlugger(self.depVar,self.indepVar,self.equation,self.t)
         self.x = getX(newPosition[0])
         self.y = getY(newPosition[1])
         self.shifting = False
@@ -682,9 +700,9 @@ class Grapher(App):
                 theta = 0
                 i = 0
             elif equation.lower() == "parametric":
-                x = str(input("x: "))
-                y = str(input("y: "))
-                point(self.graphs,"x="+x +":"+ "y="+"y","param","t",initial,0,frameWidth*width/1000)
+                x = str(input("x= "))
+                y = str(input("y= "))
+                point(self.graphs,x+":"+y,"param","t",initial,0,frameWidth*width/1000)
             else:
                 print("FUNCFAILED")
             
