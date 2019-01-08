@@ -1,3 +1,16 @@
+"""
+First, enter a width of the graph - the height will be 4/5 of width. 
+To add a graph, click and then type and equation (y=terms of x or x = terms of y)
+One can also enter circle or circle filled in order to produce a circle or a filled circle.
+After typing or circle filled, one will be prompted for the radius of the circle.
+One can also type color (then respond to the second prompt with an integer) to determine what function is what color.
+The left most color is the first enterred where as the last color would be the function at the integer you entered.
+When using log, it will default to base ten, but one can change the base by putting a comma after 
+the expression one is taking a log of with the desired base.
+Example: 
+y=log(x,3)
+Would be log(x)/log(3)
+"""
 from ggame import App, Color, LineStyle, Sprite, CircleAsset, Frame, RectangleAsset, ImageAsset
 from math import floor, sin, cos, tan, log
 #-----------------------------------------------------
@@ -626,7 +639,7 @@ class Grapher(App):
                     print("error")
                     print(sprite.t, sprite.increment)
 
-
+    colors = []
     def addPoint(self,event):
         equation = input("Equation: ")
         depVar = equation[0]
@@ -640,8 +653,8 @@ class Grapher(App):
             if equation.lower() == "circle":
                 radius = float(input("Radius: "))
                 try:
-                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1,)
-                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1,)
+                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius),)
+                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius),)
                     self.graphs += 1
                 except:
                     print("Circle Failed!")
@@ -649,9 +662,9 @@ class Grapher(App):
                 global width
                 radius = float(input("Radius: "))
                 try:
-                    point(self.graphs,"y=({0}^2-x^2)^0.5*sin(x*{1})".format(radius,1000/(width*1.2)),"y","x",-abs(radius)-0.1)
-                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1)
-                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius)-0.1)
+                    point(self.graphs,"y=({0}^2-x^2)^0.5*sin(x*{1})".format(radius,1000/(width*1.2)),"y","x",-abs(radius))
+                    point(self.graphs,"y=-1*({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius))
+                    point(self.graphs,"y=({0}^2-x^2)^0.5".format(radius),"y","x",-abs(radius))
                     self.graphs += 1
                 except:
                     print("Filled circle failed!")
@@ -660,10 +673,20 @@ class Grapher(App):
                 b = 20
                 theta = 0
                 i = 0
-            elif equation.lower() == "parametric":
-                x = str(input("x= "))
-                y = str(input("y= "))
-                point(self.graphs,x+":"+y,"param","t",initial)
+            elif equation.lower() == "color":
+                if len(self.colors) > 0:
+                    shift = 0
+                    for i in range(len(self.colors)):
+                        i -= shift
+                        self.colors[i].destroy()
+                        del self.colors[i]
+                        shift += 1
+                else:
+                    Range = int(input("Number of Colors:"))
+                    for i in range(1,Range+1):
+                        dot = CircleAsset(3,noLine, colorRandom(i))
+                        self.colors.append(Sprite(dot,(i*6,0)))
+                    
             else:
                 print("FUNCFAILED")
             
