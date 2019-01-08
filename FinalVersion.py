@@ -11,6 +11,8 @@ Example:
 y=log(x,3)
 Would be log(x)/log(3)
 
+Functions operands are: ^,*,/,+,-,log(),sin(),cos(),tan(),abs(),cot(),csc(),sec()
+
 **Anything with a discontinuity will be very slow because it needs to do a backwards regression!** - it will also slow 
 other graphs.
 """
