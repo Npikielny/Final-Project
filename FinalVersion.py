@@ -10,6 +10,9 @@ the expression one is taking a log of with the desired base.
 Example: 
 y=log(x,3)
 Would be log(x)/log(3)
+
+**Anything with a discontinuity will be very slow because it needs to do a backwards regression!** - it will also slow 
+other graphs.
 """
 from ggame import App, Color, LineStyle, Sprite, CircleAsset, Frame, RectangleAsset, ImageAsset
 from math import floor, sin, cos, tan, log
