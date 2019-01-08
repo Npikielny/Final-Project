@@ -688,7 +688,7 @@ class Grapher(App):
                         shift += 1
                 else:
                     Range = int(input("Number of Colors:"))
-                    for i in range(1,Range+1):
+                    for i in range(0,Range):
                         dot = CircleAsset(3,noLine, colorRandom(i))
                         self.colors.append(Sprite(dot,(i*6,0)))
                     
